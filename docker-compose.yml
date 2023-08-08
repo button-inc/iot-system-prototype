@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  real_fake_sensors:
+    container_name: real_fake_sensors
+    build:
+      context: .
+      dockerfile: real_fake_sensors/Dockerfile
+    ports:
+      - "8081:8081"
+  sensational_sensors:
+    container_name: sensational_sensors
+    build:
+      context: .
+      dockerfile: sensational_sensors/Dockerfile
+    ports:
+      - "8082:8082"
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - real_fake_sensors
+      - sensational_sensors
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - API_HOST=http://api:8080
+    depends_on:
+      - api
