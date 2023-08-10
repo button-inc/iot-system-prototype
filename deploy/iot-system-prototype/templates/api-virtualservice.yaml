@@ -1,0 +1,35 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: sensational-sensors
+spec:
+  hosts:
+  - sensational-sensors
+  http:
+  - route:
+    - destination:
+        host: sensational-sensors
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: real-fake-sensors
+spec:
+  hosts:
+  - real-fake-sensors
+  http:
+  - route:
+    - destination:
+        host: real-fake-sensors
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: api
+spec:
+  hosts:
+  - api
+  http:
+  - route:
+    - destination:
+        host: api
