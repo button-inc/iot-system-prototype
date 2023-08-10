@@ -1,0 +1,21 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: iot-system-prototype-app
+  namespace: iot-system-pt
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - iot-system-prototype-app-gateway
+  http:
+  - match:
+    - uri:
+        exact: /iot-system-prototype
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: iot-system-prototype-app
+        port:
+          number: 3000
