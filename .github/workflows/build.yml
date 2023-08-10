@@ -30,6 +30,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/user/api:latest
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: api_tag
+          labels: api_label
           file: api/Dockerfile
