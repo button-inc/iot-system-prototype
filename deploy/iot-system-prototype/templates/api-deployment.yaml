@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  labels:
+    service: api
+    version: v1
+  namespace: iot-system-pt
+spec:
+  selector:
+    matchLabels:
+      service: api
+  template:
+    metadata:
+      labels:
+        service: api
+        network/iot-system-prototype-default: "true"
+    spec:
+      containers:
+      - name: api
+        image: joshbutton/iot-system-prototype-api:v0.0.1
+        resources:
+          requests:
+            cpu: "5m"
+            memory: "8Mi"
+          limits:
+            cpu: "10m"
+            memory: "32Mi"
+        ports:
+          - containerPort: 8080
+            hostPort: 8080
+            protocol: TCP
