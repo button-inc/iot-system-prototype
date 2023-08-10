@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: iot-system-prototype-app
+  labels:
+    app: iot-system-prototype-app
+  namespace: iot-system-pt
+spec:
+  selector:
+    app: iot-system-prototype-app
+  ports:
+  - port: 3000
+    name: "3000"
+    targetPort: 3000
