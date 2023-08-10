@@ -37,6 +37,7 @@ jobs:
       - name: Build and push api Docker image
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
+          name: api
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
@@ -46,6 +47,7 @@ jobs:
       - name: Build and push app Docker image
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
+          name: app
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
@@ -55,6 +57,7 @@ jobs:
       - name: Build and push real_fake_sensors Docker image
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
+          name: real_fake_sensors
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
@@ -64,6 +67,7 @@ jobs:
       - name: Build and push sensational_sensors Docker image
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
+          name: sensational_sensors
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
