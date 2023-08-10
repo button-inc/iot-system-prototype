@@ -1,0 +1,5 @@
+apiVersion: v2
+name: iot-system-prototype
+description: This is a prototype for an IoT sensor management system. It includes an app, an API server, and two servers acting as fake IoT sensor manufacturer's APIs.
+type: application
+version: 0.1.0

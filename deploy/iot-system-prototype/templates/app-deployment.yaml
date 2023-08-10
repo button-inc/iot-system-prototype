@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iot-system-prototype-app
+  labels:
+    app: iot-system-prototype-app
+    version: v1
+  namespace: iot-system-pt
+spec:
+  selector:
+    matchLabels:
+      app: iot-system-prototype-app
+  template:
+    metadata:
+      labels:
+        app: iot-system-prototype-app
+    spec:
+      containers:
+      - name: iot-system-prototype-app
+        image: joshbutton/iot-system-prototype-app:v0.0.1
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "8Mi"
+          limits:
+            cpu: "50m"
+            memory: "64Mi"
+        ports:
+          - containerPort: 3000
+            hostPort: 3000
+            protocol: TCP
+        env:
+          - name: API_HOST
+            value: http://api:8080
