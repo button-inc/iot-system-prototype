@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: real-fake-sensors
+  labels:
+    service: real-fake-sensors
+    version: v1
+  namespace: iot-system-pt
+spec:
+  selector:
+    matchLabels:
+      service: real-fake-sensors
+  template:
+    metadata:
+      labels:
+        service: real-fake-sensors
+        network/iot-system-prototype-default: "true"
+    spec:
+      containers:
+      - name: real-fake-sensors
+        image: joshbutton/iot-system-prototype-real-fake-sensors:v0.0.1
+        resources:
+          requests:
+            cpu: "5m"
+            memory: "8Mi"
+          limits:
+            cpu: "10m"
+            memory: "32Mi"
+        ports:
+          - containerPort: 8081
+            hostPort: 8081
+            protocol: TCP

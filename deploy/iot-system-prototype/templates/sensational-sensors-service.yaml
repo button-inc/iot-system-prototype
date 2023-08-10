@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sensational-sensors
+  labels:
+    service: sensational-sensors
+  namespace: iot-system-pt
+spec:
+  selector:
+    service: sensational-sensors
+  ports:
+  - port: 8082
+    name: "8082"
+    targetPort: 8082
