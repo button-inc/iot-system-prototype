@@ -14,16 +14,17 @@ spec:
     metadata:
       labels:
         app: iot-system-prototype-app
+        network/iot-system-prototype-default: "true"
     spec:
       containers:
       - name: iot-system-prototype-app
         image: joshbutton/iot-system-prototype-app:v0.0.1
         resources:
           requests:
-            cpu: "10m"
+            cpu: "5m"
             memory: "8Mi"
           limits:
-            cpu: "50m"
+            cpu: "10m"
             memory: "64Mi"
         ports:
           - containerPort: 3000
