@@ -26,25 +26,25 @@ jobs:
         with:
           push: true
           tags: user/app:latest
-          file: {context}/api/Dockerfile
+          file: api/Dockerfile
       -
         name: Build and push app
         uses: docker/build-push-action@v4
         with:
           push: true
           tags: user/app:latest
-          file: {context}/app/Dockerfile
+          file: app/Dockerfile
       -
         name: Build and push real_fake_sensors
         uses: docker/build-push-action@v4
         with:
           push: true
           tags: user/app:latest
-          file: {context}/real_fake_sensors/Dockerfile
+          file: real_fake_sensors/Dockerfile
       -
         name: Build and push sensational_sensors
         uses: docker/build-push-action@v4
         with:
           push: true
           tags: user/app:latest
-          file: {context}/sensational_sensors/Dockerfile
+          file: sensational_sensors/Dockerfile
