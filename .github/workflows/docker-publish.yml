@@ -2,7 +2,7 @@ name: iot-system-prototype
 
 on:
   push:
-    branches: ["develop"]
+    branches: ["homolog"]
     tags: ["v*.*.*"]
   pull_request:
     branches: ["homolog"]
