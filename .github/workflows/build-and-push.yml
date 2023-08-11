@@ -2,9 +2,9 @@ name: Build and push images
 
 on:
   push:
-    branches: [develop, main]
+    branches: [develop, main, 731-create-build-and-push-workflow]
   pull_request:
-    branches: [develop, main]
+    branches: [develop, main, 731-create-build-and-push-workflow]
 
 jobs:
   docker-build:
