@@ -28,6 +28,7 @@ app.add_middleware(
 
 class SensorType(Enum):
     LIQUID_BIN_LEVEL = "liquid bin level"
+    SOLID_BIN_LEVEL = "solid bin level"
 
 
 class BasicSensor(BaseModel):
@@ -84,7 +85,7 @@ class SensationalSensor(BaseModel):
 def sensational_sensor_to_simple_sensor(sensor: SensationalSensor) -> BasicSensor:
     return BasicSensor(
         id=sensor["id"],
-        sensor_type=SensorType.LIQUID_BIN_LEVEL,
+        sensor_type=SensorType.SOLID_BIN_LEVEL,
         fill_level=sensor["fill_level"] if sensor["fill_level"] else None,
         sim=sensor["sim"],
         lat=sensor["lat"],
