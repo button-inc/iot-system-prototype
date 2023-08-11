@@ -1,5 +1,5 @@
-import React from "react";
-import { MapContainer, TileLayer } from "react-leaflet";
+import React, { useEffect } from "react";
+import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
@@ -12,7 +12,21 @@ interface Props {
   fillLevelThreshold?: number;
 }
 
+const regions = {
+  "Metro Vancouver": {
+    center: [49.1527, -123.0207],
+    zoom: 11,
+  },
+  "Greater Toronto Area": {
+    center: [43.70, -79.42],  // GTA approximate coordinates
+    zoom: 10,
+  },
+  // Add more regions as needed in the future
+};
+
 const Map: React.FC<Props> = ({ sensors, fillLevelThreshold }) => {
+  const [currentRegion, setCurrentRegion] = React.useState("Metro Vancouver");
+  
   const points = sensors.map((sensor) => {
     return (
       <SensorMarker
@@ -22,21 +36,44 @@ const Map: React.FC<Props> = ({ sensors, fillLevelThreshold }) => {
       />
     );
   });
-  const sensor = sensors[0];
+
+  /* const UpdateView: React.FC = () => {
+    const map = useMap();
+    useEffect(() => {
+      map.setView(regions[currentRegion].center, regions[currentRegion].zoom);
+    }, [currentRegion, map]);
+
+    return null;
+  }; */
+
   return (
-    <MapContainer
-      center={[49.1527, -123.0207]}
-      zoom={11}
-      scrollWheelZoom={true}
-      style={{ height: "100%", width: "100%" }}
-      crs={CRS.EPSG3857}
-    >
-      {points}
-      <TileLayer
-        attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-    </MapContainer>
+    <>
+      {/* <select 
+        value={currentRegion} 
+        onChange={(e) => setCurrentRegion(e.target.value)}
+      >
+        {Object.keys(regions).map((region) => (
+          <option key={region} value={region}>
+            {region}
+          </option>
+        ))}
+      </select> */}
+
+      <MapContainer
+        center={[43.70, -79.42]}
+        zoom={10}
+        scrollWheelZoom={true}
+        style={{ height: "100%", width: "100%" }}
+        crs={CRS.EPSG3857}
+      >
+        {/* <UpdateView /> */}
+        {points}
+        <TileLayer
+          attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+      </MapContainer>
+    </>
   );
 };
 
