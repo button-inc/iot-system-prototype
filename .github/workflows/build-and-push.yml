@@ -6,10 +6,6 @@ on:
   pull_request:
     branches: [develop, main]
 
-env:
-  REGISTRY: ghcr.io
-  REPO_NAME: ${{ github.repository }}
-
 jobs:
   docker-build:
     runs-on: ubuntu-latest
@@ -31,7 +27,7 @@ jobs:
           - image: ghcr.io/button-inc/iot-system-prototype/sensational_sensors
             context: .
             dockerfile: sensational_sensors/Dockerfile
-            name: realFakeSensors
+            name: sensationalSensors
     name: Build ${{ matrix.name }} docker image
     steps:
       - uses: actions/checkout@v3
