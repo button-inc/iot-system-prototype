@@ -41,8 +41,8 @@ sensors = [
         sensor_type=SensorType.LIQUID_BIN_LEVEL,
         fill_level=80,
         sim="3jdf93deq",
-        lat=49.218314,
-        long=-123.102224,
+        lat=43.828165, #49.218314,
+        long=-80.1, #-123.102224,
         man="Sensational Sensors",
     ),
     Sensor(
@@ -50,8 +50,8 @@ sensors = [
         sensor_type=SensorType.LIQUID_BIN_LEVEL,
         fill_level=75,
         sim="asdgdfhfj",
-        lat=49.238466,
-        long=-123.011415,
+        lat=43.601509,
+        long=-79.884398,
         man="Sensational Sensors",
     ),
     Sensor(
@@ -59,8 +59,8 @@ sensors = [
         sensor_type=SensorType.LIQUID_BIN_LEVEL,
         fill_level=65,
         sim="324dg4gfs",
-        lat=49.218420,
-        long=-123.202245,
+        lat=43.851197,
+        long=-79.747344,
         man="Sensational Sensors",
     ),
 ]
