@@ -1,75 +1,75 @@
-name: Build
+# name: Build
 
-on:
-  push:
-    branches: [develop, main, 731-create-build-and-push-workflow]
-  pull_request:
-    branches: [develop, main, 731-create-build-and-push-workflow]
+# on:
+#   push:
+#     branches: [develop, main, 731-create-build-and-push-workflow]
+#   pull_request:
+#     branches: [develop, main, 731-create-build-and-push-workflow]
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+# env:
+#   REGISTRY: ghcr.io
+#   IMAGE_NAME: ${{ github.repository }}
 
-jobs:
-  build-and-push-image:
-    runs-on: ubuntu-latest
+# jobs:
+#   build-and-push-image:
+#     runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-      packages: write
+#     permissions:
+#       contents: read
+#       packages: write
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Log in to the Container registry
-        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v3
+#       - name: Log in to the Container registry
+#         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+#         with:
+#           registry: ${{ env.REGISTRY }}
+#           username: ${{ github.actor }}
+#           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+#       - name: Extract metadata (tags, labels) for Docker
+#         id: meta
+#         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+#         with:
+#           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Build and push api Docker image
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-        with:
-          name: api
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          file: api/Dockerfile
+#       - name: Build and push api Docker image
+#         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+#         with:
+#           name: api
+#           context: .
+#           push: true
+#           tags: ${{ steps.meta.outputs.tags }}
+#           labels: ${{ steps.meta.outputs.labels }}
+#           file: api/Dockerfile
 
-      - name: Build and push app Docker image
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-        with:
-          name: app
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          file: app/Dockerfile
+#       - name: Build and push app Docker image
+#         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+#         with:
+#           name: app
+#           context: .
+#           push: true
+#           tags: ${{ steps.meta.outputs.tags }}
+#           labels: ${{ steps.meta.outputs.labels }}
+#           file: app/Dockerfile
 
-      - name: Build and push real_fake_sensors Docker image
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-        with:
-          name: real_fake_sensors
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          file: real_fake_sensors/Dockerfile
+#       - name: Build and push real_fake_sensors Docker image
+#         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+#         with:
+#           name: real_fake_sensors
+#           context: .
+#           push: true
+#           tags: ${{ steps.meta.outputs.tags }}
+#           labels: ${{ steps.meta.outputs.labels }}
+#           file: real_fake_sensors/Dockerfile
 
-      - name: Build and push sensational_sensors Docker image
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-        with:
-          name: sensational_sensors
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          file: sensational_sensors/Dockerfile
+#       - name: Build and push sensational_sensors Docker image
+#         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+#         with:
+#           name: sensational_sensors
+#           context: .
+#           push: true
+#           tags: ${{ steps.meta.outputs.tags }}
+#           labels: ${{ steps.meta.outputs.labels }}
+#           file: sensational_sensors/Dockerfile
