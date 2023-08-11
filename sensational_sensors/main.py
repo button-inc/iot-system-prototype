@@ -59,8 +59,8 @@ sensors = [
         sensor_type=SensorType.LIQUID_BIN_LEVEL,
         fill_level=65,
         sim="324dg4gfs",
-        lat=49.218420,
-        long=-123.202245,
+        lat=43.851197,
+        long=-79.747344,
         man="Sensational Sensors",
     ),
 ]

@@ -53,8 +53,8 @@ sensors = [
         "simCardNumber": "+5424524555",
         "connectivityProvider": "RFS inc",
         "latest_sensors_data": {"level": 84, "timestamp": 1691381304819},
-        "latitude": 43.5, #49.228314,
-        "longitude":  -80.42, #-123.092224,
+        "latitude": 43.666729, #49.228314, , 
+        "longitude":  -79.549713, #-123.092224,
     },
 ]
 
