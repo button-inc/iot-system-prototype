@@ -2,9 +2,9 @@ name: Build and push images
 
 on:
   push:
-    branches: [develop, main, 731-create-build-and-push-workflow]
+    branches: [develop, main]
   pull_request:
-    branches: [develop, main, 731-create-build-and-push-workflow]
+    branches: [develop, main]
 
 env:
   REGISTRY: ghcr.io
