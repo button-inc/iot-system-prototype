@@ -41,46 +41,55 @@ const SensorMarker: React.FC<Props> = ({
     iconSize: [25, 25],
   });
 
+  const fill_level1 = 50;
+  const bin_vol1 = 100;
+  const fill_pct =  Math.round(fill_level1 / bin_vol1 * 100, 0);
+
   return (
     <Marker key={id} position={[lat, long]} icon={maekerIcon}>
       <Popup>
           <div style={{ padding: '5px', display: 'flex', width: '300px' }}>
               <div style={{ flex: 2 }}> {/* Left column (labels) */}
-                  <Box style={{ margin: 'auto', width: '40px' }}>
+                
+
                     <Box 
                     style={{
-                        background: 'lightgrey', 
-                        marginTop: '5px',
-                        height: '100%', 
-                        borderRadius: '10px 10px 0px 0px', 
+                        margin: 'auto', width: '40px',
                         display: 'flex', 
                         flexDirection: 'column', 
                         alignItems: 'center', 
                         justifyContent: 'center'
                     }}
                     >
-                    <Typography variant="body1" style={{ marginBottom: '10px' }}>{fill_level ?? "Error"}%</Typography>
-                    <div 
-            style={{ 
-                background: 'lightgrey', 
-                width: '40px', 
-                height: '35px',
-                display: 'flex',
-                alignItems: 'center'
-            }}
-        >
-            <LinearProgress 
-                variant="determinate" 
-                value={50} 
-                style={{ transform: 'rotate(270deg)', width: '100%', height:'100%' }}
-            />
-        </div>
+                    <Typography 
+                      variant="body1" 
+                      style={{ marginBottom: '38px', marginTop: '5px', }}
+                    >
+                      {`${fill_pct}%` ?? "Error"}
+                    </Typography>
+                    
+                    <LinearProgress 
+                        variant="determinate" 
+                        value={fill_pct} 
+                        style={{ 
+                          transform: 'rotate(270deg)', 
+                          width: '100px', 
+                          height:'20px', 
+                          borderRadius: '0px 5px 5px 0px',  }}
+                    />
+                    <Typography 
+                      variant="body1" 
+                      style={{ whiteSpace: 'nowrap',marginTop: '38px'}}  // Added whiteSpace to prevent wrapping.
+                  >
+                      Fill level
+                  </Typography>
+        
                 </Box>
 
                       
-                      <Typography variant="body1">Fill level</Typography>
                       
-                  </Box>
+                      
+             
                   {/* <Typography variant="h6" style={{ marginBottom: '10px' }}>Asset ID</Typography>
                   <Typography variant="body1" style={{ marginBottom: '15px' }}>Fill Level:</Typography>
                   <Typography variant="body2" style={{ marginBottom: '15px' }}>Last Updated:</Typography>
