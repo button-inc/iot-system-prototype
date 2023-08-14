@@ -2,9 +2,7 @@ name: Build and push images
 
 on:
   push:
-    branches: [develop, main]
-  pull_request:
-    branches: [develop, main]
+    branches: [k8s-manifest]
 
 jobs:
   docker-build:
