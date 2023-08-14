@@ -6,11 +6,19 @@ import Sidebar from "../components/Sidebar";
 
 export interface Sensor {
   id: number;
-  sensor_type: string;
   fill_level: number;
-  sim: string;
   lat: number;
   long: number;
+  bin_vol: number;
+
+  sensor_type: string;
+  material_type: string;
+  bin_type: string;
+  group: string;
+  sim: string;
+  site_address: string;
+   
+  
 }
 
 const Home: NextPage = () => {

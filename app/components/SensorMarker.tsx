@@ -40,7 +40,9 @@ const SensorMarker: React.FC<Props> = ({
 
   return (
     <Marker key={id} position={[lat, long]} icon={maekerIcon}>
-      <Popup>Fill Level: {fill_level ?? "Error"}</Popup>
+      <Popup>
+          <>Fill Level: {fill_level ?? "Error"}</>
+      </Popup>
     </Marker>
   );
 };
