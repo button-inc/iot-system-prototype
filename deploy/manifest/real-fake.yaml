@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: real-fake
+  labels:
+    app: iotapp
 spec:
   replicas: 1
   selector:
@@ -15,10 +17,10 @@ spec:
       imagePullSecrets:
         - name: ghcr-secret
       containers:
-      - name: real-fake
-        image: ghcr.io/button-inc/iot-system-prototype/real_fake_sensors:latest
-        ports:
-        - containerPort: 8081
+        - name: real-fake
+          image: ghcr.io/button-inc/iot-system-prototype/real_fake_sensors:latest
+          ports:
+            - containerPort: 8081
 ---
 apiVersion: v1
 kind: Service

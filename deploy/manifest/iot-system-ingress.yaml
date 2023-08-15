@@ -7,17 +7,10 @@ spec:
     - host: iot.local
       http:
         paths:
-          - pathType: Prefix
-            path: /
+          - path: /sensors
+            pathType: Prefix
             backend:
               service:
-                name: sensational-sensor-service
-                port:
-                  number: 8080
-          - pathType: Prefix
-            path: /sensors
-            backend:
-              service:
-                name: sensational-sensor-service
+                name: api-app-service
                 port:
                   number: 8080

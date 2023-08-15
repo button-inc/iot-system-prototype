@@ -1,21 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api
+  name: api-app
+  labels:
+    app: iotapp
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: api
+      app: api-app
   template:
     metadata:
       labels:
-        app: api
+        app: api-app
     spec:
       imagePullSecrets:
         - name: ghcr-secret
       containers:
-        - name: api
+        - name: api-app
           image: ghcr.io/button-inc/iot-system-prototype/api:latest
           ports:
             - containerPort: 8080
@@ -23,10 +25,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: api-service
+  name: api-app-service
 spec:
   selector:
-    app: api
+    app: api-app
   ports:
     - protocol: TCP
       port: 8080

@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sensational-sensors
+  labels:
+    app: iotapp
 spec:
   replicas: 1
   selector:
@@ -29,5 +31,5 @@ spec:
     app: sensational-sensors
   ports:
     - protocol: TCP
-      port: 8080
+      port: 8082
       targetPort: 8082
