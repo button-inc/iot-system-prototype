@@ -87,7 +87,7 @@ const SensorMarker: React.FC<Props> = ({
                 </Box>
 
 
-
+                {/* refactor needed */}
 
                 <Box 
                   style={{
@@ -115,12 +115,7 @@ const SensorMarker: React.FC<Props> = ({
                       
                       
              
-                  {/* <Typography variant="h6" style={{ marginBottom: '10px' }}>Asset ID</Typography>
-                  <Typography variant="body1" style={{ marginBottom: '15px' }}>Fill Level:</Typography>
-                  <Typography variant="body2" style={{ marginBottom: '15px' }}>Last Updated:</Typography>
-                  <Typography variant="body2" style={{ marginBottom: '15px' }}>Location:</Typography>
-                  <Typography variant="body2" style={{ marginBottom: '15px' }}>Temperature:</Typography>
-                  <Typography variant="body2">Battery Level:</Typography> */}
+                  
               </div>
               <div style={{ flex: 3, paddingLeft: '10px' }}> {/* Right column (data values) */}
                   <Typography variant="h6" style={{ marginBottom: '10px' }}>{id}</Typography>
