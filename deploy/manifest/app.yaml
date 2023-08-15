@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: custom-app
+  labels:
+    app: iotapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: custom-app
+  template:
+    metadata:
+      labels:
+        app: custom-app
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: custom-app
+          image: ghcr.io/button-inc/iot-system-prototype/app:latest
+          ports:
+            - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: custom-app-service
+spec:
+  selector:
+    app: custom-app
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
