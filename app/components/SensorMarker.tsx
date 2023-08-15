@@ -5,6 +5,7 @@ import { Sensor } from "../pages/index";
 import Typography from "@mui/material/Typography";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
+import Image from 'next/image';
 interface Props {
   sensorToMark: Sensor;
   fillLevelThreshold?: number;
@@ -43,48 +44,72 @@ const SensorMarker: React.FC<Props> = ({
 
   const fill_level1 = 50;
   const bin_vol1 = 100;
-  const fill_pct =  Math.round(fill_level1 / bin_vol1 * 100, 0);
+  const fill_pct =  Math.round(fill_level1 / bin_vol1 * 100);
 
   return (
     <Marker key={id} position={[lat, long]} icon={maekerIcon}>
       <Popup>
           <div style={{ padding: '5px', display: 'flex', width: '300px' }}>
               <div style={{ flex: 2 }}> {/* Left column (labels) */}
-                
 
-                    <Box 
-                    style={{
-                        margin: 'auto', width: '40px',
-                        display: 'flex', 
-                        flexDirection: 'column', 
-                        alignItems: 'center', 
-                        justifyContent: 'center'
-                    }}
-                    >
-                    <Typography 
-                      variant="body1" 
-                      style={{ marginBottom: '38px', marginTop: '5px', }}
-                    >
-                      {`${fill_pct}%` ?? "Error"}
-                    </Typography>
-                    
-                    <LinearProgress 
-                        variant="determinate" 
-                        value={fill_pct} 
-                        style={{ 
-                          transform: 'rotate(270deg)', 
-                          width: '100px', 
-                          height:'20px', 
-                          borderRadius: '0px 5px 5px 0px',  }}
-                    />
-                    <Typography 
-                      variant="body1" 
-                      style={{ whiteSpace: 'nowrap',marginTop: '38px'}}  // Added whiteSpace to prevent wrapping.
+                <Box 
+                  style={{
+                      margin: 'auto', width: '40px',
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      alignItems: 'center', 
+                      justifyContent: 'center'
+                  }}
+                  >
+                  <Typography 
+                    variant="body1" 
+                    style={{ marginBottom: '38px', marginTop: '5px', }}
+                  >
+                    {`${fill_pct}%` ?? "Error"}
+                  </Typography>
+                  
+                  <LinearProgress 
+                      variant="determinate" 
+                      value={fill_pct} 
+                      style={{ 
+                        transform: 'rotate(270deg)', 
+                        width: '100px', 
+                        height:'20px', 
+                        borderRadius: '0px 5px 5px 0px',  }}
+                  />
+                  <Typography 
+                    variant="body1" 
+                    style={{ whiteSpace: 'nowrap',marginTop: '38px'}}  
                   >
                       Fill level
                   </Typography>
         
                 </Box>
+
+
+
+
+                <Box 
+                  style={{
+                      margin: 'auto', width: '40px',
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      alignItems: 'center', 
+                      justifyContent: 'center',
+                      marginTop: '3px',
+                  }}
+                  >
+                  <Image src="/assets/open-box.png" alt="Open Box" width={100} height={100} />
+                  <Typography 
+                    variant="body1" 
+                    style={{ whiteSpace: 'nowrap', marginTop: '0px'}}  
+                    >
+                      Cardboard
+                  </Typography>
+
+                </Box>
+
+                
 
                       
                       
@@ -103,12 +128,12 @@ const SensorMarker: React.FC<Props> = ({
                       <Typography variant="body1">{fill_level ?? "Error"}%</Typography>
                       <LinearProgress variant="determinate" value={fill_level} style={{ marginTop: '5px' }}/>
                   </div>
-                  <Typography variant="body2" style={{ marginBottom: '15px' }}>{sensorToMark.last_updated}</Typography>
-                  <Typography variant="body2" style={{ marginBottom: '15px' }}>{sensorToMark.location}</Typography>
-                  <Typography variant="body2" style={{ marginBottom: '15px' }}>{sensorToMark.temperature}°C</Typography>
+                  <Typography variant="body2" style={{ marginBottom: '15px' }}>{"sensorToMark.last_updated"}</Typography>
+                  <Typography variant="body2" style={{ marginBottom: '15px' }}>{"sensorToMark.location"}</Typography>
+                  <Typography variant="body2" style={{ marginBottom: '15px' }}>{"sensorToMark.temperature"}°C</Typography>
                   <div>
-                      <Typography variant="body2">{sensorToMark.battery_level}%</Typography>
-                      <LinearProgress variant="determinate" value={sensorToMark.battery_level} style={{ marginTop: '5px' }}/>
+                      <Typography variant="body2">{"sensorToMark.battery_level"}%</Typography>
+                      <LinearProgress variant="determinate" value={0} style={{ marginTop: '5px' }}/>
                   </div>
               </div>
           </div>
