@@ -16,7 +16,19 @@ const SensorMarker: React.FC<Props> = ({
   sensorToMark,
   fillLevelThreshold,
 }) => {
-  const { id, lat, long, fill_level } = sensorToMark;
+  const { 
+    id, 
+    lat, 
+    long, 
+    fill_level, 
+    address_line1, 
+    address_line2, 
+    group, 
+    bin_name, 
+    bin_type, 
+    material_type 
+  } = sensorToMark;
+  
   const iconName =
     fill_level === null
       ? "error"
@@ -50,7 +62,7 @@ const SensorMarker: React.FC<Props> = ({
 
 
   const fill_pct =  (fillLevelThreshold === undefined || fill_level === null)? null : Math.round(fill_level / fillLevelThreshold * 100);
-  console.log({fill_pct, fill_level, fillLevelThreshold})
+  
   
   return (
     <Marker key={id} position={[lat, long]} icon={maekerIcon}>
@@ -58,7 +70,7 @@ const SensorMarker: React.FC<Props> = ({
           <div style={{ padding: '5px', display: 'flex', width: '300px' }}>
               <div style={{ flex: 2 }}> {/* Left column*/}
 
-              {(fill_pct===null) && 
+              {(fill_pct === null) && 
                 <Box 
                   style={{
                       margin: 'auto', 
@@ -70,6 +82,7 @@ const SensorMarker: React.FC<Props> = ({
                       justifyContent: 'center'
                   }}
                   >
+                    {/* TODO: Bring in MUI ICONS*/}
                     <svg className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiBox-root css-uqopch" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="ErrorIcon"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path></svg>
                     <Typography 
                       variant="subtitle2" 
@@ -118,7 +131,7 @@ const SensorMarker: React.FC<Props> = ({
                 </Box>}
 
 
-                {/* refactor needed */}
+                {/* TODO: refactor needed */}
 
                 <Box 
                   style={{
@@ -135,26 +148,21 @@ const SensorMarker: React.FC<Props> = ({
                     variant="body1" 
                     style={{ whiteSpace: 'nowrap', marginTop: '0px'}}  
                     >
-                      Cardboard
+                      {material_type}
                   </Typography>
 
-                </Box>
-
-                
-
-                      
-                      
-                      
-             
+                </Box>        
                   
               </div>
+
+
               <div style={{ flex: 3, paddingLeft: '10px' }}> {/* Right column*/}
-                  <Typography variant="h6" style={{ fontWeight: 'bold' }}>My Awesome Bin</Typography>
+                  <Typography variant="h6" style={{ fontWeight: 'bold' }}>{bin_name}</Typography>
                   <Typography variant="subtitle2">{`ID ${id}`}</Typography>
   
-                  <Typography variant="body2">1150 Queen St W<br />Toronto, ON M6J 1J3<br />({lat}, {long})</Typography>
-                  <Typography variant="subtitle1" style={{marginBottom: '3px'}}><span style={{ fontWeight: 'bold' }}>Group: </span> Toronto West</Typography>
-                  <Typography variant="subtitle1"><span style={{ fontWeight: 'bold', whiteSpace: 'nowrap', }}>Bin Type: </span>EMW Cathedral Container 10yd</Typography>
+                  <Typography variant="body2">{address_line1}<br />{address_line2}<br />({lat}, {long})</Typography>
+                  <Typography variant="subtitle1" style={{marginBottom: '3px'}}><span style={{ fontWeight: 'bold' }}>Group: </span> {group}</Typography>
+                  <Typography variant="subtitle1"><span style={{ fontWeight: 'bold', whiteSpace: 'nowrap', }}>Bin Type: </span> {bin_type} </Typography>
                  
                  
               </div>
