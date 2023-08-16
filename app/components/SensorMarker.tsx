@@ -50,7 +50,7 @@ const SensorMarker: React.FC<Props> = ({
     <Marker key={id} position={[lat, long]} icon={maekerIcon}>
       <Popup>
           <div style={{ padding: '5px', display: 'flex', width: '300px' }}>
-              <div style={{ flex: 2 }}> {/* Left column (labels) */}
+              <div style={{ flex: 2 }}> {/* Left column*/}
 
                 <Box 
                   style={{
@@ -117,19 +117,15 @@ const SensorMarker: React.FC<Props> = ({
              
                   
               </div>
-              <div style={{ flex: 3, paddingLeft: '10px' }}> {/* Right column (data values) */}
-                  <Typography variant="h6" style={{ marginBottom: '10px' }}>{id}</Typography>
-                  <div style={{ marginBottom: '10px' }}>
-                      <Typography variant="body1">{fill_level ?? "Error"}%</Typography>
-                      <LinearProgress variant="determinate" value={fill_level} style={{ marginTop: '5px' }}/>
-                  </div>
-                  <Typography variant="body2" style={{ marginBottom: '15px' }}>{"sensorToMark.last_updated"}</Typography>
-                  <Typography variant="body2" style={{ marginBottom: '15px' }}>{"sensorToMark.location"}</Typography>
-                  <Typography variant="body2" style={{ marginBottom: '15px' }}>{"sensorToMark.temperature"}°C</Typography>
-                  <div>
-                      <Typography variant="body2">{"sensorToMark.battery_level"}%</Typography>
-                      <LinearProgress variant="determinate" value={0} style={{ marginTop: '5px' }}/>
-                  </div>
+              <div style={{ flex: 3, paddingLeft: '10px' }}> {/* Right column*/}
+                  <Typography variant="h6" style={{ fontWeight: 'bold' }}>My Awesome Bin</Typography>
+                  <Typography variant="subtitle2">{`ID ${id}`}</Typography>
+  
+                  <Typography variant="body2">1150 Queen St W<br />Toronto, ON M6J 1J3<br />({lat}, {long})</Typography>
+                  <Typography variant="subtitle1" style={{marginBottom: '3px'}}><span style={{ fontWeight: 'bold' }}>Group: </span> Toronto West</Typography>
+                  <Typography variant="subtitle1"><span style={{ fontWeight: 'bold', whiteSpace: 'nowrap', }}>Bin Type: </span>EMW Cathedral Container 10yd</Typography>
+                 
+                 
               </div>
           </div>
       </Popup>
