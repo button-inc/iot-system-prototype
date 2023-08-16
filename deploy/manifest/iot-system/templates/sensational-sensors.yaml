@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deploySensational.name }}
+  namespace: {{ .Values.deploySensational.namespace }}
+  labels:
+    app: iotapp
+spec:
+  replicas: {{ .Values.deploySensational.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.deploySensational.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.deploySensational.name }}
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: {{ .Values.deploySensational.name }}
+          image: "{{ .Values.deploySensational.image.name }}:{{ .Values.deploySensational.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.deploySensational.port }}
+          resources:
+            requests:
+              memory: {{ .Values.deploySensational.resources.requests.memory }}
+              cpu: {{ .Values.deploySensational.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.deploySensational.resources.limits.memory }}
+              cpu: {{ .Values.deploySensational.resources.limits.cpu }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.serviceSensational.name }}
+spec:
+  selector:
+    app: {{ .Values.deploySensational.name }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.serviceSensational.port }}
+      targetPort: {{ .Values.serviceSensational.targetPort }}

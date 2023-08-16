@@ -1,0 +1,79 @@
+deployApi:
+  name: api-app
+  namespace: default
+  port: 8080
+  replicas: 1
+  image:
+    name: ghcr.io/button-inc/iot-system-prototype/api
+    tag: latest
+  resources:
+    requests:
+      memory: "16Mi"
+      cpu: "40m"
+    limits:
+      memory: "128Mi"
+      cpu: "100m"
+serviceApi:
+  name: api-app-service
+  port: 8080
+  targetPort: 8080
+
+deployApp:
+  name: custom-app
+  namespace: default
+  port: 3000
+  replicas: 1
+  image:
+    name: ghcr.io/button-inc/iot-system-prototype/app
+    tag: latest
+  resources:
+    requests:
+      memory: "14Mi"
+      cpu: "40m"
+    limits:
+      memory: "128Mi"
+      cpu: "100m"
+serviceApp:
+  name: custom-app-service
+  port: 3000
+  targetPort: 3000
+
+deployReal:
+  name: real-fake
+  namespace: default
+  port: 8081
+  replicas: 1
+  image:
+    name: ghcr.io/button-inc/iot-system-prototype/real_fake_sensors
+    tag: latest
+  resources:
+    requests:
+      memory: "16Mi"
+      cpu: "40m"
+    limits:
+      memory: "128Mi"
+      cpu: "100m"
+serviceReal:
+  name: real-fake-service
+  port: 8081
+  targetPort: 8081
+
+deploySensational:
+  name: sensational-sensors
+  namespace: default
+  port: 8082
+  replicas: 1
+  image:
+    name: ghcr.io/button-inc/iot-system-prototype/sensational_sensors
+    tag: latest
+  resources:
+    requests:
+      memory: "16Mi"
+      cpu: "40m"
+    limits:
+      memory: "128Mi"
+      cpu: "100m"
+serviceSensational:
+  name: sensational-sensor-service
+  port: 8082
+  targetPort: 8082
