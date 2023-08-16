@@ -21,6 +21,13 @@ spec:
           image: ghcr.io/button-inc/iot-system-prototype/api:latest
           ports:
             - containerPort: 8080
+          resources:
+            requests:
+              memory: "16Mi"
+              cpu: "40m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
 ---
 apiVersion: v1
 kind: Service
