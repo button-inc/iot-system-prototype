@@ -32,8 +32,11 @@ class Sensor(BaseModel):
     bin_name: str
     address_line1: str
     address_line2: str
+    group: str
+    bin_type: str
+    material_type: str
 
-#TODO: push the sensor into the Sensor class, same as sensational_sensors/main.py
+#TODO: push the sensor into the Sensor class instead of just a dict, same as sensational_sensors/main.py
 sensors = [
     {
         "sensorsID": 2453473454,
@@ -48,7 +51,10 @@ sensors = [
         "longitude": -80.057859, #-123.152224,
         "bin_name": 'Big Purple Bin',
         "address_line1": '55 John St',
-        "address_line2": 'Alton, ON L7K 0C4'
+        "address_line2": 'Alton, ON L7K 0C4',
+        "group": 'Alton East',
+        "bin_type": 'EMW Cathedral Container 10yd',
+        "material_type": 'Cardboard'
     },
     {
         "sensorsID": 1846567335,
@@ -63,7 +69,10 @@ sensors = [
         "longitude":  -79.549713, #-123.092224,
         "bin_name": 'Little Orange Bin',
         "address_line1": '127 Princess Margaret',
-        "address_line2": 'Etobicoke, ON M9B 2Z4'
+        "address_line2": 'Etobicoke, ON M9B 2Z4',
+        "group": 'Etobicoke',
+        "bin_type": 'EMW Cathedral Container 10yd',
+        "material_type": 'Cardboard'
     },
 ]
 

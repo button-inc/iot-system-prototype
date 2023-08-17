@@ -36,6 +36,9 @@ class Sensor(BaseModel):
     bin_name: str
     address_line1: str
     address_line2: str
+    group: str
+    bin_type: str
+    material_type: str
 
 
 sensors = [
@@ -49,7 +52,10 @@ sensors = [
         man="Sensational Sensors",
         bin_name='Big Blue Bin',
         address_line1='19556 Mississauga Rd',
-        address_line2='Alton, ON L7K 1M5'
+        address_line2='Alton, ON L7K 1M5',
+        group='Alton North',
+        bin_type='EMW Cathedral Container 10yd',
+        material_type='Cardboard'
     ),
     Sensor(
         id=134563456,
@@ -61,7 +67,10 @@ sensors = [
         man="Sensational Sensors",
         bin_name='Little Red Bin',
         address_line1='13850 Steeles Ave',
-        address_line2='Halton Hills, ON L7G 0J1'
+        address_line2='Halton Hills, ON L7G 0J1',
+        group='Halton West',
+        bin_type='EMW Cathedral Container 10yd',
+        material_type='Cardboard'
     ),
     Sensor(
         id=265434931,
@@ -73,7 +82,10 @@ sensors = [
         man="Sensational Sensors",
         bin_name='Small Yellow Bin',
         address_line1="12944 Humber Station Rd",
-        address_line2="Bolton, ON L7E 0Y2"
+        address_line2="Bolton, ON L7E 0Y2",
+        group='Bolton South',
+        bin_type='EMW Cathedral Container 10yd',
+        material_type='Cardboard'
     ),
 ]
 

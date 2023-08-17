@@ -52,6 +52,9 @@ class BasicSensor(BaseModel):
     bin_name: str
     address_line1: str
     address_line2: str
+    group: str
+    bin_type: str
+    material_type: str
 
 
 class RealFakeSensor(BaseModel):
@@ -78,7 +81,10 @@ def rfs_to_bs(sensor: RealFakeSensor) -> BasicSensor:
         manufacturer=sensor["sensorCompany"],
         bin_name=sensor["bin_name"],
         address_line1=sensor["address_line1"],
-        address_line2=sensor["address_line2"]
+        address_line2=sensor["address_line2"],
+        group=sensor["group"],
+        bin_type=sensor["bin_type"],
+        material_type=sensor["material_type"],
     )
 
 
@@ -107,7 +113,10 @@ def sensational_sensor_to_simple_sensor(sensor: SensationalSensor) -> BasicSenso
         manufacturer=sensor["man"],
         bin_name=sensor["bin_name"],
         address_line1=sensor["address_line1"],
-        address_line2=sensor["address_line2"]
+        address_line2=sensor["address_line2"],
+        group=sensor["group"],
+        bin_type=sensor["bin_type"],
+        material_type=sensor["material_type"],
     )
 
 
