@@ -24,7 +24,7 @@ const Home: NextPage = () => {
 
   const [sensors, setSensors] = useState<any[]>([]);
   const getSensors = useCallback(async () => {
-    const res = await fetch(`http://iot.local:8080/sensors`);
+    const res = await fetch(`http://iot.local/sensors`);
     const responseJson = await res.json();
     setSensors(responseJson.sensors);
   }, []);
