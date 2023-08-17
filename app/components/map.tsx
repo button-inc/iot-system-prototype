@@ -31,7 +31,7 @@ const Map: React.FC<Props> = ({ sensors, fillLevelThreshold }) => {
     return (
       <SensorMarker
         key={sensor.id}
-        sensorToMark={{...sensor, bin_type :'EMW Cathedral Container 10yd', material_type: 'Cardboard' }}
+        sensorToMark={sensor}
         fillLevelThreshold={fillLevelThreshold}
       />
     );

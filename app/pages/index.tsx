@@ -14,16 +14,11 @@ export interface Sensor {
   sensor_type: string;
   material_type: string;
   bin_type: string;
-  
   sim: string;
-  site_address: string;
-
   bin_name: string;
   group: string;
   address_line1: string;
   address_line2: string;
-   
-  
 }
 
 const Home: NextPage = () => {
