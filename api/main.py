@@ -101,10 +101,10 @@ def sensational_sensor_list_to_simple_sensor_list(
 
 @app.get("/sensors")
 def get_sensors():
-    real_fake_sensors = requests.get("http://real_fake_sensors:8081/sensors").json()
+    real_fake_sensors = requests.get("http://real-fake-service:8081/sensors").json()
     rfs_as_simple_sensor_list = rfs_list_to_bs_list(real_fake_sensors["sensors"])
 
-    sensational_sensors = requests.get("http://sensational_sensors:8082/sensors").json()
+    sensational_sensors = requests.get("http://sensational-sensor-service:8082/sensors").json()
     ss_as_simple_sensor_list = sensational_sensor_list_to_simple_sensor_list(
         sensational_sensors["sensors"]
     )
