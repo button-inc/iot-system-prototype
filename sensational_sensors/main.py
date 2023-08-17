@@ -34,6 +34,8 @@ class Sensor(BaseModel):
     long: float
     man: str
     bin_name: str
+    address_line1: str
+    address_line2: str
 
 
 sensors = [
@@ -45,7 +47,9 @@ sensors = [
         lat=43.828165, #49.218314,
         long=-80.1, #-123.102224,
         man="Sensational Sensors",
-        bin_name='Big Blue Bin'
+        bin_name='Big Blue Bin',
+        address_line1='19556 Mississauga Rd',
+        address_line2='Alton, ON L7K 1M5'
     ),
     Sensor(
         id=134563456,
@@ -55,7 +59,9 @@ sensors = [
         lat=43.601509,
         long=-79.884398,
         man="Sensational Sensors",
-        bin_name='Little Red Bin'
+        bin_name='Little Red Bin',
+        address_line1='13850 Steeles Ave',
+        address_line2='Halton Hills, ON L7G 0J1'
     ),
     Sensor(
         id=265434931,
@@ -65,7 +71,9 @@ sensors = [
         lat=43.851197,
         long=-79.747344,
         man="Sensational Sensors",
-        bin_name='Small Yellow Bin'
+        bin_name='Small Yellow Bin',
+        address_line1="12944 Humber Station Rd",
+        address_line2="Bolton, ON L7E 0Y2"
     ),
 ]
 

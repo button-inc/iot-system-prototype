@@ -50,6 +50,8 @@ class BasicSensor(BaseModel):
     long: float
     manufacturer: str
     bin_name: str
+    address_line1: str
+    address_line2: str
 
 
 class RealFakeSensor(BaseModel):
@@ -74,7 +76,9 @@ def rfs_to_bs(sensor: RealFakeSensor) -> BasicSensor:
         lat=sensor["latitude"],
         long=sensor["longitude"],
         manufacturer=sensor["sensorCompany"],
-        bin_name=sensor["bin_name"]
+        bin_name=sensor["bin_name"],
+        address_line1=sensor["address_line1"],
+        address_line2=sensor["address_line2"]
     )
 
 
@@ -101,7 +105,9 @@ def sensational_sensor_to_simple_sensor(sensor: SensationalSensor) -> BasicSenso
         lat=sensor["lat"],
         long=sensor["long"],
         manufacturer=sensor["man"],
-        bin_name=sensor["bin_name"]
+        bin_name=sensor["bin_name"],
+        address_line1=sensor["address_line1"],
+        address_line2=sensor["address_line2"]
     )
 
 

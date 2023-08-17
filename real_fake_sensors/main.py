@@ -30,8 +30,10 @@ class Sensor(BaseModel):
     latitude: float
     longitude: float
     bin_name: str
+    address_line1: str
+    address_line2: str
 
-
+#TODO: push the sensor into the Sensor class, same as sensational_sensors/main.py
 sensors = [
     {
         "sensorsID": 2453473454,
@@ -44,7 +46,9 @@ sensors = [
         "latest_sensors_data": None,
         "latitude": 43.844880, #49.220314,
         "longitude": -80.057859, #-123.152224,
-        "bin_name": 'Big Purple Bin'
+        "bin_name": 'Big Purple Bin',
+        "address_line1": '55 John St',
+        "address_line2": 'Alton, ON L7K 0C4'
     },
     {
         "sensorsID": 1846567335,
@@ -57,7 +61,9 @@ sensors = [
         "latest_sensors_data": {"level": 84, "timestamp": 1691381304819},
         "latitude": 43.666729, #49.228314, , 
         "longitude":  -79.549713, #-123.092224,
-        "bin_name": 'Little Orange Bin'
+        "bin_name": 'Little Orange Bin',
+        "address_line1": '127 Princess Margaret',
+        "address_line2": 'Etobicoke, ON M9B 2Z4'
     },
 ]
 
