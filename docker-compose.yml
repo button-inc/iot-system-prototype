@@ -25,6 +25,8 @@ services:
     depends_on:
       - real_fake_sensors
       - sensational_sensors
+    environment:
+      - ENVIRONMENT=prod
   app:
     container_name: app
     build:

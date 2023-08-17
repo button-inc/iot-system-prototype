@@ -6,11 +6,19 @@ import Sidebar from "../components/Sidebar";
 
 export interface Sensor {
   id: number;
-  sensor_type: string;
   fill_level: number;
-  sim: string;
   lat: number;
   long: number;
+  bin_vol: number;
+
+  sensor_type: string;
+  material_type: string;
+  bin_type: string;
+  sim: string;
+  bin_name: string;
+  group: string;
+  address_line1: string;
+  address_line2: string;
 }
 
 const Home: NextPage = () => {
@@ -29,7 +37,7 @@ const Home: NextPage = () => {
     const responseJson = await res.json();
     setSensors(responseJson.sensors);
   }, []);
-
+  
   useEffect(() => {
     getSensors().catch(console.error);
   }, [getSensors]);
