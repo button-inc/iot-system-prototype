@@ -96,7 +96,8 @@ const SensorMarker: React.FC<Props> = ({
               {fill_pct && 
                 <Box 
                   style={{
-                      margin: 'auto', width: '40px',
+                      margin: 'auto', 
+                      width: '40px',
                       display: 'flex', 
                       flexDirection: 'column', 
                       alignItems: 'center', 
@@ -131,11 +132,12 @@ const SensorMarker: React.FC<Props> = ({
                 </Box>}
 
 
-                {/* TODO: refactor needed */}
+                {/* TODO: refactor potentially needed */}
 
                 <Box 
                   style={{
-                      margin: 'auto', width: '40px',
+                      margin: 'auto', 
+                      width: '40px',
                       display: 'flex', 
                       flexDirection: 'column', 
                       alignItems: 'center', 
