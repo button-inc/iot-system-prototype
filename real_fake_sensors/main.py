@@ -29,6 +29,7 @@ class Sensor(BaseModel):
     latest_sensors_data: dict | None
     latitude: float
     longitude: float
+    bin_name: str
 
 
 sensors = [
@@ -43,6 +44,7 @@ sensors = [
         "latest_sensors_data": None,
         "latitude": 43.844880, #49.220314,
         "longitude": -80.057859, #-123.152224,
+        "bin_name": 'Big Purple Bin'
     },
     {
         "sensorsID": 1846567335,
@@ -55,6 +57,7 @@ sensors = [
         "latest_sensors_data": {"level": 84, "timestamp": 1691381304819},
         "latitude": 43.666729, #49.228314, , 
         "longitude":  -79.549713, #-123.092224,
+        "bin_name": 'Little Orange Bin'
     },
 ]
 

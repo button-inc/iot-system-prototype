@@ -9,3 +9,9 @@ To run this locally, have docker running on your machine and run `docker-compose
 To stop, `ctrl`/`cmd` + `c`, or `docker-compose stop` if using the daemon.
 
 When working on the frontend code it can be useful to run `docker-compose stop app` , then `cd ./app`, `yarn dev` for the live changes.
+
+## For backend reload on change
+Need to have three terminals open:
+- `cd api` then `uvicorn main:app --host 0.0.0.0 --port 8080 --reload`
+- `cd real_fake_sensors` then `uvicorn main:app --host 0.0.0.0 --port 8081 --reload`
+- `cd sensational_sensors` then `uvicorn main:app --host 0.0.0.0 --port 8082 --reload`

@@ -42,7 +42,7 @@ const Home: NextPage = () => {
     const responseJson = await res.json();
     setSensors(responseJson.sensors);
   }, []);
-
+  
   useEffect(() => {
     getSensors().catch(console.error);
   }, [getSensors]);
