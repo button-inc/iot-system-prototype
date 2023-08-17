@@ -23,9 +23,9 @@ const Home: NextPage = () => {
   );
 
   const [sensors, setSensors] = useState<any[]>([]);
-
+process.env.VIA_CEP
   const getSensors = useCallback(async () => {
-    const res = await fetch(`http://localhost:8080/sensors`);
+    const res = await fetch(`http://${process.env.API}:${process.env.API_PORT}/sensors`);
     const responseJson = await res.json();
     setSensors(responseJson.sensors);
   }, []);
