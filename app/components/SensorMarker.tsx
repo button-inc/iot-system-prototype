@@ -6,6 +6,7 @@ import Typography from "@mui/material/Typography";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 import Image from 'next/image';
+import ErrorIcon from '@mui/icons-material/Error';
 
 interface Props {
   sensorToMark: Sensor;
@@ -82,11 +83,10 @@ const SensorMarker: React.FC<Props> = ({
                       justifyContent: 'center'
                   }}
                   >
-                    {/* TODO: Bring in MUI ICONS*/}
-                    <svg className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiBox-root css-uqopch" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="ErrorIcon"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path></svg>
+                    <ErrorIcon style={{width:'45px', height:'45px', color:'red', marginTop:'-30px'}}/>
                     <Typography 
                       variant="subtitle2" 
-                      style={{ marginTop: '2px', whiteSpace: 'nowrap', }}
+                      style={{ marginTop: '2px', whiteSpace: 'nowrap', marginRight: '5px', }}
                     >
                       level not captured
                     </Typography>
