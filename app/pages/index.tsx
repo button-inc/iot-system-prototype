@@ -21,6 +21,8 @@ export interface Sensor {
   address_line2: string;
 }
 
+const API_URL = process.env.NEXT_PUBLIC_API_HOST || "http://localhost:8080";
+
 const Home: NextPage = () => {
   const Map = useMemo(
     () =>
@@ -31,8 +33,9 @@ const Home: NextPage = () => {
   );
 
   const [sensors, setSensors] = useState<any[]>([]);
+
   const getSensors = useCallback(async () => {
-    const res = await fetch(`http://iot.local/sensors`);
+    const res = await fetch(`${API_URL}/sensors`);
     const responseJson = await res.json();
     setSensors(responseJson.sensors);
   }, []);

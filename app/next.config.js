@@ -6,7 +6,7 @@ const nextConfig = {
     outputStandalone: true,
   },
   publicRuntimeConfig: {
-    API_HOST: process.env.API_HOST || "http://localhost:3001",
+    NEXT_PUBLIC_API_HOST: process.env.NEXT_PUBLIC_API_HOST || "http://localhost:3001",
   },
 };
 

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.30.0 (9d8dcb518)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: api
+  name: api
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: api
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.30.0 (9d8dcb518)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/iot-system-prototype-default: "true"
+        io.kompose.service: api
+    spec:
+      containers:
+        - env:
+            - name: ENVIRONMENT
+              value: prod
+          image: ghcr.io/button-inc/iot-system-prototype/api:5d03131a4b059d2b06ba1b740c5b516ac9236323
+          name: api
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources: {}
+      imagePullSecrets:
+      - name: ghcr-secret
+      restartPolicy: Always
+status: {}
