@@ -136,12 +136,12 @@ def get_sensors():
     real_fake_sensors = requests.get(REAL_FAKE_SENSORS_BASE_URL + "/sensors").json()
     rfs_as_simple_sensor_list = rfs_list_to_bs_list(real_fake_sensors["sensors"])
 
-    sensational_sensors = requests.get(SENSATIONAL_SENSORS_BASE_URL + "/sensors").json()
-    ss_as_simple_sensor_list = sensational_sensor_list_to_simple_sensor_list(
-        sensational_sensors["sensors"]
-    )
+    # sensational_sensors = requests.get(SENSATIONAL_SENSORS_BASE_URL + "/sensors").json()
+    # ss_as_simple_sensor_list = sensational_sensor_list_to_simple_sensor_list(
+    #     sensational_sensors["sensors"]
+    # )
 
-    all_sensors_list = rfs_as_simple_sensor_list + ss_as_simple_sensor_list
+    all_sensors_list = rfs_as_simple_sensor_list #+ ss_as_simple_sensor_list
     return {"total": len(all_sensors_list), "sensors": all_sensors_list}
 
 
