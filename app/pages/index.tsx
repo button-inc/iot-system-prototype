@@ -21,7 +21,7 @@ export interface Sensor {
   address_line2: string;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_HOST || "http://real.iot.local/sensors";
+const API_URL = process.env.NEXT_PUBLIC_API_HOST || "http://real.iot.local";
 
 const Home: NextPage = () => {
   const Map = useMemo(
