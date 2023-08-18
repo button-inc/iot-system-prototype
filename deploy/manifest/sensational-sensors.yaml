@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sensational-sensors
+  labels:
+    app: iotapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sensational-sensors
+  template:
+    metadata:
+      labels:
+        app: sensational-sensors
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: sensational-sensors
+          image: ghcr.io/button-inc/iot-system-prototype/sensational_sensors:latest
+          ports:
+            - containerPort: 8082
+          resources:
+            requests:
+              memory: "16Mi"
+              cpu: "40m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sensational-sensor-service
+spec:
+  selector:
+    app: sensational-sensors
+  ports:
+    - protocol: TCP
+      port: 8082
+      targetPort: 8082

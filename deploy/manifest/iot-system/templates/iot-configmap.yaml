@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: iot-configmap
+data:
+  api: iot.local
+  api_port: "8080"
+  environment: prod
+  next_public_api_host: http://real.iot.local/sensors

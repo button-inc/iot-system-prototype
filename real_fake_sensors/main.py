@@ -8,10 +8,11 @@ app = FastAPI()
 
 # whitelist
 origins = ["http://localhost:8080", "api:8080"]
+origin = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=origin,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -10,11 +10,14 @@ env = os.environ.get("ENVIRONMENT")
 
 # Set base URLs based on the environment
 if env == "prod":
-    REAL_FAKE_SENSORS_BASE_URL = "http://real_fake_sensors:8081"
-    SENSATIONAL_SENSORS_BASE_URL = "http://sensational_sensors:8082"
+    REAL_FAKE_SENSORS_BASE_URL = "http://real-fake-service:8081"
+    SENSATIONAL_SENSORS_BASE_URL = "http://sensational-sensor-service:8082"
 else:
     REAL_FAKE_SENSORS_BASE_URL = "http://localhost:8081"
     SENSATIONAL_SENSORS_BASE_URL = "http://localhost:8082"
+
+REAL_FAKE_SENSORS_BASE_URL = "http://real-fake-service:8081"
+SENSATIONAL_SENSORS_BASE_URL = "http://sensational-sensor-service:8082"
 
 app = FastAPI()
 
@@ -27,9 +30,11 @@ origins = [
     "http://0.0.0.0:8082",
 ]
 
+origin = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=origin,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -38,7 +43,6 @@ app.add_middleware(
 
 class SensorType(Enum):
     LIQUID_BIN_LEVEL = "liquid bin level"
-    SOLID_BIN_LEVEL = "solid bin level"
 
 
 class BasicSensor(BaseModel):
@@ -105,7 +109,7 @@ class SensationalSensor(BaseModel):
 def sensational_sensor_to_simple_sensor(sensor: SensationalSensor) -> BasicSensor:
     return BasicSensor(
         id=sensor["id"],
-        sensor_type=SensorType.SOLID_BIN_LEVEL,
+        sensor_type=SensorType.LIQUID_BIN_LEVEL,
         fill_level=sensor["fill_level"] if sensor["fill_level"] else None,
         sim=sensor["sim"],
         lat=sensor["lat"],
@@ -131,12 +135,12 @@ def get_sensors():
     real_fake_sensors = requests.get(REAL_FAKE_SENSORS_BASE_URL + "/sensors").json()
     rfs_as_simple_sensor_list = rfs_list_to_bs_list(real_fake_sensors["sensors"])
 
-    sensational_sensors = requests.get(SENSATIONAL_SENSORS_BASE_URL + "/sensors").json()
-    ss_as_simple_sensor_list = sensational_sensor_list_to_simple_sensor_list(
-        sensational_sensors["sensors"]
-    )
+    # sensational_sensors = requests.get(SENSATIONAL_SENSORS_BASE_URL + "/sensors").json()
+    # ss_as_simple_sensor_list = sensational_sensor_list_to_simple_sensor_list(
+    #     sensational_sensors["sensors"]
+    # )
 
-    all_sensors_list = rfs_as_simple_sensor_list + ss_as_simple_sensor_list
+    all_sensors_list = rfs_as_simple_sensor_list #+ ss_as_simple_sensor_list
     return {"total": len(all_sensors_list), "sensors": all_sensors_list}
 
 
