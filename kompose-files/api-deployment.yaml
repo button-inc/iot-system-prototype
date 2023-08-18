@@ -10,8 +10,6 @@ metadata:
   name: api
   namespace: default
 spec:
-  imagePullSecrets:
-  - name: ghcr-secret
   replicas: 1
   selector:
     matchLabels:
@@ -38,5 +36,7 @@ spec:
               hostPort: 8080
               protocol: TCP
           resources: {}
+      imagePullSecrets:
+      - name: ghcr-secret
       restartPolicy: Always
 status: {}
