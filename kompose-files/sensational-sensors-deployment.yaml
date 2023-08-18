@@ -25,8 +25,10 @@ spec:
         io.kompose.network/iot-system-prototype-default: "true"
         io.kompose.service: sensational-sensors
     spec:
+      imagePullSecrets:
+      - name: ghcr-secret
       containers:
-        - image: sensational-sensors
+        - image: ghcr.io/button-inc/iot-system-prototype/sensational_sensors:38bd28cbfd10f1b4d3d80ce30519cb667ff8f1c3
           name: sensational-sensors
           ports:
             - containerPort: 8082
