@@ -21,8 +21,7 @@ export interface Sensor {
   address_line2: string;
 }
 
-// const API_URL = process.env.NEXT_PUBLIC_API_HOST || "http://localhost:8080";
-const API_URL = "http://real.iot.local:8080"
+const API_URL = process.env.NEXT_PUBLIC_API_HOST || "http://real.iot.local/sensors";
 
 const Home: NextPage = () => {
   const Map = useMemo(
