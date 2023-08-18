@@ -5,3 +5,4 @@ metadata:
 data:
   api: iot.local
   api_port: "8080"
+  environment: prod
