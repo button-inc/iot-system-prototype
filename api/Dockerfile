@@ -11,4 +11,4 @@ EXPOSE 8080
 # CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
 
 # If running behind a proxy like Nginx or Traefik add --proxy-headers
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--root-path", "/", "--port", "8080", "--proxy-headers"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080", "--proxy-headers"]
