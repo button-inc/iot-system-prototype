@@ -28,6 +28,11 @@ spec:
                 configMapKeyRef:
                   name: iot-configmap
                   key: api
+            - name: APP_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: iot-configmap
+                  key: {{ .Values.deployApp.env.next_public_api_host }}
             - name: API_PORT
               valueFrom:
                 configMapKeyRef:
