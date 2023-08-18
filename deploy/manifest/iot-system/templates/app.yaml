@@ -22,6 +22,17 @@ spec:
           image: "{{ .Values.deployApp.image.name }}:{{ .Values.deployApp.image.tag }}"
           ports:
             - containerPort: {{ .Values.deployApp.port }}
+          env:
+            - name: API
+              valueFrom:
+                configMapKeyRef:
+                  name: iot-configmap
+                  key: api
+            - name: API_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: iot-configmap
+                  key: api_port
           resources:
             requests:
               memory: {{ .Values.deployApp.resources.requests.memory }}
