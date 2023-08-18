@@ -10,8 +10,6 @@ metadata:
   name: app
   namespace: default
 spec:
-  imagePullSecrets:
-  - name: ghcr-secret
   replicas: 1
   selector:
     matchLabels:
@@ -27,8 +25,6 @@ spec:
         io.kompose.network/iot-system-prototype-default: "true"
         io.kompose.service: app
     spec:
-      imagePullSecrets:
-      - name: ghcr-secret
       containers:
         - env:
             - name: API_HOST
@@ -37,8 +33,9 @@ spec:
           name: app
           ports:
             - containerPort: 3000
-              hostPort: 3000
               protocol: TCP
           resources: {}
+      imagePullSecrets:
+      - name: ghcr-secret
       restartPolicy: Always
 status: {}

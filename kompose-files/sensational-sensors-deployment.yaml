@@ -32,7 +32,6 @@ spec:
           name: sensational-sensors
           ports:
             - containerPort: 8082
-              hostPort: 8082
               protocol: TCP
           resources: {}
       restartPolicy: Always

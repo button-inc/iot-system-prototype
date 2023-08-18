@@ -32,7 +32,6 @@ spec:
           name: real-fake-sensors
           ports:
             - containerPort: 8081
-              hostPort: 8081
               protocol: TCP
           resources: {}
       restartPolicy: Always
