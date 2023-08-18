@@ -27,7 +27,7 @@ deployApp:
     name: ghcr.io/button-inc/iot-system-prototype/app
     tag: latest
   env:
-    next_public_api_host: http://real.iot.local/sensors
+    nextapihost: http://real.iot.local/sensors
   resources:
     requests:
       memory: "14Mi"

@@ -32,7 +32,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: iot-configmap
-                  key: {{ .Values.deployApp.env.next_public_api_host }}
+                  key: next_public_api_host
             - name: API_PORT
               valueFrom:
                 configMapKeyRef:
