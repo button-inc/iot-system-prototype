@@ -16,6 +16,10 @@ else:
     REAL_FAKE_SENSORS_BASE_URL = "http://localhost:8081"
     SENSATIONAL_SENSORS_BASE_URL = "http://localhost:8082"
 
+# it overwrite cond above(temp).
+REAL_FAKE_SENSORS_BASE_URL = "http://real-fake-service:8081"
+SENSATIONAL_SENSORS_BASE_URL = "http://sensational-sensor-service:8082"
+
 app = FastAPI()
 
 # whitelist

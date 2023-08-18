@@ -11,10 +11,11 @@ origins = [
     "http://localhost:8080",
     "http://0.0.0.0:8081",
 ]
+origin = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=origin,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
