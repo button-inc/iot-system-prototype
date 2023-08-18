@@ -10,6 +10,8 @@ metadata:
   name: api
   namespace: default
 spec:
+  imagePullSecrets:
+  - name: ghcr-secret
   replicas: 1
   selector:
     matchLabels:
@@ -29,7 +31,7 @@ spec:
         - env:
             - name: ENVIRONMENT
               value: prod
-          image: api
+          image: ghcr.io/button-inc/iot-system-prototype/api:5d03131a4b059d2b06ba1b740c5b516ac9236323
           name: api
           ports:
             - containerPort: 8080
