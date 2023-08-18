@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - env:
-            - name: API_HOST
+            - name: NEXT_PUBLIC_API_HOST
               value: http://api:8080
           image: ghcr.io/button-inc/iot-system-prototype/app:38bd28cbfd10f1b4d3d80ce30519cb667ff8f1c3
           name: app
