@@ -7,7 +7,7 @@ metadata:
   creationTimestamp: null
   labels:
     io.kompose.service: sensational-sensors
-  name: sensational_sensors
+  name: sensational-sensors
   namespace: default
 spec:
   ports:
