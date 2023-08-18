@@ -16,5 +16,4 @@ spec:
       targetPort: 3000
   selector:
     io.kompose.service: app
-status:
-  loadBalancer: {}
+type: LoadBalancer
