@@ -6,4 +6,4 @@ data:
   api: iot.local
   api_port: "8080"
   environment: prod
-  nextapihost: http://real.iot.local/sensors
+  next_public_api_host: http://real.iot.local/sensors
