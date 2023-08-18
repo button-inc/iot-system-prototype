@@ -10,8 +10,8 @@ env = os.environ.get("ENVIRONMENT")
 
 # Set base URLs based on the environment
 if env == "prod":
-    REAL_FAKE_SENSORS_BASE_URL = "real-fake-service:8081"
-    SENSATIONAL_SENSORS_BASE_URL = "sensational-sensor-service:8082"
+    REAL_FAKE_SENSORS_BASE_URL = "http://real-fake-service:8081"
+    SENSATIONAL_SENSORS_BASE_URL = "http://sensational-sensor-service:8082"
 else:
     REAL_FAKE_SENSORS_BASE_URL = "http://localhost:8081"
     SENSATIONAL_SENSORS_BASE_URL = "http://localhost:8082"
