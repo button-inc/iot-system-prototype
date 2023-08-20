@@ -21,7 +21,7 @@ export interface Sensor {
   address_line2: string;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_HOST || "http://localhost:8080";
+const API_URL = process.env.NEXT_PUBLIC_API_HOST || "http://api:8080";
 
 const Home: NextPage = () => {
   const Map = useMemo(
@@ -39,7 +39,7 @@ const Home: NextPage = () => {
     const responseJson = await res.json();
     setSensors(responseJson.sensors);
   }, []);
-  
+
   useEffect(() => {
     getSensors().catch(console.error);
   }, [getSensors]);
