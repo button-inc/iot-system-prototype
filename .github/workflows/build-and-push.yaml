@@ -20,9 +20,9 @@ jobs:
             context: .
             dockerfile: api/Dockerfile
             name: api
-          - image: ghcr.io/button-inc/iot-system-prototype/real_fake_sensors
+          - image: ghcr.io/button-inc/iot-system-prototype/real-fake-sensors
             context: .
-            dockerfile: real_fake_sensors/Dockerfile
+            dockerfile: real-fake-sensors/Dockerfile
             name: realFakeSensors
           - image: ghcr.io/button-inc/iot-system-prototype/sensational-sensors
             context: .
