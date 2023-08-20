@@ -2,14 +2,14 @@ version: "3.9"
 
 services:
   real_fake_sensors:
-    container_name: real_fake_sensors
+    container_name: real-fake-sensors
     build:
       context: .
       dockerfile: real_fake_sensors/Dockerfile
     ports:
       - "8081:8081"
   sensational_sensors:
-    container_name: sensational_sensors
+    container_name: sensational-sensors
     build:
       context: .
       dockerfile: sensational_sensors/Dockerfile
