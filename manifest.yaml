@@ -39,7 +39,6 @@ spec:
 status: {}
 
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -60,7 +59,6 @@ spec:
 status: {}
 
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -92,7 +90,7 @@ spec:
       containers:
         - env:
             - name: NEXT_PUBLIC_API_HOST
-              value: http://api-app-service:8080
+              value: http://api:8080
           image: ghcr.io/button-inc/iot-system-prototype/app:latest
           name: app
           ports:
@@ -102,7 +100,6 @@ spec:
 status: {}
 
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -122,7 +119,7 @@ spec:
     io.kompose.service: app
 status: {}
 
-
+---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -139,7 +136,6 @@ spec:
       io.kompose.network/iot-system-prototype-default: "true"
 
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -160,7 +156,6 @@ spec:
 status: {}
 
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -199,7 +194,6 @@ spec:
 status: {}
 
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -238,7 +232,6 @@ spec:
 status: {}
 
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
