@@ -6,12 +6,13 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
+
 env = os.environ.get("ENVIRONMENT")
 
 # Set base URLs based on the environment
 if env == "prod":
-    REAL_FAKE_SENSORS_BASE_URL = "http://real_fake_sensors:8081"
-    SENSATIONAL_SENSORS_BASE_URL = "http://sensational_sensors:8082"
+    REAL_FAKE_SENSORS_BASE_URL = "http://real-fake-sensors:8081"
+    SENSATIONAL_SENSORS_BASE_URL = "http://sensational-sensors:8082"
 else:
     REAL_FAKE_SENSORS_BASE_URL = "http://localhost:8081"
     SENSATIONAL_SENSORS_BASE_URL = "http://localhost:8082"
@@ -74,7 +75,9 @@ def rfs_to_bs(sensor: RealFakeSensor) -> BasicSensor:
     return BasicSensor(
         id=sensor["sensorsID"],
         sensor_type=SensorType.LIQUID_BIN_LEVEL,
-        fill_level=sensor["latest_sensors_data"]["level"] if sensor["latest_sensors_data"] else None,
+        fill_level=sensor["latest_sensors_data"]["level"]
+        if sensor["latest_sensors_data"]
+        else None,
         sim=sensor["simCardNumber"],
         lat=sensor["latitude"],
         long=sensor["longitude"],

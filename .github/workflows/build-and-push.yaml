@@ -23,9 +23,9 @@ jobs:
             context: .
             dockerfile: real_fake_sensors/Dockerfile
             name: realFakeSensors
-          - image: ghcr.io/button-inc/iot-system-prototype/sensational_sensors
+          - image: ghcr.io/button-inc/iot-system-prototype/sensational-sensors
             context: .
-            dockerfile: sensational_sensors/Dockerfile
+            dockerfile: sensational-sensors/Dockerfile
             name: sensationalSensors
     name: Build ${{ matrix.name }} docker image
     steps:
