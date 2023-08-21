@@ -9,7 +9,13 @@ import { Sensor } from "../pages/index";
 
 interface Props {
   sensors: Sensor[];
-  fillLevelThreshold?: number;
+  alertThreshold?: number;
+  filterThresholdMaximum?: number;
+  filterThresholdMinimum?: number;
+  selectedGroup?: string;
+  selectedAssetTag?: string;
+  selectedBinType?: string;
+  selectedBinVolume?: string;
 }
 
 const regions = {
@@ -24,7 +30,7 @@ const regions = {
   // Add more regions as needed in the future
 };
 
-const Map: React.FC<Props> = ({ sensors, fillLevelThreshold }) => {
+const Map: React.FC<Props> = ({ sensors, filterThresholdMaximum, filterThresholdMinimum, alertThreshold, selectedGroup, selectedAssetTag, selectedBinType, selectedBinVolume }) => {
   const [currentRegion, setCurrentRegion] = React.useState("Metro Vancouver");
   
   const points = sensors.map((sensor) => {
@@ -32,7 +38,13 @@ const Map: React.FC<Props> = ({ sensors, fillLevelThreshold }) => {
       <SensorMarker
         key={sensor.id}
         sensorToMark={sensor}
-        fillLevelThreshold={fillLevelThreshold}
+        alertThreshold={alertThreshold}
+        filterThresholdMaximum={filterThresholdMaximum}
+        filterThresholdMinimum={filterThresholdMinimum}
+        selectedGroup={selectedGroup}
+        selectedAssetTag={selectedAssetTag}
+        selectedBinType={selectedBinType}
+        selectedBinVolume={selectedBinVolume}
       />
     );
   });
