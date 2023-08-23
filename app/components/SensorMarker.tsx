@@ -19,6 +19,43 @@ interface Props {
   selectedBinVolume?: string;
 }
 
+export function getIconName(
+  fill_level: number | null,
+  filterThresholdMinimum: number | undefined,
+  filterThresholdMaximum: number | undefined,
+  alertThreshold: number | undefined,
+  selectedGroup: string | undefined,
+  selectedAssetTag: string | undefined,
+  selectedBinType: string | undefined,
+  selectedBinVolume: string | undefined,
+  group: string | undefined,
+  asset_tag: string | undefined,
+  bin_type: string | undefined,
+  bin_volume: string | undefined,
+  ){
+  const name =
+    fill_level === null || 
+    filterThresholdMinimum === undefined || 
+    filterThresholdMaximum === undefined || 
+    alertThreshold === undefined ||
+    selectedGroup === undefined ||
+    selectedAssetTag === undefined ||
+    selectedBinType === undefined ||
+    selectedBinVolume === undefined
+        ? "error"
+        : fill_level < filterThresholdMinimum || 
+        fill_level > filterThresholdMaximum ||
+        (selectedGroup !== "" && selectedGroup !== group) ||
+        (selectedAssetTag !== "" && selectedAssetTag !== asset_tag) ||
+        (selectedBinType !== "" && selectedBinType !== bin_type) ||
+        (selectedBinVolume !== "" && selectedBinVolume !== bin_volume)
+        ? "default"
+        : alertThreshold && fill_level > alertThreshold || alertThreshold === 0
+        ? "full"
+        : "healthy";
+  return name
+} ;
+
 const SensorMarker: React.FC<Props> = ({
   sensorToMark,
   alertThreshold,
@@ -44,27 +81,19 @@ const SensorMarker: React.FC<Props> = ({
     bin_volume
   } = sensorToMark;
   
-  const iconName =
-  fill_level === null || 
-  filterThresholdMinimum === undefined || 
-  filterThresholdMaximum === undefined || 
-  alertThreshold === undefined ||
-  selectedGroup === undefined ||
-  selectedAssetTag === undefined ||
-  selectedBinType === undefined ||
-  selectedBinVolume === undefined
-      ? "error"
-      : fill_level < filterThresholdMinimum || 
-      fill_level > filterThresholdMaximum ||
-      (selectedGroup !== "" && selectedGroup !== group) ||
-      (selectedAssetTag !== "" && selectedAssetTag !== asset_tag) ||
-      (selectedBinType !== "" && selectedBinType !== bin_type) ||
-      (selectedBinVolume !== "" && selectedBinVolume !== bin_volume)
-      ? "default"
-      : alertThreshold && fill_level > alertThreshold || alertThreshold === 0
-      ? "full"
-      : "healthy";
-
+  const iconName = getIconName(fill_level,
+    filterThresholdMinimum,
+    filterThresholdMaximum,
+    alertThreshold,
+    selectedGroup,
+    selectedAssetTag,
+    selectedBinType,
+    selectedBinVolume,
+    group,
+    asset_tag,
+    bin_type,
+    bin_volume);
+  
   let iconUrl;
   let linearProgressColor : "error" | "inherit" | "success" | "primary" | "secondary" | "info" | "warning";
   switch (iconName) {

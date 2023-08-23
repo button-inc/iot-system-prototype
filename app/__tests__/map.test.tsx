@@ -1,68 +1,37 @@
-import React from "react";
-import { render } from "@testing-library/react";
-import Map from "../components/map";
-
-jest.mock('react-leaflet')
-jest.mock('leaflet')
+import {getIconName} from "../components/SensorMarker";
 
 describe("Map Integration Tests", () => {
 
-  /*interface Sensor {
-    id: number;
-    fill_level: number;
-    lat: number;
-    long: number;
-    bin_vol: number;
-  
-    sensor_type: string;
-    material_type: string;
-    bin_type: string;
-    sim: string;
-    bin_name: string;
-    bin_volume: string;
-    group: string;
-    address_line1: string;
-    address_line2: string;
-    asset_tag: string;
-  
-  }*/
+  let iconResult;
 
-  const mockSensors = [
-    {
-      "id": 2453473454,
-      "sensor_type": "liquid bin level",
-      "fill_level": null,
-      "sim": "12344423",
-      "lat": 43.84488,
-      "long": -80.057859,
-      "manufacturer": "Real Fake Sensors",
-      "bin_name": "Big Purple Bin",
-      "address_line1": "55 John St",
-      "address_line2": "Alton, ON L7K 0C4",
-      "group": "Alton East",
-      "bin_type": "EMW Cathedral Container 10yd",
-      "material_type": "Cardboard",
-      "asset_tag": "up",
-      "bin_volume": "small"
-    },
-  ]
+  it("Returns the healthy icon when under alert threshold", () => {
+    iconResult = getIconName(50, 0, 100, 80, "", "", "", "", "", "", "", "");
+    expect(iconResult).toBe("healthy");
+  });
 
-  it("renders the map with correct number of points", () => {
-    const { container } = render(
-      <Map 
-      sensors={mockSensors}
-      alertThreshold={50}
-      filterThresholdMinimum ={0}
-      filterThresholdMaximum={100}
-      selectedGroup={"Bolton South"}
-      selectedAssetTag={"bottom"}
-      selectedBinType={"EMW Cathedral Container 10yd"}
-      selectedBinVolume={"small"}
-      />
-    );
+  it("Returns the full icon when over alert threshold", () => {
+    iconResult = getIconName(50, 0, 100, 30, "", "", "", "", "", "", "", "");
+    expect(iconResult).toBe("full");
+  });
 
-    const markerElements = container.querySelectorAll(".leaflet-marker-icon");
-    expect(markerElements.length).toBe(mockSensors.length);
+  it("Returns the default icon fill level is outside of filter threshold", () => {
+    iconResult = getIconName(25, 50, 100, 30, "", "", "", "", "", "", "", "");
+    expect(iconResult).toBe("default");
+  });
+
+  it("Returns the error icon when inputs are undefined", () => {
+    iconResult = getIconName(25, 50, undefined, 30, "", "", "", "", "", "", "", "");
+    expect(iconResult).toBe("error");
+  });
+
+  it("Returns the correct icon (healthy) with multiple filters active and matching", () => {
+    iconResult = getIconName(50, 0, 100, 90, "Bolton South", "bottom", "EMW Cathedral Container 10yd", "small", "Bolton South", "bottom", "EMW Cathedral Container 10yd", "small");
+    expect(iconResult).toBe("healthy");
+  });
+
+  it("Returns the correct icon (default) with multiple filters active and not matching", () => {
+    iconResult = getIconName(50, 0, 100, 90, "Bolton South", "top", "EMW Cathedral Container 10yd", "small", "Bolton South", "bottom", "EMW Cathedral Container 10yd", "small");
+    expect(iconResult).toBe("default");
   });
 
 });

@@ -1,5 +1,1 @@
-module.exports = {
-    useMapEvents: () => {},
-    CRS: () => {},
-    render: () => {},
-}
+module.exports = {}

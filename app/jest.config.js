@@ -135,9 +135,7 @@ module.exports = {
   // The test environment that will be used for testing
   testEnvironment: "jsdom",
 
-  transformIgnorePatterns: [
-      "node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)"
-    ],
+  transformIgnorePatterns: ['/node_modules/(?!leaflet)'],
 
   // Options that will be passed to the testEnvironment
   // testEnvironmentOptions: {},
