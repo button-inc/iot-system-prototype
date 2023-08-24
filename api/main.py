@@ -56,6 +56,8 @@ class BasicSensor(BaseModel):
     group: str
     bin_type: str
     material_type: str
+    asset_tag: str
+    bin_volume: str
 
 
 class RealFakeSensor(BaseModel):
@@ -69,6 +71,8 @@ class RealFakeSensor(BaseModel):
     latest_sensors_data: dict | None
     latitude: float
     longitude: float
+    asset_tag: str
+    bin_volume: str
 
 
 def rfs_to_bs(sensor: RealFakeSensor) -> BasicSensor:
@@ -88,6 +92,8 @@ def rfs_to_bs(sensor: RealFakeSensor) -> BasicSensor:
         group=sensor["group"],
         bin_type=sensor["bin_type"],
         material_type=sensor["material_type"],
+        asset_tag=sensor["asset_tag"],
+        bin_volume=sensor["bin_volume"],
     )
 
 
@@ -103,6 +109,8 @@ class SensationalSensor(BaseModel):
     lat: float
     long: float
     man: str
+    asset_tag: str
+    bin_volume: str
 
 
 def sensational_sensor_to_simple_sensor(sensor: SensationalSensor) -> BasicSensor:
@@ -120,6 +128,8 @@ def sensational_sensor_to_simple_sensor(sensor: SensationalSensor) -> BasicSenso
         group=sensor["group"],
         bin_type=sensor["bin_type"],
         material_type=sensor["material_type"],
+        asset_tag=sensor["asset_tag"],
+        bin_volume=sensor["bin_volume"],
     )
 
 

@@ -35,6 +35,8 @@ class Sensor(BaseModel):
     group: str
     bin_type: str
     material_type: str
+    asset_tag: str
+    bin_volume: str
 
 #TODO: push the sensor into the Sensor class instead of just a dict, same as sensational_sensors/main.py
 sensors = [
@@ -54,7 +56,9 @@ sensors = [
         "address_line2": 'Alton, ON L7K 0C4',
         "group": 'Alton East',
         "bin_type": 'EMW Cathedral Container 10yd',
-        "material_type": 'Cardboard'
+        "material_type": 'Cardboard',
+        "asset_tag": "up",
+        "bin_volume": "small"
     },
     {
         "sensorsID": 1846567335,
@@ -72,7 +76,9 @@ sensors = [
         "address_line2": 'Etobicoke, ON M9B 2Z4',
         "group": 'Etobicoke',
         "bin_type": 'EMW Cathedral Container 10yd',
-        "material_type": 'Cardboard'
+        "material_type": 'Cardboard',
+        "asset_tag": "down",
+        "bin_volume": "large"
     },
 ]
 

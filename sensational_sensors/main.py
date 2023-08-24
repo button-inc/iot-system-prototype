@@ -39,6 +39,8 @@ class Sensor(BaseModel):
     group: str
     bin_type: str
     material_type: str
+    asset_tag: str
+    bin_volume: str
 
 
 sensors = [
@@ -55,7 +57,9 @@ sensors = [
         address_line2='Alton, ON L7K 1M5',
         group='Alton North',
         bin_type='EMW Cathedral Container 10yd',
-        material_type='Cardboard'
+        material_type='Cardboard',
+        asset_tag='strange',
+        bin_volume='medium'
     ),
     Sensor(
         id=134563456,
@@ -70,22 +74,111 @@ sensors = [
         address_line2='Halton Hills, ON L7G 0J1',
         group='Halton West',
         bin_type='EMW Cathedral Container 10yd',
-        material_type='Cardboard'
+        material_type='Cardboard',
+        asset_tag='strange',
+        bin_volume='small'
     ),
     Sensor(
         id=265434931,
         sensor_type=SensorType.LIQUID_BIN_LEVEL,
         fill_level=65,
-        sim="324dg4gfs",
-        lat=43.851197,
-        long=-79.747344,
+        sim="fjaksyr3j",
+        lat=43.951197,
+        long=-79.947344,
         man="Sensational Sensors",
-        bin_name='Small Yellow Bin',
-        address_line1="12944 Humber Station Rd",
+        bin_name='Strange Bin',
+        address_line1="12345 Fake Name Rd",
+        address_line2="Bolton, ON L7E 0Y2",
+        group='Halton West',
+        bin_type='EMW Cathedral Container 10yd',
+        material_type='Plastic',
+        asset_tag='charm',
+        bin_volume='large'
+    ),
+    Sensor(
+        id=265434945,
+        sensor_type=SensorType.LIQUID_BIN_LEVEL,
+        fill_level=25,
+        sim="86msjg91a",
+        lat=43.551197,
+        long=-79.547344,
+        man="Sensational Sensors",
+        bin_name='Charming Bin',
+        address_line1="44444 Cow Rd",
         address_line2="Bolton, ON L7E 0Y2",
         group='Bolton South',
         bin_type='EMW Cathedral Container 10yd',
-        material_type='Cardboard'
+        material_type='Plastic',
+        asset_tag='up',
+        bin_volume='medium'
+    ),
+    Sensor(
+        id=265434933,
+        sensor_type=SensorType.LIQUID_BIN_LEVEL,
+        fill_level=10,
+        sim="324dg4gfs",
+        lat=43.822397,
+        long=-79.647344,
+        man="Sensational Sensors",
+        bin_name='Cheddar Bin',
+        address_line1="41234 Cheese Rd",
+        address_line2="Bolton, ON L7E 0Y2",
+        group='Bolton South',
+        bin_type='EMW Cathedral Container 10yd',
+        material_type='Plastic',
+        asset_tag='bottom',
+        bin_volume='small'
+    ),
+    Sensor(
+        id=265435142,
+        sensor_type=SensorType.LIQUID_BIN_LEVEL,
+        fill_level=40,
+        sim="9185jak34",
+        lat=43.451197,
+        long=-80.147344,
+        man="Sensational Sensors",
+        bin_name='Small Yellow Bin',
+        address_line1="626 Caramel Dr",
+        address_line2="Bolton, ON L7E 0Y2",
+        group='Bolton South',
+        bin_type='EMW Cathedral Container 10yd',
+        material_type='Cardboard',
+        asset_tag='strange',
+        bin_volume='medium'
+    ),
+    Sensor(
+        id=265434817,
+        sensor_type=SensorType.LIQUID_BIN_LEVEL,
+        fill_level=40,
+        sim="81kai41j8",
+        lat=43.351197,
+        long=-79.347344,
+        man="Sensational Sensors",
+        bin_name='Cherry Bin',
+        address_line1="99473 Fruit Blvd",
+        address_line2="Bolton, ON L7E 0Y2",
+        group='Bolton South',
+        bin_type='EMW Cathedral Container 20yd',
+        material_type='Compost',
+        asset_tag='top',
+        bin_volume='small'
+    ),
+    Sensor(
+        id=265434991,
+        sensor_type=SensorType.LIQUID_BIN_LEVEL,
+        fill_level=90,
+        sim="01d83nn17",
+        lat=43.991197,
+        long=-79.887344,
+        man="Sensational Sensors",
+        bin_name='Corn Bin',
+        address_line1="513 Cow Rd",
+        address_line2="Bolton, ON L7E 0Y2",
+        group='Bolton South',
+        bin_type='EMW Cathedral Container 20yd',
+        material_type='Compost',
+        asset_tag='top',
+        bin_volume='large'
     ),
 ]
 
