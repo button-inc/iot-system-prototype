@@ -34,6 +34,8 @@ export interface Sensor {
 
 }
 
+const API_URL = process.env.NEXT_PUBLIC_API_HOST || "http://api:8080";
+
 const Home: NextPage = () => {
   const Map = useMemo(
     () =>
@@ -52,11 +54,11 @@ const Home: NextPage = () => {
   const [selectedBinVolume, setSelectedBinVolume] = useState<string>("");
 
   const getSensors = useCallback(async () => {
-    const res = await fetch(`http://localhost:8080/sensors`);
+    const res = await fetch(`${API_URL}/sensors`);
     const responseJson = await res.json();
     setSensors(responseJson.sensors);
   }, []);
-  
+
   useEffect(() => {
     getSensors().catch(console.error);
   }, [getSensors]);
