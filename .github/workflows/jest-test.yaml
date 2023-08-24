@@ -18,9 +18,9 @@ jobs:
         node-version: '18'
 
     - name: Install dependencies
-      working-directory: iot-system-prototype/app
+      working-directory: app
       run: npm install
 
     - name: Run Jest tests
-      working-directory: iot-system-prototype/app
+      working-directory: app
       run: npm run test
