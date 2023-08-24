@@ -20,21 +20,21 @@ jobs:
       with:
         node-version: '18'
 
-    - name: Cache node modules
+    - name: Cache yarn cache
       uses: actions/cache@v2
       with:
-        path: app/node_modules
-        key: ${{ runner.OS }}-node-${{ hashFiles('app/package-lock.json') }}
+        path: ~/.cache/yarn
+        key: ${{ runner.OS }}-yarn-${{ hashFiles('app/yarn.lock') }}
         restore-keys: |
-          ${{ runner.OS }}-node-
+          ${{ runner.OS }}-yarn-
 
     - name: Install dependencies
       working-directory: app
-      run: npm install
+      run: yarn install
 
     - name: Run Jest tests
       working-directory: app
-      run: npm run test
+      run: yarn test
 
     - name: Archive test results
       if: always()
