@@ -4,7 +4,6 @@ metadata:
   name: api
   labels:
     service: api
-    version: v1
   # namespace: iot-system-pt
 spec:
   selector:
@@ -14,10 +13,13 @@ spec:
     metadata:
       labels:
         service: api
-        network/iot-system-prototype-default: "true"
+        iot-system-prototype-default: "true"
     spec:
       containers:
       - name: api
+        env:
+            - name: ENVIRONMENT
+              value: prod
         image: ghcr.io/button-inc/iot-system-prototype/api:latest
         resources:
           requests:
@@ -51,23 +53,22 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: iot-system-prototype-app
+  name: app
   labels:
-    app: iot-system-prototype-app
-    version: v1
+    service: app
   # namespace: iot-system-pt
 spec:
   selector:
     matchLabels:
-      app: iot-system-prototype-app
+      service: app
   template:
     metadata:
       labels:
-        app: iot-system-prototype-app
-        network/iot-system-prototype-default: "true"
+        service: app
+        iot-system-prototype-default: "true"
     spec:
       containers:
-      - name: iot-system-prototype-app
+      - name: app
         image: ghcr.io/button-inc/iot-system-prototype/app:latest
         resources:
           requests:
@@ -81,7 +82,7 @@ spec:
             hostPort: 3000
             protocol: TCP
         env:
-          - name: API_HOST
+          - name: NEXT_PUBLIC_API_HOST
             value: http://api:8080
       imagePullSecrets:
       - name: ghcr-login-secret
@@ -89,17 +90,32 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: iot-system-prototype-app
+  name: app
   labels:
-    app: iot-system-prototype-app
+    service: app
   # namespace: iot-system-pt
 spec:
   selector:
-    app: iot-system-prototype-app
+    service: app
   ports:
   - port: 3000
     name: "3000"
     targetPort: 3000
+---
+# TODO: To be superseded by Istio-mesh
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: iot-system-prototype-default
+spec:
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              iot-system-prototype-default: "true"
+  podSelector:
+    matchLabels:
+      iot-system-prototype-default: "true"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -107,7 +123,6 @@ metadata:
   name: real-fake-sensors
   labels:
     service: real-fake-sensors
-    version: v1
   # namespace: iot-system-pt
 spec:
   selector:
@@ -117,7 +132,7 @@ spec:
     metadata:
       labels:
         service: real-fake-sensors
-        network/iot-system-prototype-default: "true"
+        iot-system-prototype-default: "true"
     spec:
       containers:
       - name: real-fake-sensors
@@ -157,7 +172,6 @@ metadata:
   name: sensational-sensors
   labels:
     service: sensational-sensors
-    version: v1
   # namespace: iot-system-pt
 spec:
   selector:
@@ -167,7 +181,7 @@ spec:
     metadata:
       labels:
         service: sensational-sensors
-        network/iot-system-prototype-default: "true"
+        iot-system-prototype-default: "true"
     spec:
       containers:
       - name: sensational-sensors
