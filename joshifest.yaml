@@ -1,0 +1,202 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  labels:
+    service: api
+    version: v1
+  # namespace: iot-system-pt
+spec:
+  selector:
+    matchLabels:
+      service: api
+  template:
+    metadata:
+      labels:
+        service: api
+        network/iot-system-prototype-default: "true"
+    spec:
+      containers:
+      - name: api
+        image: ghcr.io/button-inc/iot-system-prototype/api:latest
+        resources:
+          requests:
+            cpu: "5m"
+            memory: "8Mi"
+          limits:
+            cpu: "10m"
+            memory: "32Mi"
+        ports:
+          - containerPort: 8080
+            hostPort: 8080
+            protocol: TCP
+      imagePullSecrets:
+      - name: ghcr-login-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  labels:
+    service: api
+  # namespace: iot-system-pt
+spec:
+  selector:
+    service: api
+  ports:
+  - port: 8080
+    name: "8080"
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iot-system-prototype-app
+  labels:
+    app: iot-system-prototype-app
+    version: v1
+  # namespace: iot-system-pt
+spec:
+  selector:
+    matchLabels:
+      app: iot-system-prototype-app
+  template:
+    metadata:
+      labels:
+        app: iot-system-prototype-app
+        network/iot-system-prototype-default: "true"
+    spec:
+      containers:
+      - name: iot-system-prototype-app
+        image: ghcr.io/button-inc/iot-system-prototype/app:latest
+        resources:
+          requests:
+            cpu: "5m"
+            memory: "8Mi"
+          limits:
+            cpu: "10m"
+            memory: "64Mi"
+        ports:
+          - containerPort: 3000
+            hostPort: 3000
+            protocol: TCP
+        env:
+          - name: API_HOST
+            value: http://api:8080
+      imagePullSecrets:
+      - name: ghcr-login-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: iot-system-prototype-app
+  labels:
+    app: iot-system-prototype-app
+  # namespace: iot-system-pt
+spec:
+  selector:
+    app: iot-system-prototype-app
+  ports:
+  - port: 3000
+    name: "3000"
+    targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: real-fake-sensors
+  labels:
+    service: real-fake-sensors
+    version: v1
+  # namespace: iot-system-pt
+spec:
+  selector:
+    matchLabels:
+      service: real-fake-sensors
+  template:
+    metadata:
+      labels:
+        service: real-fake-sensors
+        network/iot-system-prototype-default: "true"
+    spec:
+      containers:
+      - name: real-fake-sensors
+        image: ghcr.io/button-inc/iot-system-prototype/real_fake_sensors:latest
+        resources:
+          requests:
+            cpu: "5m"
+            memory: "8Mi"
+          limits:
+            cpu: "10m"
+            memory: "32Mi"
+        ports:
+          - containerPort: 8081
+            hostPort: 8081
+            protocol: TCP
+      imagePullSecrets:
+      - name: ghcr-login-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: real-fake-sensors
+  labels:
+    service: real-fake-sensors
+  # namespace: iot-system-pt
+spec:
+  selector:
+    service: real-fake-sensors
+  ports:
+  - port: 8081
+    name: "8081"
+    targetPort: 8081
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sensational-sensors
+  labels:
+    service: sensational-sensors
+    version: v1
+  # namespace: iot-system-pt
+spec:
+  selector:
+    matchLabels:
+      service: sensational-sensors
+  template:
+    metadata:
+      labels:
+        service: sensational-sensors
+        network/iot-system-prototype-default: "true"
+    spec:
+      containers:
+      - name: sensational-sensors
+        image: ghcr.io/button-inc/iot-system-prototype/sensational_sensors:latest
+        resources:
+          requests:
+            cpu: "5m"
+            memory: "8Mi"
+          limits:
+            cpu: "10m"
+            memory: "32Mi"
+        ports:
+          - containerPort: 8082
+            hostPort: 8082
+            protocol: TCP
+      imagePullSecrets:
+      - name: ghcr-login-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sensational-sensors
+  labels:
+    service: sensational-sensors
+  # namespace: iot-system-pt
+spec:
+  selector:
+    service: sensational-sensors
+  ports:
+  - port: 8082
+    name: "8082"
+    targetPort: 8082
