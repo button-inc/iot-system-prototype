@@ -34,7 +34,13 @@ spec:
           name: api
           ports:
             - containerPort: 8080
-          resources: {}
+          resources:
+            requests:
+              cpu: "5m"
+              memory: "8Mi"
+            limits:
+              cpu: "10m"
+              memory: "32Mi"
       restartPolicy: Always
 status: {}
 
@@ -95,7 +101,13 @@ spec:
           name: app
           ports:
             - containerPort: 3000
-          resources: {}
+          resources:
+            requests:
+              cpu: "5m"
+              memory: "8Mi"
+            limits:
+              cpu: "10m"
+              memory: "64Mi"
       restartPolicy: Always
 status: {}
 
@@ -189,7 +201,13 @@ spec:
           name: real-fake-sensors
           ports:
             - containerPort: 8081
-          resources: {}
+          resources:
+            requests:
+              cpu: "5m"
+              memory: "8Mi"
+            limits:
+              cpu: "10m"
+              memory: "32Mi"
       restartPolicy: Always
 status: {}
 
@@ -227,7 +245,13 @@ spec:
           name: sensational-sensors
           ports:
             - containerPort: 8082
-          resources: {}
+          resources:
+            requests:
+              cpu: "5m"
+              memory: "8Mi"
+            limits:
+              cpu: "10m"
+              memory: "32Mi"
       restartPolicy: Always
 status: {}
 
