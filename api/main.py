@@ -207,6 +207,8 @@ def brighterbins_sensor_to_simple_sensor(sensor: BrighterBinsSensor) -> BasicSen
         group=None,
         bin_type="Standard park bin",
         material_type="Mixed waste",
+        bin_volume=sensor["bin_volume"],
+        asset_tag=sensor["asset_tag"],
     )
 
 
@@ -252,6 +254,8 @@ def get_brighterbin_sensors():
                 "address": sampleStore[id]["address"],
                 "lat": sampleStore[id]["lat"],
                 "long": sampleStore[id]["long"],
+                "bin_volume": 10000,
+                "asset_tag": "up",
             }
         )
         bins.append(sensor)
