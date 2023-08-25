@@ -4,7 +4,6 @@ metadata:
   name: api
   labels:
     app: api
-  # namespace: iot-system-pt
 spec:
   selector:
     matchLabels:
@@ -13,7 +12,6 @@ spec:
     metadata:
       labels:
         app: api
-        # iot-system-prototype-default: "true"
     spec:
       containers:
       - name: api
@@ -30,8 +28,6 @@ spec:
             memory: "32Mi"
         ports:
           - containerPort: 8080
-            # hostPort: 8080
-            # protocol: TCP
       imagePullSecrets:
       - name: ghcr-login-secret
 ---
@@ -42,7 +38,6 @@ metadata:
   labels:
     app: api
     service: api
-  # namespace: iot-system-pt
 spec:
   selector:
     app: api
@@ -57,7 +52,6 @@ metadata:
   name: app
   labels:
     app: app
-  # namespace: iot-system-pt
 spec:
   selector:
     matchLabels:
@@ -66,7 +60,6 @@ spec:
     metadata:
       labels:
         app: app
-        # iot-system-prototype-default: "true"
     spec:
       containers:
       - name: app
@@ -80,12 +73,9 @@ spec:
             memory: "64Mi"
         ports:
           - containerPort: 3000
-            # hostPort: 3000
-            # protocol: TCP
         env:
           - name: NEXT_PUBLIC_API_HOST
             value: "http://34.95.61.243/iot/sensor-api"
-            # value: http://34.95.61.243:8080
       imagePullSecrets:
       - name: ghcr-login-secret
 ---
@@ -96,7 +86,6 @@ metadata:
   labels:
     app: app
     service: app
-  # namespace: iot-system-pt
 spec:
   selector:
     app: app
@@ -104,21 +93,6 @@ spec:
   - port: 80
     name: "http"
     targetPort: 3000
-# ---
-# # TODO: To be superseded by Istio-mesh
-# apiVersion: networking.k8s.io/v1
-# kind: NetworkPolicy
-# metadata:
-#   name: iot-system-prototype-default
-# spec:
-#   ingress:
-#     - from:
-#         - podSelector:
-#             matchLabels:
-#               iot-system-prototype-default: "true"
-#   podSelector:
-#     matchLabels:
-#       iot-system-prototype-default: "true"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -126,7 +100,6 @@ metadata:
   name: real-fake-sensors
   labels:
     app: real-fake-sensors
-  # namespace: iot-system-pt
 spec:
   selector:
     matchLabels:
@@ -135,7 +108,6 @@ spec:
     metadata:
       labels:
         app: real-fake-sensors
-        # iot-system-prototype-default: "true"
     spec:
       containers:
       - name: real-fake-sensors
@@ -149,8 +121,6 @@ spec:
             memory: "32Mi"
         ports:
           - containerPort: 8081
-            # hostPort: 8081
-            # protocol: TCP
       imagePullSecrets:
       - name: ghcr-login-secret
 ---
@@ -161,7 +131,6 @@ metadata:
   labels:
     app: real-fake-sensors
     service: real-fake-sensors
-  # namespace: iot-system-pt
 spec:
   selector:
     app: real-fake-sensors
@@ -176,7 +145,6 @@ metadata:
   name: sensational-sensors
   labels:
     app: sensational-sensors
-  # namespace: iot-system-pt
 spec:
   selector:
     matchLabels:
@@ -185,7 +153,6 @@ spec:
     metadata:
       labels:
         app: sensational-sensors
-        # iot-system-prototype-default: "true"
     spec:
       containers:
       - name: sensational-sensors
@@ -199,8 +166,6 @@ spec:
             memory: "32Mi"
         ports:
           - containerPort: 8082
-            # hostPort: 8082
-            # protocol: TCP
       imagePullSecrets:
       - name: ghcr-login-secret
 ---
@@ -211,7 +176,6 @@ metadata:
   labels:
     app: sensational-sensors
     service: sensational-sensors
-  # namespace: iot-system-pt
 spec:
   selector:
     app: sensational-sensors
