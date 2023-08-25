@@ -113,7 +113,7 @@ const Home: NextPage = () => {
           className={`drawer ${drawerOpen ? "open" : ""}`}
         >
           <div className="drawer-content">
-            <Typography variant="h6">Create Route</Typography>
+            <Typography variant="h6">Filters</Typography>
             <Typography id="slider-label">Fill Level Threshold</Typography>
             <Slider
               value={thresholdRange}
@@ -210,7 +210,7 @@ const Home: NextPage = () => {
           onClick={toggleDrawer(!drawerOpen)}
         >
           <MenuIcon />
-          <Typography variant="h6">Create Route</Typography>
+          <Typography variant="h6">Filters</Typography>
         </IconButton>
         <style jsx>
           {`
