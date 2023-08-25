@@ -19,7 +19,7 @@ app.add_middleware(
 
 
 class Sensor(BaseModel):
-    sensorsID: int
+    sensorsID: str
     sensorCompany: str
     sensorDeviceID: int
     firmwareVersion: str
@@ -38,10 +38,11 @@ class Sensor(BaseModel):
     asset_tag: str
     bin_volume: str
 
-#TODO: push the sensor into the Sensor class instead of just a dict, same as sensational_sensors/main.py
+
+# TODO: push the sensor into the Sensor class instead of just a dict, same as sensational_sensors/main.py
 sensors = [
     {
-        "sensorsID": 2453473454,
+        "sensorsID": "2453473454",
         "sensorCompany": "Real Fake Sensors",
         "sensorDeviceID": 523452,
         "firmwareVersion": "0.1.4",
@@ -49,19 +50,19 @@ sensors = [
         "simCardNumber": "12344423",
         "connectivityProvider": "RFS inc",
         "latest_sensors_data": None,
-        "latitude": 43.844880, #49.220314,
-        "longitude": -80.057859, #-123.152224,
-        "bin_name": 'Big Purple Bin',
-        "address_line1": '55 John St',
-        "address_line2": 'Alton, ON L7K 0C4',
-        "group": 'Alton East',
-        "bin_type": 'EMW Cathedral Container 10yd',
-        "material_type": 'Cardboard',
+        "latitude": 43.844880,
+        "longitude": -80.057859,
+        "bin_name": "Big Purple Bin",
+        "address_line1": "55 John St",
+        "address_line2": "Alton, ON L7K 0C4",
+        "group": "Alton East",
+        "bin_type": "EMW Cathedral Container 10yd",
+        "material_type": "Cardboard",
         "asset_tag": "up",
-        "bin_volume": "small"
+        "bin_volume": "small",
     },
     {
-        "sensorsID": 1846567335,
+        "sensorsID": "1846567335",
         "sensorCompany": "Real Fake Sensors",
         "sensorDeviceID": 5673546,
         "firmwareVersion": "0.2.1",
@@ -69,16 +70,16 @@ sensors = [
         "simCardNumber": "+5424524555",
         "connectivityProvider": "RFS inc",
         "latest_sensors_data": {"level": 84, "timestamp": 1691381304819},
-        "latitude": 43.666729, #49.228314, , 
-        "longitude":  -79.549713, #-123.092224,
-        "bin_name": 'Little Orange Bin',
-        "address_line1": '127 Princess Margaret',
-        "address_line2": 'Etobicoke, ON M9B 2Z4',
-        "group": 'Etobicoke',
-        "bin_type": 'EMW Cathedral Container 10yd',
-        "material_type": 'Cardboard',
+        "latitude": 43.666729,
+        "longitude": -79.549713,
+        "bin_name": "Little Orange Bin",
+        "address_line1": "127 Princess Margaret",
+        "address_line2": "Etobicoke, ON M9B 2Z4",
+        "group": "Etobicoke",
+        "bin_type": "EMW Cathedral Container 10yd",
+        "material_type": "Cardboard",
         "asset_tag": "down",
-        "bin_volume": "large"
+        "bin_volume": "large",
     },
 ]
 
