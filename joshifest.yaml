@@ -3,23 +3,23 @@ kind: Deployment
 metadata:
   name: api
   labels:
-    service: api
+    app: api
   # namespace: iot-system-pt
 spec:
   selector:
     matchLabels:
-      service: api
+      app: api
   template:
     metadata:
       labels:
-        service: api
-        iot-system-prototype-default: "true"
+        app: api
+        # iot-system-prototype-default: "true"
     spec:
       containers:
       - name: api
         env:
-            - name: ENVIRONMENT
-              value: prod
+        - name: ENVIRONMENT
+          value: prod
         image: ghcr.io/button-inc/iot-system-prototype/api:latest
         resources:
           requests:
@@ -30,8 +30,8 @@ spec:
             memory: "32Mi"
         ports:
           - containerPort: 8080
-            hostPort: 8080
-            protocol: TCP
+            # hostPort: 8080
+            # protocol: TCP
       imagePullSecrets:
       - name: ghcr-login-secret
 ---
@@ -40,11 +40,12 @@ kind: Service
 metadata:
   name: api
   labels:
+    app: api
     service: api
   # namespace: iot-system-pt
 spec:
   selector:
-    service: api
+    app: api
   ports:
   - port: 8080
     name: "8080"
@@ -55,17 +56,17 @@ kind: Deployment
 metadata:
   name: app
   labels:
-    service: app
+    app: app
   # namespace: iot-system-pt
 spec:
   selector:
     matchLabels:
-      service: app
+      app: app
   template:
     metadata:
       labels:
-        service: app
-        iot-system-prototype-default: "true"
+        app: app
+        # iot-system-prototype-default: "true"
     spec:
       containers:
       - name: app
@@ -79,11 +80,12 @@ spec:
             memory: "64Mi"
         ports:
           - containerPort: 3000
-            hostPort: 3000
-            protocol: TCP
+            # hostPort: 3000
+            # protocol: TCP
         env:
           - name: NEXT_PUBLIC_API_HOST
-            value: http://api:8080
+            value: "http://34.95.61.243/iot/sensor-api"
+            # value: http://34.95.61.243:8080
       imagePullSecrets:
       - name: ghcr-login-secret
 ---
@@ -92,47 +94,48 @@ kind: Service
 metadata:
   name: app
   labels:
+    app: app
     service: app
   # namespace: iot-system-pt
 spec:
   selector:
-    service: app
+    app: app
   ports:
-  - port: 3000
-    name: "3000"
+  - port: 80
+    name: "http"
     targetPort: 3000
----
-# TODO: To be superseded by Istio-mesh
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: iot-system-prototype-default
-spec:
-  ingress:
-    - from:
-        - podSelector:
-            matchLabels:
-              iot-system-prototype-default: "true"
-  podSelector:
-    matchLabels:
-      iot-system-prototype-default: "true"
+# ---
+# # TODO: To be superseded by Istio-mesh
+# apiVersion: networking.k8s.io/v1
+# kind: NetworkPolicy
+# metadata:
+#   name: iot-system-prototype-default
+# spec:
+#   ingress:
+#     - from:
+#         - podSelector:
+#             matchLabels:
+#               iot-system-prototype-default: "true"
+#   podSelector:
+#     matchLabels:
+#       iot-system-prototype-default: "true"
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: real-fake-sensors
   labels:
-    service: real-fake-sensors
+    app: real-fake-sensors
   # namespace: iot-system-pt
 spec:
   selector:
     matchLabels:
-      service: real-fake-sensors
+      app: real-fake-sensors
   template:
     metadata:
       labels:
-        service: real-fake-sensors
-        iot-system-prototype-default: "true"
+        app: real-fake-sensors
+        # iot-system-prototype-default: "true"
     spec:
       containers:
       - name: real-fake-sensors
@@ -146,8 +149,8 @@ spec:
             memory: "32Mi"
         ports:
           - containerPort: 8081
-            hostPort: 8081
-            protocol: TCP
+            # hostPort: 8081
+            # protocol: TCP
       imagePullSecrets:
       - name: ghcr-login-secret
 ---
@@ -156,11 +159,12 @@ kind: Service
 metadata:
   name: real-fake-sensors
   labels:
+    app: real-fake-sensors
     service: real-fake-sensors
   # namespace: iot-system-pt
 spec:
   selector:
-    service: real-fake-sensors
+    app: real-fake-sensors
   ports:
   - port: 8081
     name: "8081"
@@ -171,17 +175,17 @@ kind: Deployment
 metadata:
   name: sensational-sensors
   labels:
-    service: sensational-sensors
+    app: sensational-sensors
   # namespace: iot-system-pt
 spec:
   selector:
     matchLabels:
-      service: sensational-sensors
+      app: sensational-sensors
   template:
     metadata:
       labels:
-        service: sensational-sensors
-        iot-system-prototype-default: "true"
+        app: sensational-sensors
+        # iot-system-prototype-default: "true"
     spec:
       containers:
       - name: sensational-sensors
@@ -195,8 +199,8 @@ spec:
             memory: "32Mi"
         ports:
           - containerPort: 8082
-            hostPort: 8082
-            protocol: TCP
+            # hostPort: 8082
+            # protocol: TCP
       imagePullSecrets:
       - name: ghcr-login-secret
 ---
@@ -205,11 +209,12 @@ kind: Service
 metadata:
   name: sensational-sensors
   labels:
+    app: sensational-sensors
     service: sensational-sensors
   # namespace: iot-system-pt
 spec:
   selector:
-    service: sensational-sensors
+    app: sensational-sensors
   ports:
   - port: 8082
     name: "8082"

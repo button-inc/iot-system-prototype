@@ -1,69 +1,13 @@
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: sensational-sensors
-spec:
-  hosts:
-  - sensational-sensors
-  http:
-  - route:
-    - destination:
-        host: sensational-sensors
----
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: real-fake-sensors
-spec:
-  hosts:
-  - real-fake-sensors
-  http:
-  - route:
-    - destination:
-        host: real-fake-sensors
----
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: api
-spec:
-  hosts:
-  - api
-  http:
-  - match:
-      - port: 8080
-    route:
-    - destination:
-        host: api
----
-apiVersion: networking.istio.io/v1beta1
-kind: VirtualService
-metadata:
-  name: app
-spec:
-  hosts:
-  - "*"
-  gateways:
-  - iot-system-prototype-app-gateway
-  http:
-  - match:
-    - uri:
-        exact: /
-    route:
-    - destination:
-        host: app
-        port:
-          number: 3000
----
+# TEST CASE USING httpbin
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
-  name: iot-system-prototype-app-gateway
-  # namespace: iot-system-pt
+  name: httpbin-gateway
 spec:
+  # The selector matches the ingress gateway pod labels.
+  # If you installed Istio using Helm following the standard documentation, this would be "istio=ingress"
   selector:
-    # https://github.com/istio/istio/issues/29680#issuecomment-1472894785
-    istio: ingress # we use helm to deploy the istio-ingress gateway server, this is the selector that helm establishes. This differs from the default `ingressgateway` frequently found in the Istio documentation.
+    istio: ingress
   servers:
   - port:
       number: 80
@@ -71,3 +15,163 @@ spec:
       protocol: HTTP
     hosts:
     - "*"
+# ---
+# apiVersion: networking.istio.io/v1beta1
+# kind: VirtualService
+# metadata:
+#   name: testapi
+# spec:
+#   hosts:
+#   - "*"
+#   gateways:
+#     - httpbin-gateway
+#   http:
+#   - match:
+#     - uri:
+#         prefix: /api
+#     route:
+#     - destination:
+#         port:
+#           number: 8080
+#         host: api
+# ---
+# apiVersion: networking.istio.io/v1beta1
+# kind: VirtualService
+# metadata:
+#   name: httpbin
+# spec:
+#   hosts:
+#   - "*"
+#   gateways:
+#   - httpbin-gateway
+#   http:
+#   - match:
+#     - uri:
+#         prefix: /status
+#     - uri:
+#         prefix: /delay
+#     route:
+#     - destination:
+#         port:
+#           number: 8000
+#         host: httpbin
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: testio
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - httpbin-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /iot/sensor-api/
+    - uri:
+        exact: /iot/sensor-api
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        port:
+          number: 8080
+        host: api
+  - match:
+    - uri:
+        exact: /iot/
+    - uri:
+        exact: /iot
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        port:
+          number: 80
+        host: app
+
+# END TEST CASE
+# ---
+# apiVersion: networking.istio.io/v1alpha3
+# kind: VirtualService
+# metadata:
+#   name: sensational-sensors
+# spec:
+#   hosts:
+#   - sensational-sensors
+#   http:
+#   - route:
+#     - destination:
+#         host: sensational-sensors
+# ---
+# apiVersion: networking.istio.io/v1alpha3
+# kind: VirtualService
+# metadata:
+#   name: real-fake-sensors
+# spec:
+#   hosts:
+#   - real-fake-sensors
+#   http:
+#   - route:
+#     - destination:
+#         host: real-fake-sensors
+# ---
+# apiVersion: networking.istio.io/v1alpha3
+# kind: VirtualService
+# metadata:
+#   name: api
+# spec:
+#   hosts:
+#   - api
+#   # gateways:
+#   # - iot-system-prototype-app-gateway
+#   http:
+#   - match:
+#       - port: 8080
+#     route:
+#     - destination:
+#         host: api
+# ---
+# apiVersion: networking.istio.io/v1beta1
+# kind: VirtualService
+# metadata:
+#   name: app
+# spec:
+#   hosts:
+#   - "*"
+#   gateways:
+#   - iot-gateway
+#   http:
+#   - match:
+#     - uri:
+#         # exact: /iot
+#         exact: "/"
+#     route:
+#     - destination:
+#         host: app
+#         port:
+#           number: 3000
+# ---
+# apiVersion: networking.istio.io/v1beta1
+# kind: Gateway
+# metadata:
+#   name: iot-gateway
+#   # namespace: iot-system-pt
+# spec:
+#   selector:
+#     # https://github.com/istio/istio/issues/29680#issuecomment-1472894785
+#     istio: ingress # we use helm to deploy the istio-ingress gateway server, this is the selector that helm establishes. This differs from the default `ingressgateway` frequently found in the Istio documentation.
+#   servers:
+#   - port:
+#       number: 80
+#       name: http
+#       protocol: HTTP
+#     hosts:
+#     - "*"
+#   # - port:
+#   #     number: 8080
+#   #     name: api
+#   #     protocol: HTTP
+#   #   hosts:
+#   #   - "*"
