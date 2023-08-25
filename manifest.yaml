@@ -195,3 +195,59 @@ spec:
   - port: 8082
     name: "8082"
     targetPort: 8082
+---
+################################################################################
+# ISTIO INGRESS GATEWAY
+# Istio already handles the internal routing/dns, this exposes specific services
+# to the web.
+################################################################################
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: iot-gateway
+spec:
+  selector:
+    istio: ingress
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: iot-service-routing
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - iot-gateway
+  # double the matching URIs to properly handle rewriting to root on the destination services
+  http:
+  - match:
+    - uri:
+        prefix: /iot/sensor-api/
+    - uri:
+        exact: /iot/sensor-api
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        port:
+          number: 8080
+        host: api
+  - match:
+    - uri:
+        exact: /iot/
+    - uri:
+        exact: /iot
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        port:
+          number: 80
+        host: app
