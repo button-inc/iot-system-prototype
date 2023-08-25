@@ -211,7 +211,7 @@ def get_brighterbin_sensors():
 
     bins = []
 
-    for record in records:
+    for index, record in enumerate(records):
         id = record["id"]
         response = requests.request(
             "POST",
@@ -232,6 +232,7 @@ def get_brighterbin_sensors():
         sensor.update(
             {
                 "id": id,
+                "row_id": index + 2,
                 "bin_name": record["name"],
                 "address": record["address"],
                 "lat": record["lat"],
@@ -243,6 +244,14 @@ def get_brighterbin_sensors():
         bins.append(sensor)
 
     return bins
+
+
+@app.put("/update_name/{row_id}/")
+def update_name(row_id: int, name: str):
+    sheet = sa.open("BrighterBins_mock_data")
+    worksheet = sheet.worksheet("bins_data")
+    worksheet.update_cell(row_id, 2, name)
+    return {"success": True}
 
 
 # combined
