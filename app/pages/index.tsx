@@ -31,10 +31,9 @@ export interface Sensor {
   address_line1: string;
   address_line2: string;
   asset_tag: string;
-
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_HOST || "http://api:8080";
+const API_URL = process.env.NEXT_PUBLIC_API_HOST || "http://localhost:8080";
 
 const Home: NextPage = () => {
   const Map = useMemo(
@@ -94,10 +93,10 @@ const Home: NextPage = () => {
       <div className="content-wrapper">
         <Sidebar sensors={sensors} />
         <div id="map" style={{ height: "75vh", width: "100%" }}>
-          <Map 
+          <Map
             sensors={sensors}
             alertThreshold={50}
-            filterThresholdMinimum ={thresholdRange[0]}
+            filterThresholdMinimum={thresholdRange[0]}
             filterThresholdMaximum={thresholdRange[1]}
             selectedGroup={selectedGroup}
             selectedAssetTag={selectedAssetTag}
@@ -174,8 +173,12 @@ const Home: NextPage = () => {
                   onChange={handleBinTypeChange}
                 >
                   <MenuItem value=""> - </MenuItem>
-                  <MenuItem value="EMW Cathedral Container 10yd">EMW Cathedral Container 10yd</MenuItem>
-                  <MenuItem value="EMW Cathedral Container 20yd">EMW Cathedral Container 20yd</MenuItem>
+                  <MenuItem value="EMW Cathedral Container 10yd">
+                    EMW Cathedral Container 10yd
+                  </MenuItem>
+                  <MenuItem value="EMW Cathedral Container 20yd">
+                    EMW Cathedral Container 20yd
+                  </MenuItem>
                 </Select>
               </FormControl>
             </div>
@@ -196,7 +199,11 @@ const Home: NextPage = () => {
               </FormControl>
             </div>
             <div className="close-button">
-              <Button variant="contained" color="primary" onClick={toggleDrawer(false)}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={toggleDrawer(false)}
+              >
                 Close
               </Button>
             </div>
