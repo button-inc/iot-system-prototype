@@ -1,9 +1,9 @@
 from enum import Enum
-from dotenv import load_dotenv
-
-import requests
 import time
+import requests
 
+import gspread
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -12,6 +12,7 @@ import os
 load_dotenv()
 env = os.environ.get("ENVIRONMENT")
 brighterbins_api_token = os.environ.get("BRIGHTERBINS_TOKEN")
+sa = gspread.service_account(filename="google_sheets_sa_key.json")
 
 # Set base URLs based on the environment
 if env == "prod":
@@ -64,7 +65,7 @@ class BasicSensor(BaseModel):
 
 
 class RealFakeSensor(BaseModel):
-    sensorsID: int
+    sensorsID: str
     sensorCompany: str
     sensorDeviceID: int
     firmwareVersion: str
@@ -104,7 +105,7 @@ def rfs_list_to_bs_list(sensors: list[RealFakeSensor]) -> list[BasicSensor]:
 
 
 class SensationalSensor(BaseModel):
-    id: int
+    id: str
     sensor_type: SensorType
     fill_level: int
     sim: str
@@ -171,28 +172,6 @@ class BrighterBinsSensor(BaseModel):
     long: float
 
 
-sampleStore = {
-    "30C2BD3DA32F8EE4": {
-        "name": "Leslie Park",
-        "address": "5200 Leslie St, North York, ON M2J 2M4",
-        "lat": 43.785389678151496,
-        "long": -79.36672012769327,
-    },
-    "8CD9834D4694893F": {
-        "name": "Don Mills Park",
-        "address": "2975 Don Mills Rd W, Toronto, ON",
-        "lat": 43.78154776666376,
-        "long": -79.35045521273253,
-    },
-    "AE2CD5631BC0EC2D": {
-        "name": "Cliffwood Park",
-        "address": "280 Cliffwood Rd, North York, ON M2H 2S7",
-        "lat": 43.808614212122095,
-        "long": -79.35467146593578,
-    },
-}
-
-
 def brighterbins_sensor_to_simple_sensor(sensor: BrighterBinsSensor) -> BasicSensor:
     return BasicSensor(
         id=sensor["id"],
@@ -220,21 +199,24 @@ def bb_list_to_simple_sensor_list(
 
 @app.get("/brighter")
 def get_brighterbin_sensors():
-    # brighterbins_ids = ["30C2BD3DA32F8EE4", "8CD9834D4694893F", "AE2CD5631BC0EC2D"]
-    brighterbins_ids = ["30C2BD3DA32F8EE4", "8CD9834D4694893F", "AE2CD5631BC0EC2D"]
     url = "https://api.brighterbins.com/bins/timeseries"
     # get the readings from the past 24 hors
     readingsEndTime = round(time.time() * 1000)
     readingsStartTime = readingsEndTime - 86400000
-    headers = {"Authorization": "Bearer " + brighterbins_api_token}
+
+    # get all of the records from the BB mock data sheet
+    sheet = sa.open("BrighterBins_mock_data")
+    worksheet = sheet.worksheet("bins_data")
+    records = worksheet.get_all_records()
 
     bins = []
 
-    for id in brighterbins_ids:
+    for index, record in enumerate(records):
+        id = record["id"]
         response = requests.request(
             "POST",
             url,
-            headers=headers,
+            headers={"Authorization": "Bearer " + brighterbins_api_token},
             data={
                 "from": readingsStartTime,
                 "to": readingsEndTime,
@@ -250,17 +232,26 @@ def get_brighterbin_sensors():
         sensor.update(
             {
                 "id": id,
-                "bin_name": sampleStore[id]["name"],
-                "address": sampleStore[id]["address"],
-                "lat": sampleStore[id]["lat"],
-                "long": sampleStore[id]["long"],
-                "bin_volume": 10000,
-                "asset_tag": "up",
+                "row_id": index + 2,
+                "bin_name": record["name"],
+                "address": record["address"],
+                "lat": record["lat"],
+                "long": record["long"],
+                "bin_volume": record["bin_volume"],
+                "asset_tag": record["tags"],
             }
         )
         bins.append(sensor)
 
     return bins
+
+
+@app.put("/update_name/{row_id}/")
+def update_name(row_id: int, name: str):
+    sheet = sa.open("BrighterBins_mock_data")
+    worksheet = sheet.worksheet("bins_data")
+    worksheet.update_cell(row_id, 2, name)
+    return {"success": True}
 
 
 # combined
@@ -284,7 +275,7 @@ def get_sensors():
 
 
 # @app.get("/sensors/{sensor_id}")
-# def query_sensor_by_id(sensor_id: int) -> Sensor:
+# def query_sensor_by_id(sensor_id: str) -> Sensor:
 #     if sensor_id not in sensors:
 #         raise HTTPException(
 #             status_code=404, detail=f"Sensor iwth id {sensor_id} does not exist"

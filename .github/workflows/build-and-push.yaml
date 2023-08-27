@@ -19,6 +19,8 @@ jobs:
             context: .
             dockerfile: api/Dockerfile
             name: api
+            build-args: |
+              "BB_TOKEN=${{ secrets.BB_TOKEN }}"
           - image: ghcr.io/button-inc/iot-system-prototype/real_fake_sensors
             context: .
             dockerfile: real_fake_sensors/Dockerfile

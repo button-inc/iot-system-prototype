@@ -9,3 +9,4 @@ chart/**/charts/
 .scratch*
 cypress.env.json
 **/.env
+**/google_sheets_sa_key.json

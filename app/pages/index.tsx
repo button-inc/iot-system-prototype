@@ -16,7 +16,7 @@ import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 
 export interface Sensor {
-  id: number;
+  id: string;
   fill_level: number | null;
   lat: number;
   long: number;
