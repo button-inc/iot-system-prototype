@@ -11,7 +11,8 @@ import os
 
 load_dotenv()
 env = os.environ.get("ENVIRONMENT")
-brighterbins_api_token = os.environ.get("BRIGHTERBINS_TOKEN")
+bb_email = os.environ.get("BB_EMAIL")
+bb_password = os.environ.get("BB_PASSWORD")
 sa = gspread.service_account(filename="google_sheets_sa_key.json")
 
 # Set base URLs based on the environment
@@ -197,6 +198,13 @@ def bb_list_to_simple_sensor_list(
     return [brighterbins_sensor_to_simple_sensor(sensor) for sensor in sensors]
 
 
+def get_brighterbins_token():
+    url = "https://api.brighterbins.com/auth/login"
+    payload = {"email": bb_email, "password": bb_password}
+    response = requests.request("POST", url, data=payload).json()
+    return response["token"]
+
+
 @app.get("/brighter")
 def get_brighterbin_sensors():
     url = "https://api.brighterbins.com/bins/timeseries"
@@ -208,7 +216,7 @@ def get_brighterbin_sensors():
     sheet = sa.open("BrighterBins_mock_data")
     worksheet = sheet.worksheet("bins_data")
     records = worksheet.get_all_records()
-
+    brighterbins_api_token = get_brighterbins_token()
     bins = []
 
     for index, record in enumerate(records):
