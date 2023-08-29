@@ -1,5 +1,5 @@
 {
-  "name": "button-project",
+  "name": "iot-system-prototype",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -10,11 +10,13 @@
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
-    "prepare": "husky install",
+    "prepare": "cd .. && husky install app_vue/.husky",
     "pre-commit": "lint-staged"
   },
   "dependencies": {
     "husky": "^8.0.3",
+    "leaflet-routing-machine": "3.2.12",
+    "leaflet": "1.7.1",
     "ol": "^7.5.1",
     "ol-contextmenu": "^5.2.1",
     "ol-ext": "^4.0.11",
@@ -34,13 +36,11 @@
     "@vue/tsconfig": "^0.4.0",
     "eslint": "^8.46.0",
     "eslint-plugin-vue": "^9.16.1",
-    "leaflet": "^1.9.4",
     "lint-staged": "^14.0.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.0.0",
     "sass": "^1.66.1",
     "sass-loader": "^13.3.2",
-    "typescript": "~5.1.6",
     "vite": "^4.4.9",
     "vue-tsc": "^1.8.8"
   },

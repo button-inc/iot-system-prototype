@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import SensorMap from '@/components/sensorMap.vue';
 import data from '@/data/sensorsMock.json';
 
@@ -7,7 +7,6 @@ const sensors = data.sensors;
 
 <template>
   <main>
-    <div class="test">Map page here</div>
     <SensorMap :sensors="sensors"></SensorMap>
   </main>
 </template>
