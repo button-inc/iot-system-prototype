@@ -10,3 +10,4 @@ chart/**/charts/
 cypress.env.json
 **/.env
 **/google_sheets_sa_key.json
+.DS_store

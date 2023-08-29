@@ -1,0 +1,7 @@
+// a single global font
+@font-face {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  src: url('../fonts/Inter.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: block;
+}

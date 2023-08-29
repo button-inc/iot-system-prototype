@@ -1,0 +1,93 @@
+// font mixins
+
+@mixin fontHeading1() {
+  font-family: $font-face;
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 56px;
+}
+
+@mixin fontHeading2() {
+  font-family: $font-face;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 38px;
+}
+
+@mixin fontHeading3() {
+  font-family: $font-face;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 29px;
+}
+
+@mixin fontHeading4() {
+  font-family: $font-face;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 29px;
+}
+
+@mixin fontHeading5() {
+  font-family: $font-face;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+@mixin fontBodyLarge() {
+  font-family: $font-face;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 30px;
+}
+
+@mixin fontBody() {
+  font-family: $font-face;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 28px;
+}
+
+@mixin fontBodySmall() {
+  font-family: $font-face;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+// Media queries
+$smallScreenWidth: 500px;
+$mediumScreenWidth: 814px;
+$largeScreenWidth: 1200px;
+$extraLargeScreenWidth: 1600px;
+
+@mixin smallScreensMax() {
+  @media (max-width: $smallScreenWidth) {
+      @content;
+  }
+}
+
+@mixin smallScreens() {
+  @media (min-width: $smallScreenWidth) {
+      @content;
+  }
+}
+
+@mixin mediumScreens() {
+  @media (min-width: $mediumScreenWidth) {
+      @content;
+  }
+}
+
+@mixin largeScreens() {
+  @media (min-width: $largeScreenWidth) {
+      @content;
+  }
+}
+
+@mixin extraLargeScreens() {
+  @media (min-width: $extraLargeScreenWidth) {
+      @content;
+  }
+}
