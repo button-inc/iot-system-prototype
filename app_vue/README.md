@@ -17,7 +17,7 @@ This template should help get you started developing with Vue 3 in Vite.
 ### CSS
 - we are using the BEM approach where possible
 - if a single vuetify class fulfills your need, go ahead and use that
-- don't combine a vuetify class with a custom class, instead, nest the vuetify css attributes in your custom class
+- don't combine a vuetify class with a custom class (ie. `class="text-subtitle-2 my-custom-class"`) , instead, nest the vuetify css attributes in your custom class (ie. `my-custom-class"`)
 - we have also added vuetify typography in our own mixins located in /assets/stylesheets/mixins
   - you can feel free to use `@include <mixinName>` in your custom class to avoid rewriting repetitive code
 
