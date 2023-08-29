@@ -1,7 +1,7 @@
 <script setup>
   import { ref } from 'vue';
   import SensorMap from '@/components/sensorMap.vue';
-  import SensorFilter from '@/components/sensorFilter.vue';
+  import SensorNavbar from '@/components/sensorNavbar.vue';
   import data from '@/data/sensorsMock.json';
 
   const sensors = ref(data.sensors);
@@ -12,7 +12,7 @@
 
 <template>
   <main>
-    <SensorFilter></SensorFilter>
+    <SensorNavbar :sensors="sensors"></SensorNavbar>
     <SensorMap :sensors="sensors" 
       :alertThreshold="alertThreshold"
       :filterThresholdMaximum="filterThresholdMaximum"

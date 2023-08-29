@@ -91,6 +91,7 @@
 }
 
 // Media queries
+$extraSmallScreenWidth: 300px;
 $smallScreenWidth: 500px;
 $mediumScreenWidth: 814px;
 $largeScreenWidth: 1200px;
@@ -98,6 +99,12 @@ $extraLargeScreenWidth: 1600px;
 
 @mixin smallScreensMax() {
   @media (max-width: $smallScreenWidth) {
+      @content;
+  }
+}
+
+@mixin extraSmallScreens() {
+  @media (min-width: $extraSmallScreenWidth) {
       @content;
   }
 }
