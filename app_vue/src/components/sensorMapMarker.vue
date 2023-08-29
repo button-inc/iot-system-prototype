@@ -61,7 +61,6 @@
 </script>
 
 <template>
-  <!-- position is in order of lat, long -->
   <l-icon
     :icon-size="[25,25]"
     :icon-anchor="[13,0]"
@@ -96,5 +95,5 @@
 </template>
 
 <style lang="scss" scoped>
-  
+
 </style>
