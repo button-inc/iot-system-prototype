@@ -1,27 +1,27 @@
 <script setup>
-import { ref } from 'vue'
-import SensorMapMarker from './sensorMapMarker.vue'
-import 'leaflet/dist/leaflet.css'
-import { LMap, LTileLayer, LMarker } from '@vue-leaflet/vue-leaflet'
+  import { ref } from 'vue'
+  import SensorMapMarker from './sensorMapMarker.vue'
+  import 'leaflet/dist/leaflet.css'
+  import { LMap, LTileLayer, LMarker } from '@vue-leaflet/vue-leaflet'
 
-const props = defineProps({
-  sensors: {
-    type: Array,
-    required: true
-  },
-  alertThreshold: {
-    type: Number
-  },
-  filterThresholdMaximum: {
-    type: Number
-  },
-  filterThresholdMinimum: {
-    type: Number
-  }
-})
+  const props = defineProps({
+    sensors: {
+      type: Array,
+      required: true
+    },
+    alertThreshold: {
+      type: Number
+    },
+    filterThresholdMaximum: {
+      type: Number
+    },
+    filterThresholdMinimum: {
+      type: Number
+    }
+  })
 
-const center = ref([43.7, -79.42])
-const zoom = ref(10)
+  const center = ref([43.7, -79.42]);
+  const zoom = ref(10);
 </script>
 
 <template>
