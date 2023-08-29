@@ -54,7 +54,7 @@
         prominent
       >
         <v-app-bar-nav-icon @click.stop="state.drawer = !state.drawer">
-          <v-icon icon="fa:fas fa-list"></v-icon>
+          <vue-feather type="align-justify"></vue-feather>
         </v-app-bar-nav-icon>
         <v-toolbar-title>Create Route</v-toolbar-title>
       </v-app-bar>

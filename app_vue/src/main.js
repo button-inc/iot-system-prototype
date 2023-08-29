@@ -13,6 +13,9 @@ import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
 
+// feather icons
+import VueFeather from 'vue-feather';
+
 const vuetify = createVuetify({
   components,
   directives,
@@ -30,5 +33,7 @@ const app = createApp(App);
 app.use(createPinia());
 app.use(router);
 app.use(vuetify);
+
+app.component(VueFeather.name, VueFeather);
 
 app.mount('#app');
