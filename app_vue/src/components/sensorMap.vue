@@ -5,31 +5,34 @@
   import { ref, inject, onMounted } from "vue";
   import type { View } from "ol";
   import type { ObjectEvent } from "ol/Object";
+
   import SensorMapMarker from './sensorMapMarker.vue';
+  import "leaflet/dist/leaflet.css";
+  import { LMap, LTileLayer, LPopup, LMarker, LIcon } from "@vue-leaflet/vue-leaflet";
 
-  // import type { PropType } from 'vue' // TODO: implement type interface to sensors prop
+  import type { PropType } from 'vue' // TODO: implement type interface to sensors prop
 
-  // export interface Sensor {
-  //   id: string;
-  //   fill_level: number | null;
-  //   lat: number;
-  //   long: number;
-  //   sensor_type: string;
-  //   material_type: string;
-  //   bin_type: string;
-  //   sim: string;
-  //   bin_name: string;
-  //   bin_volume: string;
-  //   group: string;
-  //   address_line1: string;
-  //   address_line2: string;
-  //   asset_tag: string;
-  //   manufacturer: string;
-  // }
+  export interface Sensor {
+    id: string;
+    fill_level: number | null;
+    lat: number;
+    long: number;
+    sensor_type: string;
+    material_type: string;
+    bin_type: string;
+    sim: string;
+    bin_name: string;
+    bin_volume: string;
+    group: string;
+    address_line1: string;
+    address_line2: string;
+    asset_tag: string;
+    manufacturer: string;
+  }
 
   const props = defineProps({
     sensors: {
-      type: Array,
+      type: Array as PropType<Sensor[]>,
       required: true
     },
     alertThreshold: {
@@ -55,6 +58,7 @@
     }
   });
 
+  console.log('sensors', props.sensors);
   const center = ref([-79.42, 43.70]);
   const projection = ref("EPSG:4326");
   const zoom = ref(10);
@@ -89,6 +93,29 @@
 
 <template>
   <div class="container" style="height:600px; width:800px" v-if="sensors">
+    leaflet map:
+    
+    <l-map ref="map" v-model:zoom="zoom" :use-global-leaflet="false" :center="[43.70, -79.42]">
+      <l-tile-layer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        layer-type="base"
+        name="OpenStreetMap"
+      ></l-tile-layer>
+      <l-marker v-for="sensor in props.sensors" 
+        :key="sensor.id"
+        :lat-lng="[sensor.lat, sensor.long]">
+        <l-icon
+          :icon-size="[25,25]"
+          :icon-anchor="[13,0]"
+          icon-url="https://cdn-icons-png.flaticon.com/128/1304/1304037.png"
+        />
+        <l-popup> lol </l-popup>
+      </l-marker>
+    </l-map>
+
+    
+
+    openlayer map:
     <ol-map style="height: 600px">
       <ol-view
         ref="view"
@@ -122,7 +149,12 @@
       </ol-tile-layer>
 
       <!-- position is in order of long, lat -->
-      <SensorMapMarker :position="[-79.35467147, 43.80861421]" id="8CD9834D4694893F"></SensorMapMarker>
+      <SensorMapMarker v-for="sensor in props.sensors" 
+        :key="sensor.id" 
+        :position="[sensor.long, sensor.lat]" 
+        :id="sensor.id"
+        @update-center="center = $event">
+      </SensorMapMarker>
 
     </ol-map>
 

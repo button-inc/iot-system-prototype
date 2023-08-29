@@ -6,11 +6,12 @@
   import type { View } from "ol";
   import type { ObjectEvent } from "ol/Object";
   import type { PropType } from 'vue'
+  import Overlay from 'ol/Overlay.js';
 
-
+  const emit = defineEmits(["update-center"]);
   const props = defineProps({
     position: {
-      type: Array as PropType<Number[]>,
+      type: Array as PropType<number[]>,
       required: true
     },
     id: {
@@ -20,12 +21,19 @@
   });
 
   const positionData = ref(props.position);
-
+  const popupData = ref([props.position[0] + 1, props.position[1]])
 
   // callback used when clicking marker
-  const overlayClicked = (event: ObjectEvent, position: Array<Number>, id: string) => {
+  const overlayClicked = (event: ObjectEvent, position: Array<number>, id: string) => {
+
+
+
     console.log('event', event, position, id);
-    document.getElementById('8CD9834D4694893F')?.classList.toggle('show');
+
+    document.getElementById(id)?.classList.toggle('show');
+    positionData.value = position;
+
+    emit('update-center', position);
   };
 </script>
 
@@ -36,25 +44,35 @@
     @click="overlayClicked($event, positionData, props.id)"
   >
 
-    <div class="overlay-content">
-      <img class="icon" src="https://cdn-icons-png.flaticon.com/128/1304/1304037.png"/>
-
-      <div class="hover-content" id="8CD9834D4694893F">
+    <div class="sensor-marker">
+      <img class="sensor-marker__icon" src="https://cdn-icons-png.flaticon.com/128/1304/1304037.png"/>
+      <div class="popup" :id="id">
         hover here!
       </div>
+       
+      <!-- <div class="popup" :id="props.id">
+        hover here!
+      </div> -->
     </div>
 
   </ol-overlay>
 </template>
 
 <style lang="scss" scoped>
-.icon {
-  width: 25px;
-  height: 25px;
+.sensor-marker {
+  &__icon {
+    width: 25px;
+    height: 25px;
+  }
 }
 
-.hover-content {
+.popup {
   display: none;
+  height: 200px;
+  width: 200px;
+  background: white;
+  border-radius: 16px;
+  padding: 4px;
   &.show {
     display: block;
   }
