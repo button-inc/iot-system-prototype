@@ -2,79 +2,99 @@
   /*
   * this file uses openlayer for vue 3: https://vue3openlayers.netlify.app/componentsguide/map/
   */
-  import { ref, inject, onMounted } from "vue";
-  import type { View } from "ol";
-  import type { ObjectEvent } from "ol/Object";
-  import type { PropType } from 'vue'
-  import Overlay from 'ol/Overlay.js';
-
-  const emit = defineEmits(["update-center"]);
+  import { ref } from "vue";
+  import { LPopup, LIcon } from "@vue-leaflet/vue-leaflet";
+  import type { Sensor } from './sensorMap.vue';
+  import type { PropType } from 'vue';
+  
   const props = defineProps({
-    position: {
-      type: Array as PropType<number[]>,
+    sensor: {
+      type: Object as PropType<Sensor>,
       required: true
     },
-    id: {
-      type: String,
-      default: ''
-    }
   });
 
-  const positionData = ref(props.position);
-  const popupData = ref([props.position[0] + 1, props.position[1]])
+  const fill_pct = ref(Math.round(props.sensor.fill_level || 0));
+  const alertThreshold = 50;
+  const filterThresholdMaximum = 100;
+  const filterThresholdMinimum = 0;
 
-  // callback used when clicking marker
-  const overlayClicked = (event: ObjectEvent, position: Array<number>, id: string) => {
+  function getIconName() {
+    const isDefaultState:boolean = props.sensor.fill_level ? props.sensor.fill_level < filterThresholdMinimum || 
+      props.sensor.fill_level > filterThresholdMaximum : false;
 
+    const isFullState:boolean = props.sensor.fill_level ? alertThreshold && props.sensor.fill_level > alertThreshold : false;
 
-
-    console.log('event', event, position, id);
-
-    document.getElementById(id)?.classList.toggle('show');
-    positionData.value = position;
-
-    emit('update-center', position);
+    if (isDefaultState) {
+      return 'default';
+    } else if (isFullState) {
+      return 'full';
+    }
+    return 'healthy';
   };
+
+  const getIconAndProgressColor = (iconName: string) => {
+    let iconUrl = '';
+    let linearProgressColor : "error" | "inherit" | "success" | "primary" | "secondary" | "info" | "warning";
+    switch (iconName) {
+      case "error":
+        iconUrl = "https://cdn-icons-png.flaticon.com/128/1304/1304037.png";
+        linearProgressColor = "error";
+        break;
+      case "full":
+        iconUrl = "https://cdn-icons-png.flaticon.com/128/5028/5028066.png";
+        linearProgressColor = "error";
+        break;
+      case "healthy":
+        iconUrl = "https://cdn-icons-png.flaticon.com/128/542/542775.png";
+        linearProgressColor = "success";
+        break;
+      default:
+        iconUrl = "https://cdn-icons-png.flaticon.com/128/484/484662.png";
+        linearProgressColor = "primary";
+    }
+    return {iconUrl, linearProgressColor};
+  };
+
+  const {iconUrl, linearProgressColor} = getIconAndProgressColor(getIconName());
+
 </script>
 
 <template>
-  <!-- position is in order of long, lat -->
-  <ol-overlay
-    :position="positionData"
-    @click="overlayClicked($event, positionData, props.id)"
-  >
-
-    <div class="sensor-marker">
-      <img class="sensor-marker__icon" src="https://cdn-icons-png.flaticon.com/128/1304/1304037.png"/>
-      <div class="popup" :id="id">
-        hover here!
+  <!-- position is in order of lat, long -->
+  <l-icon
+    :icon-size="[25,25]"
+    :icon-anchor="[13,0]"
+    :icon-url="iconUrl"
+  />
+  <l-popup>
+    <div class="progress-bar">
+      <div v-if="fill_pct === null">
+        level not captured
       </div>
-       
-      <!-- <div class="popup" :id="props.id">
-        hover here!
-      </div> -->
+      <div v-else>
+        {{ fill_pct }}%
+        Fill level
+      </div>
     </div>
 
-  </ol-overlay>
+    <div class="box">
+      {{ props.sensor.material_type }}
+    </div>
+
+    <div class="details">
+      {{ props.sensor.bin_name }} <br>
+      id: {{ props.sensor.id }} <br>
+      {{ props.sensor.address_line1 }} <br>
+      {{ props.sensor.address_line2 }} <br>
+      {{ props.sensor.group }} <br>
+      {{ props.sensor.asset_tag }} <br>
+      {{ props.sensor.bin_type }} <br>
+      {{ props.sensor.bin_volume }}
+    </div>
+  </l-popup>
 </template>
 
 <style lang="scss" scoped>
-.sensor-marker {
-  &__icon {
-    width: 25px;
-    height: 25px;
-  }
-}
-
-.popup {
-  display: none;
-  height: 200px;
-  width: 200px;
-  background: white;
-  border-radius: 16px;
-  padding: 4px;
-  &.show {
-    display: block;
-  }
-}
+  
 </style>
