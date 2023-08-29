@@ -17,18 +17,6 @@ const props = defineProps({
   },
   filterThresholdMinimum: {
     type: Number
-  },
-  selectedGroup: {
-    type: String
-  },
-  selectedAssetTag: {
-    type: String
-  },
-  selectedBinType: {
-    type: String
-  },
-  selectedBinVolume: {
-    type: String
   }
 })
 
@@ -50,7 +38,12 @@ const zoom = ref(10)
         :key="sensor.id"
         :lat-lng="[sensor.lat, sensor.long]"
       >
-        <SensorMapMarker :sensor="sensor"></SensorMapMarker>
+        <SensorMapMarker 
+          :sensor="sensor"
+          :alertThreshold="alertThreshold"
+          :filterThresholdMaximum="filterThresholdMaximum"
+          :filterThresholdMinimum="filterThresholdMinimum">
+        </SensorMapMarker>
       </l-marker>
     </l-map>
   </div>

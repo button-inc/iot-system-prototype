@@ -6,30 +6,36 @@ const props = defineProps({
   sensor: {
     type: Object,
     required: true
+  },
+  alertThreshold: {
+    type: Number
+  },
+  filterThresholdMaximum: {
+    type: Number
+  },
+  filterThresholdMinimum: {
+    type: Number
   }
 })
 
-const fill_pct = ref(Math.round(props.sensor.fill_level || 0))
-const alertThreshold = 50
-const filterThresholdMaximum = 100
-const filterThresholdMinimum = 0
+const fillPercent = ref(Math.round(props.sensor.fill_level || 0))
 
 function getIconName() {
   const isDefaultState = props.sensor.fill_level
-    ? props.sensor.fill_level < filterThresholdMinimum ||
-      props.sensor.fill_level > filterThresholdMaximum
+    ? props.sensor.fill_level < props.filterThresholdMinimum ||
+      props.sensor.fill_level > props.filterThresholdMaximum
     : false
 
   const isFullState = props.sensor.fill_level
-    ? alertThreshold && props.sensor.fill_level > alertThreshold
+    ? props.alertThreshold && props.sensor.fill_level > props.alertThreshold
     : false
 
   if (isDefaultState) {
-    return 'default'
+    return 'default';
   } else if (isFullState) {
-    return 'full'
+    return 'full';
   }
-  return 'healthy'
+  return 'healthy';
 }
 
 const getIconAndProgressColor = (iconName) => {
@@ -62,8 +68,8 @@ const { iconUrl, linearProgressColor } = getIconAndProgressColor(getIconName())
   <l-icon :icon-size="[25, 25]" :icon-anchor="[13, 0]" :icon-url="iconUrl" />
   <l-popup>
     <div class="progress-bar">
-      <div v-if="fill_pct === null">level not captured</div>
-      <div v-else>{{ fill_pct }}% Fill level</div>
+      <div v-if="fillPercent === null">level not captured</div>
+      <div v-else>{{ fillPercent }}% Fill level</div>
     </div>
 
     <div class="box">
