@@ -55,7 +55,7 @@ const zoom = ref(10)
     height: 600px;
 
     // leaflet library popup close button override
-    ::v-deep .leaflet-container a.leaflet-popup-close-button{
+    :deep .leaflet-container a.leaflet-popup-close-button{
       top: 2px;
       right: 4px;
     }
