@@ -1,67 +1,67 @@
 <script setup>
-import { ref } from 'vue'
-import { LPopup, LIcon } from '@vue-leaflet/vue-leaflet'
+  import { ref } from 'vue'
+  import { LPopup, LIcon } from '@vue-leaflet/vue-leaflet'
 
-const props = defineProps({
-  sensor: {
-    type: Object,
-    required: true
-  },
-  alertThreshold: {
-    type: Number
-  },
-  filterThresholdMaximum: {
-    type: Number
-  },
-  filterThresholdMinimum: {
-    type: Number
+  const props = defineProps({
+    sensor: {
+      type: Object,
+      required: true
+    },
+    alertThreshold: {
+      type: Number
+    },
+    filterThresholdMaximum: {
+      type: Number
+    },
+    filterThresholdMinimum: {
+      type: Number
+    }
+  })
+
+  const fillPercent = ref(Math.round(props.sensor.fill_level || 0))
+
+  function getIconName() {
+    const isDefaultState = props.sensor.fill_level
+      ? props.sensor.fill_level < props.filterThresholdMinimum ||
+        props.sensor.fill_level > props.filterThresholdMaximum
+      : false
+
+    const isFullState = props.sensor.fill_level
+      ? props.alertThreshold && props.sensor.fill_level > props.alertThreshold
+      : false
+
+    if (isDefaultState) {
+      return 'default';
+    } else if (isFullState) {
+      return 'full';
+    }
+    return 'healthy';
   }
-})
 
-const fillPercent = ref(Math.round(props.sensor.fill_level || 0))
-
-function getIconName() {
-  const isDefaultState = props.sensor.fill_level
-    ? props.sensor.fill_level < props.filterThresholdMinimum ||
-      props.sensor.fill_level > props.filterThresholdMaximum
-    : false
-
-  const isFullState = props.sensor.fill_level
-    ? props.alertThreshold && props.sensor.fill_level > props.alertThreshold
-    : false
-
-  if (isDefaultState) {
-    return 'default';
-  } else if (isFullState) {
-    return 'full';
+  const getIconAndProgressColor = (iconName) => {
+    let iconUrl = ''
+    let linearProgressColor = '';
+    switch (iconName) {
+      case 'error':
+        iconUrl = 'https://cdn-icons-png.flaticon.com/128/1304/1304037.png'
+        linearProgressColor = 'error'
+        break
+      case 'full':
+        iconUrl = 'https://cdn-icons-png.flaticon.com/128/5028/5028066.png'
+        linearProgressColor = 'error'
+        break
+      case 'healthy':
+        iconUrl = 'https://cdn-icons-png.flaticon.com/128/542/542775.png'
+        linearProgressColor = 'success'
+        break
+      default:
+        iconUrl = 'https://cdn-icons-png.flaticon.com/128/484/484662.png'
+        linearProgressColor = 'primary'
+    }
+    return { iconUrl, linearProgressColor }
   }
-  return 'healthy';
-}
 
-const getIconAndProgressColor = (iconName) => {
-  let iconUrl = ''
-  let linearProgressColor = '';
-  switch (iconName) {
-    case 'error':
-      iconUrl = 'https://cdn-icons-png.flaticon.com/128/1304/1304037.png'
-      linearProgressColor = 'error'
-      break
-    case 'full':
-      iconUrl = 'https://cdn-icons-png.flaticon.com/128/5028/5028066.png'
-      linearProgressColor = 'error'
-      break
-    case 'healthy':
-      iconUrl = 'https://cdn-icons-png.flaticon.com/128/542/542775.png'
-      linearProgressColor = 'success'
-      break
-    default:
-      iconUrl = 'https://cdn-icons-png.flaticon.com/128/484/484662.png'
-      linearProgressColor = 'primary'
-  }
-  return { iconUrl, linearProgressColor }
-}
-
-const { iconUrl, linearProgressColor } = getIconAndProgressColor(getIconName())
+  const { iconUrl, linearProgressColor } = getIconAndProgressColor(getIconName())
 </script>
 
 <template>
