@@ -53,9 +53,19 @@ const Home: NextPage = () => {
   const [selectedBinVolume, setSelectedBinVolume] = useState<string>("");
 
   const getSensors = useCallback(async () => {
-    const res = await fetch(`${API_URL}/sensors`);
+    const res = await fetch(`${API_URL}/latest_readings`);
     const responseJson = await res.json();
-    setSensors(responseJson.sensors);
+    let sensorsArray = [];
+    for (const sensorId in responseJson.brighterBins) {
+      sensorsArray.push(responseJson.brighterBins[sensorId]);
+    }
+    for (const sensorId in responseJson.realFakeSensors) {
+      sensorsArray.push(responseJson.realFakeSensors[sensorId]);
+    }
+    for (const sensorId in responseJson.sensationalSensors) {
+      sensorsArray.push(responseJson.sensationalSensors[sensorId]);
+    }
+    setSensors(sensorsArray);
   }, []);
 
   useEffect(() => {
@@ -85,8 +95,6 @@ const Home: NextPage = () => {
   const toggleDrawer = (open: boolean) => () => {
     setDrawerOpen(open);
   };
-
-  console.log(sensors);
 
   return (
     <DefaultLayout>
