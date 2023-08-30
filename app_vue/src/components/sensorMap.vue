@@ -53,8 +53,7 @@
 <style lang="scss" scoped>
   .sensor-map-container {
     width: 100%;
-    height: calc(100vh - 65px);
-    margin-top: 64px;
+    height: 100vh;
 
     // leaflet library popup close button override
     :deep .leaflet-container a.leaflet-popup-close-button{
