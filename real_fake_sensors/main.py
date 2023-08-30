@@ -39,9 +39,8 @@ class Sensor(BaseModel):
     bin_volume: str
 
 
-# TODO: push the sensor into the Sensor class instead of just a dict, same as sensational_sensors/main.py
-sensors = [
-    {
+sensors = {
+    "2453473454": {
         "sensorsID": "2453473454",
         "sensorCompany": "Real Fake Sensors",
         "sensorDeviceID": 523452,
@@ -61,7 +60,7 @@ sensors = [
         "asset_tag": "up",
         "bin_volume": "small",
     },
-    {
+    "1846567335": {
         "sensorsID": "1846567335",
         "sensorCompany": "Real Fake Sensors",
         "sensorDeviceID": 5673546,
@@ -81,22 +80,9 @@ sensors = [
         "asset_tag": "down",
         "bin_volume": "large",
     },
-]
-
-
-@app.get("/")
-def index() -> str:
-    return "hi"
+}
 
 
 @app.get("/sensors")
-def get_sensors() -> dict[str, str | int | list[Sensor]]:
-    return {"total": len(sensors), "sensors": sensors}
-
-
-@app.get("/sensors/{sensor_id}")
-def query_sensor_by_id(sensor_id: int) -> Sensor:
-    for sensor in sensors:
-        if sensor["sensorsID"] == sensor_id:
-            return sensor
-    raise HTTPException(status_code=404, detail="Sensor not found")
+def get_sensors() -> dict[str, Sensor]:
+    return sensors
