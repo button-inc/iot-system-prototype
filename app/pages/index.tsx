@@ -2,7 +2,6 @@ import type { NextPage } from "next";
 import dynamic from "next/dynamic";
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import DefaultLayout from "../components/Layout";
-import Sidebar from "../components/Sidebar";
 import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
 import Drawer from "@mui/material/Drawer";
@@ -14,6 +13,7 @@ import { SelectChangeEvent } from "@mui/material/Select";
 import Slider from "@mui/material/Slider";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
+import Backdrop from "@mui/material/Backdrop";
 
 export interface Sensor {
   id: string;
@@ -51,6 +51,8 @@ const Home: NextPage = () => {
   const [selectedAssetTag, setSelectedAssetTag] = useState<string>("");
   const [selectedBinType, setSelectedBinType] = useState<string>("");
   const [selectedBinVolume, setSelectedBinVolume] = useState<string>("");
+  
+  const sidebarWidth = "220px";
 
   const getSensors = useCallback(async () => {
     const res = await fetch(`${API_URL}/sensors`);
@@ -90,28 +92,40 @@ const Home: NextPage = () => {
 
   return (
     <DefaultLayout>
-      <div className="content-wrapper">
-        <Sidebar sensors={sensors} />
-        <div id="map" style={{ height: "75vh", width: "100%" }}>
-          <Map
-            sensors={sensors}
-            alertThreshold={50}
-            filterThresholdMinimum={thresholdRange[0]}
-            filterThresholdMaximum={thresholdRange[1]}
-            selectedGroup={selectedGroup}
-            selectedAssetTag={selectedAssetTag}
-            selectedBinType={selectedBinType}
-            selectedBinVolume={selectedBinVolume}
-          />
+      <Drawer
+        anchor="left"
+        open={drawerOpen}
+        onClose={toggleDrawer(false)}
+        variant="persistent"
+        className={`drawer ${drawerOpen ? "open" : ""}`}
+        PaperProps={{ style: { width: sidebarWidth, zIndex: 20000 } }}
+      >
+        <div className="drawer-content">
+          <Typography variant="h6">Settings</Typography>
+          <div className="close-button">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={toggleDrawer(false)}
+            >
+              Close
+            </Button>
+          </div>
         </div>
-        <Drawer
-          anchor="left"
-          open={drawerOpen}
-          onClose={toggleDrawer(false)}
-          variant="persistent"
-          className={`drawer ${drawerOpen ? "open" : ""}`}
-        >
-          <div className="drawer-content">
+      </Drawer>
+      <div className="content-wrapper">
+        <div className="sidebar">
+          <IconButton
+            className="menu-button"
+            color="primary"
+            aria-label="open drawer"
+            edge="end"
+            onClick={toggleDrawer(!drawerOpen)}
+          >
+            <MenuIcon />
+            <Typography variant="subtitle1">Settings</Typography>
+          </IconButton>
+          <div className="sidebar-content">
             <Typography variant="h6">Filters</Typography>
             <Typography id="slider-label">Fill Level Threshold</Typography>
             <Slider
@@ -198,39 +212,44 @@ const Home: NextPage = () => {
                 </Select>
               </FormControl>
             </div>
-            <div className="close-button">
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={toggleDrawer(false)}
-              >
-                Close
-              </Button>
-            </div>
           </div>
-        </Drawer>
-        <IconButton
-          className="menu-button"
-          color="primary"
-          aria-label="open drawer"
-          edge="end"
-          onClick={toggleDrawer(!drawerOpen)}
-        >
-          <MenuIcon />
-          <Typography variant="h6">Filters</Typography>
-        </IconButton>
+        </div>
+        <Map
+            sensors={sensors}
+            alertThreshold={50}
+            filterThresholdMinimum={thresholdRange[0]}
+            filterThresholdMaximum={thresholdRange[1]}
+            selectedGroup={selectedGroup}
+            selectedAssetTag={selectedAssetTag}
+            selectedBinType={selectedBinType}
+            selectedBinVolume={selectedBinVolume}
+          />
+        <Backdrop
+          open={drawerOpen}
+          onClick={toggleDrawer(false)}
+          style={{ zIndex: 10000 }} 
+        />
         <style jsx>
           {`
+            .sidebar {
+              min-width: ${sidebarWidth};
+              max-width: ${sidebarWidth};
+              margin-right: 0;
+              position: relative;
+            }
+
             .content-wrapper {
               display: flex;
-              flex-direction: row;
+              height: 100vh; 
+              overflow: hidden;
+              position: relative;
             }
 
             .menu-button {
-              position: absolute;
-              top: 20px;
-              left: 20px;
-              z-index: 1;
+              position: relative;
+              top: 0px;
+              left: 0px;
+              z-index: 2;
             }
 
             .drawer {
@@ -244,6 +263,11 @@ const Home: NextPage = () => {
 
             .drawer-content {
               padding: 20px;
+              z-index: 20000;
+            }
+            .sidebar-content {
+              padding: 20px;
+              z-index: 1;
             }
 
             .with-margin {
@@ -256,6 +280,7 @@ const Home: NextPage = () => {
           `}
         </style>
       </div>
+      
     </DefaultLayout>
   );
 };
