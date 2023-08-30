@@ -31,9 +31,9 @@ services:
     container_name: app
     build:
       context: .
-      dockerfile: app/Dockerfile
+      dockerfile: app_vue/Dockerfile
     ports:
-      - "3000:3000"
+      - "3000:5173"
     environment:
       - NEXT_PUBLIC_API_HOST=http://api:8080
     depends_on:
