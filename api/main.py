@@ -4,8 +4,12 @@ import requests
 
 import gspread
 from dotenv import load_dotenv
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_utils.session import FastAPISessionMaker
+from fastapi_utils.tasks import repeat_every
+
 from pydantic import BaseModel
 import os
 
@@ -48,6 +52,8 @@ class SensorType(Enum):
     SOLID_BIN_LEVEL = "solid bin level"
 
 
+# This is our mock generic type.
+# A real generic type is still needed, and this format is unlikely to be the final format.
 class BasicSensor(BaseModel):
     id: str
     sensor_type: SensorType
@@ -65,6 +71,7 @@ class BasicSensor(BaseModel):
     bin_volume: str
 
 
+# Fake sensors (mock data)
 class RealFakeSensor(BaseModel):
     sensorsID: str
     sensorCompany: str
@@ -78,6 +85,42 @@ class RealFakeSensor(BaseModel):
     longitude: float
     asset_tag: str
     bin_volume: str
+
+
+# Fake sensors (mock data)
+class SensationalSensor(BaseModel):
+    id: str
+    sensor_type: SensorType
+    fill_level: int
+    sim: str
+    lat: float
+    long: float
+    man: str
+    asset_tag: str
+    bin_volume: str
+
+
+# BrighterBins are real.
+class BrighterBinsSensorReading(BaseModel):
+    epoch_ms: int
+    rawDistance: int
+    temperature: int
+    batteryLevel: int
+    pickUpEvent: bool
+    fillLevel: int
+    fillError: bool
+    snr: int
+    rssi: int
+
+
+class BrighterBinsSensor(BaseModel):
+    id: str
+    readings: list[BrighterBinsSensorReading] | None
+    is_extended_uplink: int
+    manufacturer: str
+    address: str
+    lat: float
+    long: float
 
 
 def rfs_to_bs(sensor: RealFakeSensor) -> BasicSensor:
@@ -101,23 +144,18 @@ def rfs_to_bs(sensor: RealFakeSensor) -> BasicSensor:
     )
 
 
-def rfs_list_to_bs_list(sensors: list[RealFakeSensor]) -> list[BasicSensor]:
-    return [rfs_to_bs(sensor) for sensor in sensors]
+def rfs_dict_to_bs_dict(
+    sensors: dict[str, RealFakeSensor | None]
+) -> dict[str, BasicSensor | None]:
+    bs_dict = {}
+    for index, sensor_id in enumerate(sensors):
+        if sensor_id in sensors:
+            bs_dict[sensor_id] = rfs_to_bs(sensors[sensor_id])
+
+    return bs_dict
 
 
-class SensationalSensor(BaseModel):
-    id: str
-    sensor_type: SensorType
-    fill_level: int
-    sim: str
-    lat: float
-    long: float
-    man: str
-    asset_tag: str
-    bin_volume: str
-
-
-def sensational_sensor_to_simple_sensor(sensor: SensationalSensor) -> BasicSensor:
+def sensational_sensor_to_basic_sensor(sensor: SensationalSensor) -> BasicSensor:
     return BasicSensor(
         id=sensor["id"],
         sensor_type=SensorType.SOLID_BIN_LEVEL,
@@ -136,48 +174,25 @@ def sensational_sensor_to_simple_sensor(sensor: SensationalSensor) -> BasicSenso
     )
 
 
-def sensational_sensor_list_to_simple_sensor_list(
-    sensors: list[SensationalSensor],
-) -> list[BasicSensor]:
-    return [sensational_sensor_to_simple_sensor(sensor) for sensor in sensors]
+def ss_dict_to_bs_dict(
+    sensors: dict[str, SensationalSensor | None]
+) -> dict[str, BasicSensor | None]:
+    bs_dict = {}
+    for index, sensor_id in enumerate(sensors):
+        if sensor_id in sensors:
+            bs_dict[sensor_id] = sensational_sensor_to_basic_sensor(sensors[sensor_id])
+    return bs_dict
 
 
-# Brighter Bins
-class BrighterBinsSensorRaw(BaseModel):
-    epoch_ms: int
-    rawDistance: int
-    temperature: int
-    batteryLevel: int
-    pickUpEvent: bool
-    fillLevel: int
-    fillError: bool
-    snr: int
-    rssi: int
-    is_extended_uplink: int
-
-
-class BrighterBinsSensor(BaseModel):
-    epoch_ms: int
-    rawDistance: int
-    temperature: int
-    batteryLevel: int
-    pickUpEvent: bool
-    fillLevel: int
-    fillError: bool
-    snr: int
-    rssi: int
-    is_extended_uplink: int
-    manufacturer: str
-    address: str
-    lat: float
-    long: float
-
-
-def brighterbins_sensor_to_simple_sensor(sensor: BrighterBinsSensor) -> BasicSensor:
+def brighterbins_sensor_to_basic_sensor_with_reading(
+    sensor: BrighterBinsSensor,
+) -> BasicSensor:
     return BasicSensor(
         id=sensor["id"],
         sensor_type=SensorType.SOLID_BIN_LEVEL,
-        fill_level=sensor["fillLevel"] if "fillLevel" in sensor else None,
+        fill_level=sensor["readings"][-1]["fillLevel"]
+        if (sensor["readings"] and len(sensor["readings"]) > 0)
+        else None,
         lat=sensor["lat"],
         long=sensor["long"],
         manufacturer="BrighterBins",
@@ -192,12 +207,6 @@ def brighterbins_sensor_to_simple_sensor(sensor: BrighterBinsSensor) -> BasicSen
     )
 
 
-def bb_list_to_simple_sensor_list(
-    sensors: list[BrighterBinsSensor],
-) -> list[BasicSensor]:
-    return [brighterbins_sensor_to_simple_sensor(sensor) for sensor in sensors]
-
-
 def get_brighterbins_token():
     url = "https://api.brighterbins.com/auth/login"
     payload = {"email": bb_email, "password": bb_password}
@@ -205,40 +214,68 @@ def get_brighterbins_token():
     return response["token"]
 
 
-@app.get("/brighter")
-def get_brighterbin_sensors():
-    url = "https://api.brighterbins.com/bins/timeseries"
-    # get the readings from the past 24 hors
-    readingsEndTime = round(time.time() * 1000)
-    readingsStartTime = readingsEndTime - 86400000
+rfs_cache = {}
+ss_cache = {}
+bb_cache = {}
+last_run_timestamp = 0
 
-    # get all of the records from the BB mock data sheet
-    sheet = sa.open("BrighterBins_mock_data")
-    worksheet = sheet.worksheet("bins_data")
-    records = worksheet.get_all_records()
+
+@app.on_event("startup")
+def set_rfs_and_ss_cache():
+    global rfs_cache
+    global ss_cache
+
+    # Convert the sensors to the common "BasicSensor" type and cache their values
+    # rfs and ss are mock so they have a simplecase, we can fetch once and never again, they won't change.
+    rfs_response = requests.get(REAL_FAKE_SENSORS_BASE_URL + "/sensors").json()
+    rfs_as_bs = rfs_dict_to_bs_dict(rfs_response)
+    rfs_cache = rfs_as_bs
+    ss_response = requests.get(SENSATIONAL_SENSORS_BASE_URL + "/sensors").json()
+    ss_cache = ss_dict_to_bs_dict(ss_response)
+    return
+
+
+# For BrighterBins, we need to fetch all of the historical data at server start,
+# and then append the latest readings from each sensor once per hour.
+@app.on_event("startup")
+@repeat_every(seconds=60 * 60)  # 1 hour
+def update_bb_cache() -> None:
+    global bb_cache
+    global last_run_timestamp
+
     brighterbins_api_token = get_brighterbins_token()
-    bins = []
+    url = "https://api.brighterbins.com/bins/timeseries"
 
-    for index, record in enumerate(records):
-        id = record["id"]
-        response = requests.request(
-            "POST",
-            url,
-            headers={"Authorization": "Bearer " + brighterbins_api_token},
-            data={
-                "from": readingsStartTime,
-                "to": readingsEndTime,
-                "id": id,
-            },
-        ).json()
-        reading = (
-            {}
-            if len(response["data"]["series"]) == 0
-            else response["data"]["series"][0]
-        )
-        sensor = reading
-        sensor.update(
-            {
+    # fully populate bb_cache if this is the first time this is being run
+    if last_run_timestamp == 0:
+        print("Fetching initial data...")
+        readingsEndTime = round(time.time() * 1000)
+        # start around July 28, for no particular reason
+        readingsStartTime = 1690592310000
+
+        # get all the sensors data from the google sheet
+        sheet = sa.open("BrighterBins_mock_data")
+        worksheet = sheet.worksheet("bins_data")
+        records = worksheet.get_all_records()
+
+        for index, record in enumerate(records):
+            id = record["id"]
+            response = requests.request(
+                "POST",
+                url,
+                headers={"Authorization": "Bearer " + brighterbins_api_token},
+                data={
+                    "from": readingsStartTime,
+                    "to": readingsEndTime,
+                    "id": id,
+                },
+            ).json()
+            readings = (
+                []
+                if len(response["data"]["series"]) == 0
+                else response["data"]["series"]
+            )
+            sensor = {
                 "id": id,
                 "row_id": index + 2,
                 "bin_name": record["name"],
@@ -247,67 +284,53 @@ def get_brighterbin_sensors():
                 "long": record["long"],
                 "bin_volume": record["bin_volume"],
                 "asset_tag": record["tags"],
+                "readings": readings,
             }
-        )
-        bins.append(sensor)
-
-    return bins
-
-
-@app.put("/update_name/{row_id}/")
-def update_name(row_id: int, name: str):
-    sheet = sa.open("BrighterBins_mock_data")
-    worksheet = sheet.worksheet("bins_data")
-    worksheet.update_cell(row_id, 2, name)
-    return {"success": True}
-
-
-# combined
-@app.get("/sensors")
-def get_sensors():
-    real_fake_sensors = requests.get(REAL_FAKE_SENSORS_BASE_URL + "/sensors").json()
-    rfs_as_simple_sensor_list = rfs_list_to_bs_list(real_fake_sensors["sensors"])
-
-    sensational_sensors = requests.get(SENSATIONAL_SENSORS_BASE_URL + "/sensors").json()
-    ss_as_simple_sensor_list = sensational_sensor_list_to_simple_sensor_list(
-        sensational_sensors["sensors"]
-    )
-
-    brighterbins = get_brighterbin_sensors()
-    bb_as_ss_list = bb_list_to_simple_sensor_list(brighterbins)
-
-    all_sensors_list = (
-        rfs_as_simple_sensor_list + ss_as_simple_sensor_list + bb_as_ss_list
-    )
-    return {"total": len(all_sensors_list), "sensors": all_sensors_list}
+            bb_cache[id] = sensor
+        print("Initial fetch complete")
+    else:
+        print("Fetching latest data...")
+        for id in bb_cache:
+            readingsEndTime = round(time.time() * 1000)
+            readingsStartTime = last_run_timestamp + 1
+            response = requests.request(
+                "POST",
+                url,
+                headers={"Authorization": "Bearer " + brighterbins_api_token},
+                data={
+                    "from": readingsStartTime,
+                    "to": readingsEndTime,
+                    "id": id,
+                },
+            ).json()
+            bb_cache[id]["readings"] = (
+                bb_cache[id]["readings"] + response["data"]["series"]
+            )
+        print("Latest fetch complete")
+    return
 
 
-# @app.get("/sensors/{sensor_id}")
-# def query_sensor_by_id(sensor_id: str) -> Sensor:
-#     if sensor_id not in sensors:
-#         raise HTTPException(
-#             status_code=404, detail=f"Sensor iwth id {sensor_id} does not exist"
-#         )
-#     return sensors[sensor_id]
+@app.get("/latest_readings")
+def get_latest_readings():
+    global rfs_cache
+    global ss_cache
+
+    bb_readings = {}
+    for id in bb_cache:
+        bb_readings[id] = brighterbins_sensor_to_basic_sensor_with_reading(bb_cache[id])
+
+    latest_readings = {
+        "brighterBins": bb_readings,
+        "realFakeSensors": rfs_cache,
+        "sensationalSensors": ss_cache,
+    }
+    return latest_readings
 
 
-# Selection = dict[str, str | int | SensorType | None]
-
-
-# @app.get("/sensors/")
-# def query_sensor_by_parameters(
-#     # sensor_type: SensorType | None = None,
-#     min_fill_level: int | None = None,
-#     # sim: str | None = None,
-# ) -> dict[str, Selection]:
-#     def check_sensor(sensor: Sensor) -> bool:
-#         return all(
-#             (
-#                 # sensor_type is None or sensor.sensor_type == sensor_type,
-#                 min_fill_level is None or sensor.fill_level >= min_fill_level,
-#                 # sim is None or sensor.sim == sim,
-#             )
-#         )
-
-#     selection = [sensor for sensor in sensors.values() if check_sensor(sensor)]
-#     return {"selection": selection}
+# @app.put("/update_bb_name/{row_id}/")
+# def update_name(row_id: int, name: str):
+#     sheet = sa.open("BrighterBins_mock_data")
+#     worksheet = sheet.worksheet("bins_data")
+#     worksheet.update_cell(row_id, 2, name)
+#     # update the cache here maybe? else fetch latest.
+#     return {"success": True}
