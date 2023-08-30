@@ -207,7 +207,10 @@ def brighterbins_sensor_to_basic_sensor_with_reading(
     )
 
 
+@app.get("/token")
 def get_brighterbins_token():
+    global bb_email
+    global bb_password
     url = "https://api.brighterbins.com/auth/login"
     payload = {"email": bb_email, "password": bb_password}
     response = requests.request("POST", url, data=payload).json()
@@ -242,7 +245,6 @@ def set_rfs_and_ss_cache():
 def update_bb_cache() -> None:
     global bb_cache
     global last_run_timestamp
-
     brighterbins_api_token = get_brighterbins_token()
     url = "https://api.brighterbins.com/bins/timeseries"
 
