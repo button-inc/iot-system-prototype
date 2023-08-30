@@ -28,7 +28,7 @@
   <div>
     <v-layout>
       <v-navigation-drawer
-        class="navigation-container rounded-e-xl"
+        class="navigation-container"
         permanent
         :location="state.location"
         width="inherit"
