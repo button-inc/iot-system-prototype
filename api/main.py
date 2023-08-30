@@ -146,8 +146,15 @@ def rfs_to_bs(sensor: RealFakeSensor) -> BasicSensor:
     )
 
 
-def rfs_list_to_bs_list(sensors: list[RealFakeSensor]) -> list[BasicSensor]:
-    return [rfs_to_bs(sensor) for sensor in sensors]
+def rfs_dict_to_bs_dict(
+    sensors: dict[str, RealFakeSensor | None]
+) -> dict[str, BasicSensor | None]:
+    bs_dict = {}
+    for index, sensor_id in enumerate(sensors):
+        if sensor_id in sensors:
+            bs_dict[sensor_id] = rfs_to_bs(sensors[sensor_id])
+
+    return bs_dict
 
 
 def sensational_sensor_to_basic_sensor(sensor: SensationalSensor) -> BasicSensor:
@@ -198,7 +205,6 @@ def brighterbins_sensor_to_basic_sensor_with_reading(
     )
 
 
-@app.get("/token")
 def get_brighterbins_token():
     global bb_email
     global bb_password
