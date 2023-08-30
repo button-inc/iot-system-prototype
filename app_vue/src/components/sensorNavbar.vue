@@ -1,12 +1,12 @@
 <script setup>
-  import { ref, reactive, watch } from 'vue'
+  import { reactive, watch } from 'vue'
 
-  const props = defineProps({
-    sensors: {
-      type: Array,
-      required: true
-    },
-  })
+  // const props = defineProps({
+  //   sensors: {
+  //     type: Array,
+  //     required: true
+  //   },
+  // })
 
   const state = reactive({ 
     drawer: false,
