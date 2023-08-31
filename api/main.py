@@ -243,7 +243,7 @@ def update_bb_cache() -> None:
         readingsEndTime = round(time.time() * 1000)
         # start around July 28, for no particular reason
         readingsStartTime = 1690592310000
-
+        last_run_timestamp = readingsEndTime + 1
         # get all the sensors data from the google sheet
         sheet = sa.open("BrighterBins_mock_data")
         worksheet = sheet.worksheet("bins_data")
@@ -284,6 +284,7 @@ def update_bb_cache() -> None:
         for id in bb_cache:
             readingsEndTime = round(time.time() * 1000)
             readingsStartTime = last_run_timestamp + 1
+            last_run_timestamp = readingsEndTime + 1
             response = requests.request(
                 "POST",
                 url,
