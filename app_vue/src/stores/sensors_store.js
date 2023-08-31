@@ -47,12 +47,19 @@ export const useSensorStore = defineStore('sensors', () => {
     sensors.value = allSensors.value.filter(sensor => {
       const isFillRangeValid = selectedFillRange.value && sensor.fill_level;
       const isWithinFillRange = sensor.fill_level >= selectedFillRange.value[0] && sensor.fill_level <= selectedFillRange.value[1];
-      
-      return selectedFillRange.value && sensor.fill_level ? sensor.fill_level >= selectedFillRange.value[0] && sensor.fill_level <= selectedFillRange.value[1] : true
-        && selectedGroup.value && sensor.group ? sensor.group === selectedGroup.value : true
-        && selectedAssetTag.value && sensor.asset_tag ? sensor.asset_tag === selectedAssetTag.value : true
-        && selectedBinType.value && sensor.bin_type ? sensor.bin_type === selectedBinType.value : true
-        && selectedBinVolume.value && sensor.bin_volume ? sensor.bin_volume === selectedBinVolume.value : true;
+      const hasGroupValues = selectedGroup.value && sensor.group;
+      const hasAssetTagValues = selectedAssetTag.value && sensor.asset_tag;
+      const hasBinTypeValues = selectedBinType.value && sensor.bin_type;
+      const hasBinVolumeValues = selectedBinVolume.value && sensor.bin_volume;
+
+      // if user has selected a filter option, and that param is present in sensor data, confirm that they match
+      // if they don't match, filter the sensor out (ie. return false)
+      // note: when we return true, sensor is still kept in the list
+      return isFillRangeValid ? isWithinFillRange : true
+        && hasGroupValues ? sensor.group === selectedGroup.value : true
+        && hasAssetTagValues ? sensor.asset_tag === selectedAssetTag.value : true
+        && hasBinTypeValues ? sensor.bin_type === selectedBinType.value : true
+        && hasBinVolumeValues ? sensor.bin_volume === selectedBinVolume.value : true;
     })
   }
 
