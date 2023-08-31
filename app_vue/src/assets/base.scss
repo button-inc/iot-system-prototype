@@ -1,0 +1,19 @@
+/* color palette from <https://github.com/vuejs/theme> */
+@import './stylesheets/variables';
+@import './stylesheets/mixins';
+@import './stylesheets/fonts';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  scroll-behavior: smooth;
+  font-weight: normal;
+  font-family: $font-face;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
