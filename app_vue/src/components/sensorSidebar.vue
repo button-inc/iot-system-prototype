@@ -25,39 +25,35 @@
 </script>
 
 <template>
-  <div>
-    <v-layout>
-      <v-navigation-drawer
-        class="navigation-container"
-        permanent
-        :location="state.location"
-        width="inherit"
-        height="inherit"
-      >
-        <div class="navbar-content">
+  <div class="sensor-sidebar">
+    <v-navigation-drawer
+      class="navigation-container"
+      permanent
+      :location="state.location"
+      width="inherit"
+      height="inherit"
+    >
+      <div class="navbar-content">
 
-          <SensorSideBarFilters></SensorSideBarFilters>
+        <SensorSideBarFilters></SensorSideBarFilters>
 
-          <section class="routes-list">
-            <div class="text-h6 padding-b-30">Routes</div>
-            <span class="font-italic">No routes to be displayed yet</span>
-          </section>
+        <section class="routes-list">
+          <div class="text-h6 padding-b-30">Routes</div>
+          <span class="font-italic">No routes to be displayed yet</span>
+        </section>
 
-          <!-- Map Updated button -->
-          <v-btn class="map-updated" variant="plain">
-            <vue-feather class="map-updated__icon" type="refresh-ccw"></vue-feather>
-            <div>
-              <span class="map-updated__text">Map updated:</span>
-              <span>Just now</span>
-            </div>
-          </v-btn>
+        <!-- Map Updated button -->
+        <v-btn class="map-updated" variant="plain">
+          <vue-feather class="map-updated__icon" type="refresh-ccw"></vue-feather>
+          <div>
+            <span class="map-updated__text">Map updated:</span>
+            <span>Just now</span>
+          </div>
+        </v-btn>
 
-        </div>
+      </div>
 
-      </v-navigation-drawer>
-    </v-layout>
-
-
+    </v-navigation-drawer>
   </div>
 </template>
 
@@ -74,7 +70,7 @@
     }
 
     @include mediumScreens {
-      width: 392px;
+      width: 352px;
     }
   }
 
