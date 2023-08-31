@@ -4,7 +4,7 @@
     {
       "id": "2453473454",
       "sensor_type": "liquid bin level",
-      "fill_level": null,
+      "fill_level": 10,
       "lat": 43.84488,
       "long": -80.057859,
       "manufacturer": "Real Fake Sensors",
@@ -180,7 +180,7 @@
     {
       "id": "8CD9834D4694893F",
       "sensor_type": "solid bin level",
-      "fill_level": null,
+      "fill_level": 10,
       "lat": 43.78154777,
       "long": -79.35045521,
       "manufacturer": "BrighterBins",
@@ -196,7 +196,7 @@
     {
       "id": "AE2CD5631BC0EC2D",
       "sensor_type": "solid bin level",
-      "fill_level": null,
+      "fill_level": 10,
       "lat": 43.80861421,
       "long": -79.35467147,
       "manufacturer": "BrighterBins",
