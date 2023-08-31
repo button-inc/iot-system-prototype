@@ -25,10 +25,10 @@ const DefaultLayout = ({ children }: any) => {
             background-color: #fafafc;
           }
           main {
-            margin: auto;
-            padding: 30px 40px;
+            margin: 0;
             flex-grow: 1;
             width: 100%;
+            height: 100%;
           }
         `}
       </style>
