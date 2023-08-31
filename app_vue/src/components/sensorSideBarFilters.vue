@@ -1,21 +1,50 @@
 <script setup>
   import { reactive, ref } from 'vue'
+  import { useSensorStore } from '@/stores/sensors_store';
 
   const thresholdRange = ref([0,100]);
 
+  const sensorStore = useSensorStore();
+  
   const state = reactive({
     sliderValue: [0, 100],
-    group: ['Alton North', 'Halton West', 'Bolton South'],
-    assetTag: ['Up', 'Down', 'Top', 'Bottom', 'Strange', 'Charm'],
-    binType: ['EMW Cathedral Container 10yd', 'EMW Cathedral Container 20yd'],
-    binVolume: ['Small', 'Medium', 'Large']
+    group: sensorStore.getAllGroupOptions(),
+    assetTag: sensorStore.getAllAssetTags(),
+    binType: sensorStore.getAllBinTypes(),
+    binVolume: sensorStore.getAllBinVolumes()
   });
+
+  function updateGroupFilter(group) {
+    sensorStore.setSelectedGroup(group);
+    sensorStore.updateSensorsWithFilters();
+  }
+
+  function updateAssetTagFilter(assetTag) {
+    sensorStore.setSelectedAssetTag(assetTag);
+    sensorStore.updateSensorsWithFilters();
+  }
+
+  function updateBinTypeFilter(binType) {
+    sensorStore.setSelectedBinType(binType);
+    sensorStore.updateSensorsWithFilters();
+  }
+
+  function updateBinVolumeFilter(binVolume) {
+    sensorStore.setSelectedBinVolume(binVolume);
+    sensorStore.updateSensorsWithFilters();
+  }
+
+  function updateFillRangeFilter(fillRange) {
+    console.log('fillRange', fillRange);
+    sensorStore.setSelectedFillRange(fillRange);
+    sensorStore.updateSensorsWithFilters();
+  }
 
 </script>
 
 <template>
   <section class="filter-list">
-    <div class="text-h6 padding-b-30">Filter Sensors</div>
+    <div class="text-h6 padding-b-30">Filter Sensors ({{ sensorStore.getTotalSensors() }})</div>
 
     <div class="filter-list__fill-level">
       <div class="filter-list__label color-gray-grey">Fill Level Threshold</div>
@@ -29,7 +58,8 @@
         tick-size="4"
         :step="1"
         :max="thresholdRange[1]"
-        :min="thresholdRange[0]">
+        :min="thresholdRange[0]"
+        @update:modelValue="updateFillRangeFilter">
         <template v-slot:thumb-label="{ modelValue }">
           {{modelValue}}%
         </template>
@@ -39,6 +69,7 @@
     <v-select class="filter-list__dropdown"
       label="Group"
       :items="state.group"
+      @update:modelValue="updateGroupFilter"
     ></v-select>
 
     <v-select class="filter-list__dropdown"
@@ -46,16 +77,19 @@
       chips
       multiple
       :items="state.assetTag"
+      @update:modelValue="updateAssetTagFilter"
     ></v-select>
 
     <v-select class="filter-list__dropdown"
       label="Bin Type"
       :items="state.binType"
+      @update:modelValue="updateBinTypeFilter"
     ></v-select>
 
     <v-select class="filter-list__dropdown"
       label="Bin Volume"
       :items="state.binVolume"
+      @update:modelValue="updateBinVolumeFilter"
     ></v-select>
 
   </section>
