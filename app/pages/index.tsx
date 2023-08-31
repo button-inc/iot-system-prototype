@@ -51,16 +51,13 @@ const Home: NextPage = () => {
   const [selectedAssetTag, setSelectedAssetTag] = useState<string>("");
   const [selectedBinType, setSelectedBinType] = useState<string>("");
   const [selectedBinVolume, setSelectedBinVolume] = useState<string>("");
-  
+
   const sidebarWidth = "220px";
 
   const getSensors = useCallback(async () => {
     const res = await fetch(`${API_URL}/latest_readings`);
     const responseJson = await res.json();
-    const combinedSensors = responseJson.brighterBins
-      .concat(responseJson.realFakeSensors)
-      .concat(responseJson.sensationalSensors);
-    setSensors(combinedSensors);
+    setSensors(responseJson.sensors);
   }, []);
 
   useEffect(() => {
@@ -218,19 +215,19 @@ const Home: NextPage = () => {
           </div>
         </div>
         <Map
-            sensors={sensors}
-            alertThreshold={50}
-            filterThresholdMinimum={thresholdRange[0]}
-            filterThresholdMaximum={thresholdRange[1]}
-            selectedGroup={selectedGroup}
-            selectedAssetTag={selectedAssetTag}
-            selectedBinType={selectedBinType}
-            selectedBinVolume={selectedBinVolume}
-          />
+          sensors={sensors}
+          alertThreshold={50}
+          filterThresholdMinimum={thresholdRange[0]}
+          filterThresholdMaximum={thresholdRange[1]}
+          selectedGroup={selectedGroup}
+          selectedAssetTag={selectedAssetTag}
+          selectedBinType={selectedBinType}
+          selectedBinVolume={selectedBinVolume}
+        />
         <Backdrop
           open={drawerOpen}
           onClick={toggleDrawer(false)}
-          style={{ zIndex: 10000 }} 
+          style={{ zIndex: 10000 }}
         />
         <style jsx>
           {`
@@ -243,7 +240,7 @@ const Home: NextPage = () => {
 
             .content-wrapper {
               display: flex;
-              height: 100vh; 
+              height: 100vh;
               overflow: hidden;
               position: relative;
             }
@@ -283,7 +280,6 @@ const Home: NextPage = () => {
           `}
         </style>
       </div>
-      
     </DefaultLayout>
   );
 };
