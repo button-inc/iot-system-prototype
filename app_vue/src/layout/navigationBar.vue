@@ -12,8 +12,6 @@
     <v-navigation-drawer
       id="navigation"
       :expand-on-hover="expand"
-      :mini-variant="expand"
-      :model-value="true"
       :key="expand"
       color="#191A1C"
       rail-width="41"
