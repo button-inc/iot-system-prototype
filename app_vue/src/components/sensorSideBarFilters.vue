@@ -35,7 +35,6 @@
   }
 
   function updateFillRangeFilter(fillRange) {
-    console.log('fillRange', fillRange);
     sensorStore.setSelectedFillRange(fillRange);
     sensorStore.updateSensorsWithFilters();
   }
