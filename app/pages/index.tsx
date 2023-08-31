@@ -55,9 +55,12 @@ const Home: NextPage = () => {
   const sidebarWidth = "220px";
 
   const getSensors = useCallback(async () => {
-    const res = await fetch(`${API_URL}/sensors`);
+    const res = await fetch(`${API_URL}/latest_readings`);
     const responseJson = await res.json();
-    setSensors(responseJson.sensors);
+    const combinedSensors = responseJson.brighterBins
+      .concat(responseJson.realFakeSensors)
+      .concat(responseJson.sensationalSensors);
+    setSensors(combinedSensors);
   }, []);
 
   useEffect(() => {
