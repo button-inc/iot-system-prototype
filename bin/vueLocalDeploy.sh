@@ -32,11 +32,13 @@ else
     exit 1
 fi
 
-echo "stopping docker app..."
+echo "stopping docker 'app' container..."
 sleep .5
 if [ "$( docker inspect --format '{{json .State.Running}}' app )" = "true" ];
 then 
     docker-compose stop app
+    echo "docker 'app' container stopped! continuing to use mock docker containers..."
+    sleep .5
 fi
 
 echo "starting up vue app..."
