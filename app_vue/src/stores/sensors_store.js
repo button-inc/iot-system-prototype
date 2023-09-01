@@ -7,8 +7,8 @@ import { defineStore } from 'pinia'
 // functions starting with "update" -> actions
 export const useSensorStore = defineStore('sensors', () => {
   //state
-  const sensors = ref([]);
-  const allSensors = ref([]);
+  const sensors = ref([]); // variable to manipulate sensor data
+  const allSensors = ref([]); // state to hold all sensors
 
   const selectedGroup = ref(null);
   const selectedAssetTag = ref([]);
@@ -58,28 +58,47 @@ export const useSensorStore = defineStore('sensors', () => {
     // note: when we return true, sensor is still kept in the list
     sensors.value = allSensors.value.filter(sensor => {
       // filter for fill range
-      const hasFillRangeValues = selectedFillRange.value && sensor.fill_level;
-      const isWithinFillRange = sensor.fill_level >= selectedFillRange?.value[0] && sensor.fill_level <= selectedFillRange?.value[1];
-      const fillRangeFilter = hasFillRangeValues ? isWithinFillRange : true;
+      const fillRangeFilter = () => {
+        if (selectedFillRange.value && sensor.fill_level) {
+          return sensor.fill_level >= selectedFillRange?.value[0] && sensor.fill_level <= selectedFillRange?.value[1];
+        }
+        return true;
+      };
 
       // filter for group
-      const hasGroupValues = selectedGroup.value && sensor.group;
-      const groupFilter = hasGroupValues ? sensor.group === selectedGroup.value : true;
+      const groupFilter = () => {
+        if (selectedGroup.value && sensor.group) {
+          return sensor.group === selectedGroup.value;
+        }
+        return true;
+      };
 
       // filter for asset tag
-      const hasAssetTagValues = selectedAssetTag.value.length > 0 && sensor.asset_tag;
-      const assetTagFilter = hasAssetTagValues ? selectedAssetTag.value.includes(sensor.asset_tag) : true;
+      const assetTagFilter = () => {
+        if (selectedAssetTag.value && selectedAssetTag.value.length > 0 && sensor.asset_tag) {
+          return selectedAssetTag.value.includes(sensor.asset_tag);
+        }
+        return true;
+      };
 
       // filter for bintype
-      const hasBinTypeValues = selectedBinType.value && sensor.bin_type;
-      const binTypeFilter = hasBinTypeValues ? sensor.bin_type === selectedBinType.value : true;
+      const binTypeFilter = () => {
+        if (selectedBinType.value && sensor.bin_type) {
+          return sensor.bin_type === selectedBinType.value ;
+        }
+        return true;
+      };
 
       // filter for bin volume
-      const hasBinVolumeValues = selectedBinVolume.value && sensor.bin_volume;
-      const binVolumeFilter = hasBinVolumeValues ? sensor.bin_volume === selectedBinVolume.value : true;
+      const binVolumeFilter = () => {
+        if (selectedBinVolume.value && sensor.bin_volume) {
+          return sensor.bin_volume === selectedBinVolume.value;
+        }
+        return true;
+      };
       
       // combining results of all filters together
-      return fillRangeFilter && groupFilter && assetTagFilter && binTypeFilter && binVolumeFilter;
+      return fillRangeFilter() && groupFilter() && assetTagFilter() && binTypeFilter() && binVolumeFilter();
     })
   }
 
