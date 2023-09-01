@@ -101,19 +101,19 @@
         <span>{{ props.sensor.address_line1 }}</span>
         <span>{{ props.sensor.address_line2 }}</span>
       </div>
-      <div v-if="props.sensor.group" class="bin-details__group">
+      <div class="bin-details__group">
         <span class="font-weight-bold">Group</span>
         {{ props.sensor.group }}
       </div>
-      <div v-if="props.sensor.bin_type" class="bin-details__bin-type">
+      <div class="bin-details__bin-type">
         <span class="font-weight-bold">Bin type</span>
         {{ props.sensor.bin_type }}
       </div>
-      <div v-if="props.sensor.bin_volume" class="bin-details__bin-volume">
+      <div class="bin-details__bin-volume">
         <span class="font-weight-bold">Bin Volume: </span>
         {{ props.sensor.bin_volume }}
       </div>
-      <div v-if="props.sensor.asset_tag" class="bin-details__tag-list">
+      <div class="bin-details__tag-list">
         <span class="bin-details__tag-list-text">Tags:</span>
         <span class="bin-details__tag">{{ props.sensor.asset_tag }}</span>
       </div>
