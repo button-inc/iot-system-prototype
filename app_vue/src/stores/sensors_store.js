@@ -6,14 +6,19 @@ export const useSensorStore = defineStore('sensors', () => {
   const sensors = ref([]);
   const allSensors = ref([]);
 
-  const selectedGroup = ref('');
-  const selectedAssetTag = ref('');
-  const selectedBinType = ref('');
-  const selectedBinVolume = ref('');
+  const selectedGroup = ref(null);
+  const selectedAssetTag = ref([]);
+  const selectedBinType = ref(null);
+  const selectedBinVolume = ref(null);
   const selectedFillRange = ref([0,100]);
 
   function $reset() {
     sensors.value = allSensors.value;
+    selectedGroup.value = null;
+    selectedAssetTag.value = [];
+    selectedBinType.value = null;
+    selectedBinVolume.value = null;
+    selectedFillRange.value = null;
   }
 
   //setters
@@ -45,7 +50,7 @@ export const useSensorStore = defineStore('sensors', () => {
   function updateSensorsWithFilters() {
     // if user has selected a filter option, and that param is present in sensor data, confirm that they match
     // if they don't match, filter the sensor out (ie. return false)
-    // if sensor data is having a null param, keep the sensor (ie. why we return true for a filter by default)
+    // if sensor data is having a null param, keep the sensor (ie. return true by default)
     // note: when we return true, sensor is still kept in the list
     sensors.value = allSensors.value.filter(sensor => {
       // filter for fill range
@@ -58,8 +63,8 @@ export const useSensorStore = defineStore('sensors', () => {
       const groupFilter = hasGroupValues ? sensor.group === selectedGroup.value : true;
 
       // filter for asset tag
-      const hasAssetTagValues = selectedAssetTag.value && sensor.asset_tag;
-      const assetTagFilter = hasAssetTagValues ? sensor.asset_tag === selectedAssetTag.value : true;
+      const hasAssetTagValues = selectedAssetTag.value.length > 0 && sensor.asset_tag;
+      const assetTagFilter = hasAssetTagValues ? selectedAssetTag.value.includes(sensor.asset_tag) : true;
 
       // filter for bintype
       const hasBinTypeValues = selectedBinType.value && sensor.bin_type;
