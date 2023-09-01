@@ -67,6 +67,8 @@
     @include smallScreens {
       height: 100%;
       border-radius: 0 20px 20px 0;
+      position: absolute !important; // !important not normally rec, needed to override unique vuetify issue
+      left: 41px !important; // used to place two vuetify sidebars on top of one another
     }
 
     @include mediumScreens {
