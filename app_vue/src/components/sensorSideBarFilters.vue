@@ -81,35 +81,35 @@
       </v-range-slider>
     </div>
 
-    <v-select class="filter-list__dropdown"
+    <v-autocomplete class="filter-list__dropdown"
       v-model="state.selectedGroup"
       label="Group"
       :items="state.group"
       @update:modelValue="updateGroupFilter"
-    ></v-select>
+    ></v-autocomplete>
 
-    <v-select class="filter-list__dropdown"
+    <v-autocomplete class="filter-list__dropdown"
       v-model="state.selectedAssetTag"
       label="Asset Tag"
       chips
       multiple
       :items="state.assetTag"
       @update:modelValue="updateAssetTagFilter"
-    ></v-select>
+    ></v-autocomplete>
 
-    <v-select class="filter-list__dropdown"
+    <v-autocomplete class="filter-list__dropdown"
       v-model="state.selectedBinType"
       label="Bin Type"
       :items="state.binType"
       @update:modelValue="updateBinTypeFilter"
-    ></v-select>
+    ></v-autocomplete>
 
-    <v-select class="filter-list__dropdown"
+    <v-autocomplete class="filter-list__dropdown"
       v-model="state.selectedBinVolume"
       label="Bin Volume"
       :items="state.binVolume"
       @update:modelValue="updateBinVolumeFilter"
-    ></v-select>
+    ></v-autocomplete>
 
   </section>
 </template>
