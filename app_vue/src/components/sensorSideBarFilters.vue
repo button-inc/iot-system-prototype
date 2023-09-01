@@ -25,7 +25,8 @@
     assetTag: [],
     binType: [],
     binVolume: [],
-    totalSensors: 0
+    totalSensors: 0,
+    showFillLabel: false
   });
 
   // watching for store state updates and updating component variables
@@ -108,6 +109,9 @@
         :step="1"
         :max="thresholdRange[1]"
         :min="thresholdRange[0]"
+        :thumb-label="state.showFillLabel"
+        @mouseup="state.showFillLabel = false"
+        @mousedown="state.showFillLabel = true"
         @update:modelValue="updateFillRangeFilter">
         <template v-slot:thumb-label="{ modelValue }">
           {{modelValue}}%
