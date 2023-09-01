@@ -1,22 +1,55 @@
 <script setup>
-  import { reactive, ref } from 'vue'
+  import { reactive, ref, watch } from 'vue'
   import { useSensorStore } from '@/stores/sensors_store';
+  import { storeToRefs } from 'pinia';
 
   const thresholdRange = ref([0,100]);
+
+  // sensor store
   const sensorStore = useSensorStore();
-  
+  const { 
+    sensors, 
+    getAllGroupOptions,
+    getAllAssetTags,
+    getAllBinTypes,
+    getAllBinVolumes} = storeToRefs(sensorStore);
+
+  // component reactive variables
   const state = reactive({
     selectedGroup: null,
     selectedAssetTag: [],
     selectedBinType: null,
     selectedBinVolume: null,
     selectedFillRange: [0, 100],
-    group: sensorStore.getAllGroupOptions(),
-    assetTag: sensorStore.getAllAssetTags(),
-    binType: sensorStore.getAllBinTypes(),
-    binVolume: sensorStore.getAllBinVolumes(),
+    group: [],
+    assetTag: [],
+    binType: [],
+    binVolume: [],
+    totalSensors: 0
   });
 
+  // watching for store state updates and updating component variables
+  watch(sensors, () => {
+    state.totalSensors = sensorStore.getTotalSensors;
+  })
+
+  watch(getAllGroupOptions, () => {
+    state.group = sensorStore.getAllGroupOptions;
+  })
+
+  watch(getAllAssetTags, () => {
+    state.assetTag = sensorStore.getAllAssetTags;
+  })
+
+  watch(getAllBinTypes, () => {
+    state.binType = sensorStore.getAllBinTypes;
+  })
+
+  watch(getAllBinVolumes, () => {
+    state.binVolume = sensorStore.getAllBinVolumes;
+  })
+
+  // when change event is received from form, update sensor store
   function updateGroupFilter() {
     sensorStore.setSelectedGroup(state.selectedGroup);
     sensorStore.updateSensorsWithFilters();
@@ -43,9 +76,10 @@
   }
 
   function clearFilters() {
-    sensorStore.$reset();
+    sensorStore.clearSelected(); // clear store of selected values
+    // clear v-models in form
     state.selectedGroup = null;
-    state.selectedAssetTag = null;
+    state.selectedAssetTag = [];
     state.selectedBinType = null;
     state.selectedBinVolume = null;
     state.selectedFillRange = [0, 100];
@@ -56,11 +90,11 @@
 <template>
   <section class="filter-list">
     <div class="text-h6 padding-b-30 d-flex align-center">
-      <span>Filter Sensors ({{ sensorStore.getTotalSensors() }})</span> 
+      <span>Filter Sensors ({{ state.totalSensors }})</span> 
       <span class="mx-3">|</span>
       <v-btn variant="plain" color="#2196F3" class="pa-0 pt-1 text-capitalize" @click="clearFilters">Clear</v-btn>
     </div>
-
+    
     <div class="filter-list__fill-level">
       <div class="filter-list__label color-gray-grey">Fill Level Threshold</div>
       <v-range-slider class="filter-list__slider" 

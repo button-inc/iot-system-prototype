@@ -6,6 +6,7 @@
   import { useSensorStore } from '@/stores/sensors_store';
   import NavigationBar from '@/layout/navigationBar.vue';
   import axios from 'axios';
+  import { storeToRefs } from 'pinia';
 
   // config
   const alertThreshold = ref(50);
@@ -14,15 +15,15 @@
   
   // prepare sensor store
   const sensorStore = useSensorStore();
+  const { sensors } = storeToRefs(sensorStore);
   //sensorStore.setSensors(data.sensors); // Using MOCK data file
 
   // make api call to get sensors
-  const getLatestReadings = () => {
-    axios
-      .get('http://localhost:8080/latest_readings')
-      .then((response) => {
-        sensorStore.setSensors(response.data.sensors);
-      });
+  const getLatestReadings = async () => {
+    const response = await axios.get('http://localhost:8080/latest_readings');
+    if (response) {
+      sensorStore.setSensors(response.data.sensors);
+    }
   };
   
   onMounted(() => {
@@ -37,7 +38,7 @@
       
       <NavigationBar></NavigationBar>
       <SensorSidebar></SensorSidebar>
-      <SensorMap :sensors="sensorStore.sensors" 
+      <SensorMap :sensors="sensors" 
         :alertThreshold="alertThreshold"
         :filterThresholdMaximum="filterThresholdMaximum"
         :filterThresholdMinimum="filterThresholdMinimum">
