@@ -2,7 +2,7 @@
   import { ref } from 'vue';
   import SensorMap from '@/components/sensorMap.vue';
   import SensorSidebar from '@/components/sensorSidebar.vue';
-  import data from '@/data/sensorsMock.json';
+  import data from '@/data/latestReadingsMock.json';
   import { useSensorStore } from '@/stores/sensors_store';
   import NavigationBar from '@/layout/navigationBar.vue';
 
