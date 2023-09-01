@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  real_fake_sensors:
+    container_name: real-fake-sensors
+    build:
+      context: .
+      dockerfile: real_fake_sensors/Dockerfile
+    ports:
+      - "8081:8081"
+  sensational_sensors:
+    container_name: sensational-sensors
+    build:
+      context: .
+      dockerfile: sensational_sensors/Dockerfile
+    ports:
+      - "8082:8082"
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - real_fake_sensors
+      - sensational_sensors
+    environment:
+      - ENVIRONMENT=prod
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: app_vue/Dockerfile
+    ports:
+      - "80:3000"
+    depends_on:
+      - api
