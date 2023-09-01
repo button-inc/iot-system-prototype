@@ -13,7 +13,7 @@ export const useSensorStore = defineStore('sensors', () => {
   const selectedFillRange = ref([0,100]);
 
   function $reset() {
-    sensors.value = [];
+    sensors.value = allSensors.value;
   }
 
   //setters
@@ -43,23 +43,34 @@ export const useSensorStore = defineStore('sensors', () => {
   }
 
   function updateSensorsWithFilters() {
-    // TODO: accomodate null fill level
+    // if user has selected a filter option, and that param is present in sensor data, confirm that they match
+    // if they don't match, filter the sensor out (ie. return false)
+    // if sensor data is having a null param, keep the sensor (ie. why we return true for a filter by default)
+    // note: when we return true, sensor is still kept in the list
     sensors.value = allSensors.value.filter(sensor => {
-      const isFillRangeValid = selectedFillRange.value && sensor.fill_level;
+      // filter for fill range
+      const hasFillRangeValues = selectedFillRange.value && sensor.fill_level;
       const isWithinFillRange = sensor.fill_level >= selectedFillRange.value[0] && sensor.fill_level <= selectedFillRange.value[1];
-      const hasGroupValues = selectedGroup.value && sensor.group;
-      const hasAssetTagValues = selectedAssetTag.value && sensor.asset_tag;
-      const hasBinTypeValues = selectedBinType.value && sensor.bin_type;
-      const hasBinVolumeValues = selectedBinVolume.value && sensor.bin_volume;
+      const fillRangeFilter = hasFillRangeValues ? isWithinFillRange : true;
 
-      // if user has selected a filter option, and that param is present in sensor data, confirm that they match
-      // if they don't match, filter the sensor out (ie. return false)
-      // note: when we return true, sensor is still kept in the list
-      return isFillRangeValid ? isWithinFillRange : true
-        && hasGroupValues ? sensor.group === selectedGroup.value : true
-        && hasAssetTagValues ? sensor.asset_tag === selectedAssetTag.value : true
-        && hasBinTypeValues ? sensor.bin_type === selectedBinType.value : true
-        && hasBinVolumeValues ? sensor.bin_volume === selectedBinVolume.value : true;
+      // filter for group
+      const hasGroupValues = selectedGroup.value && sensor.group;
+      const groupFilter = hasGroupValues ? sensor.group === selectedGroup.value : true;
+
+      // filter for asset tag
+      const hasAssetTagValues = selectedAssetTag.value && sensor.asset_tag;
+      const assetTagFilter = hasAssetTagValues ? sensor.asset_tag === selectedAssetTag.value : true;
+
+      // filter for bintype
+      const hasBinTypeValues = selectedBinType.value && sensor.bin_type;
+      const binTypeFilter = hasBinTypeValues ? sensor.bin_type === selectedBinType.value : true;
+
+      // filter for bin volume
+      const hasBinVolumeValues = selectedBinVolume.value && sensor.bin_volume;
+      const binVolumeFilter = hasBinVolumeValues ? sensor.bin_volume === selectedBinVolume.value : true;
+      
+      // combining results of all filters together
+      return fillRangeFilter && groupFilter && assetTagFilter && binTypeFilter && binVolumeFilter;
     })
   }
 

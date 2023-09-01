@@ -43,7 +43,11 @@
 
 <template>
   <section class="filter-list">
-    <div class="text-h6 padding-b-30">Filter Sensors ({{ sensorStore.getTotalSensors() }})</div>
+    <div class="text-h6 padding-b-30 d-flex align-center">
+      <span>Filter Sensors ({{ sensorStore.getTotalSensors() }})</span> 
+      <span class="mx-3">|</span>
+      <v-btn variant="plain" color="#2196F3" class="pa-0 pt-1 text-capitalize" @click="sensorStore.$reset()">Clear</v-btn>
+    </div>
 
     <div class="filter-list__fill-level">
       <div class="filter-list__label color-gray-grey">Fill Level Threshold</div>
