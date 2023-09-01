@@ -29,8 +29,12 @@
     const isFullState = props.sensor.fill_level
       ? props.alertThreshold && props.sensor.fill_level > props.alertThreshold
       : false;
+    
+    const isErrorState = !props.sensor.fill_level;
 
-    if (isDefaultState) {
+    if (isErrorState) {
+      return 'error';
+    } else if (isDefaultState) {
       return 'default';
     } else if (isFullState) {
       return 'full';
