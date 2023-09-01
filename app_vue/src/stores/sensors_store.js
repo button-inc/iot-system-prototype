@@ -59,7 +59,7 @@ export const useSensorStore = defineStore('sensors', () => {
     sensors.value = allSensors.value.filter(sensor => {
       // filter for fill range
       const hasFillRangeValues = selectedFillRange.value && sensor.fill_level;
-      const isWithinFillRange = sensor.fill_level >= selectedFillRange.value[0] && sensor.fill_level <= selectedFillRange.value[1];
+      const isWithinFillRange = sensor.fill_level >= selectedFillRange?.value[0] && sensor.fill_level <= selectedFillRange?.value[1];
       const fillRangeFilter = hasFillRangeValues ? isWithinFillRange : true;
 
       // filter for group
