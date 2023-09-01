@@ -313,12 +313,8 @@ def get_latest_readings():
             brighterbins_sensor_to_basic_sensor_with_reading(bb_cache[id])
         )
 
-    latest_readings = {
-        "brighterBins": bb_readings,
-        "realFakeSensors": rfs_cache,
-        "sensationalSensors": ss_cache,
-    }
-    return latest_readings
+    latest_readings = bb_readings + rfs_cache + ss_cache
+    return {"sensors": latest_readings}
 
 
 # @app.put("/update_bb_name/{row_id}/")
