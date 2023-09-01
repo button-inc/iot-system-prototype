@@ -1,6 +1,10 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
+// this store is used to carry sensor data throughout our app
+// functions starting with "set" -> setters
+// functions starting with "get" -> getters
+// functions starting with "update" -> actions
 export const useSensorStore = defineStore('sensors', () => {
   //state
   const sensors = ref([]);
