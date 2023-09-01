@@ -1,15 +1,9 @@
 <script setup>
-  import { reactive, ref, watch, onMounted } from 'vue'
+  import { reactive, ref } from 'vue'
   import { useSensorStore } from '@/stores/sensors_store';
 
-
-
-
   const thresholdRange = ref([0,100]);
-
   const sensorStore = useSensorStore();
-
-  
   
   const state = reactive({
     selectedGroup: null,
