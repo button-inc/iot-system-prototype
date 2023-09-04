@@ -81,6 +81,7 @@
     justify-content: flex-start;
     align-items: center;
     padding: 17px 34px 31px 34px;
+    overflow: auto;
     
     @include smallScreens {
       height: 100%;

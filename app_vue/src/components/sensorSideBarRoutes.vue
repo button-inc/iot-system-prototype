@@ -15,11 +15,13 @@
 <template>
   <section class="routes-list">
     <div class="text-h6 padding-b-30">Routes</div>
-    <div class="py-6 px-4 routes-list__route-container">
+    <div class="py-4 px-4 routes-list__route-container">
+      <!-- no route present -->
       <span v-if="sensorRouteList && sensorRouteList.length === 0" 
         class="font-italic">
         No route to be displayed yet
       </span>
+      <!-- route is present -->
       <div v-else>
         <div class="d-flex align-center justify-space-between">
           <span>{{ sensorRouteList.length }} Bins </span>
@@ -40,6 +42,13 @@
               <span>{{ sensor.address_line2 }}</span>
             </div>
           </div>
+          <!-- TODO: placeholders -->
+          <v-btn class="pa-0" variant="plain">
+            Optimize route
+          </v-btn>
+          <v-btn class="pa-0" variant="plain">
+            Export route
+          </v-btn>
         </template>
       </div>
     </div>
@@ -53,7 +62,7 @@
     width: 100%;
 
     &__route-container {
-      border: 1px solid $black;
+      border: 1px solid $grey;
     }
 
     &__route {
