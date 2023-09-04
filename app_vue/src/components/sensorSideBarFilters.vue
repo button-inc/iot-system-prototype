@@ -12,7 +12,7 @@
     getAllGroupOptions,
     getAllAssetTags,
     getAllBinTypes,
-    getAllBinVolumes} = storeToRefs(sensorStore);
+    getAllBinVolumes } = storeToRefs(sensorStore);
 
   // component reactive variables
   const state = reactive({

@@ -4,12 +4,10 @@
   import 'leaflet/dist/leaflet.css'
   import { LMap, LTileLayer, LMarker, LControlZoom } from '@vue-leaflet/vue-leaflet'
   import { useDevice, DEVICE_SIZE } from '@/utils/screenSizeHelper';
+  import { useSensorStore } from '@/stores/sensors_store';
+  import { storeToRefs } from 'pinia';
 
   const props = defineProps({
-    sensors: {
-      type: Array,
-      required: true
-    },
     alertThreshold: {
       type: Number
     },
@@ -23,7 +21,8 @@
 
   const center = ref([43.7, -79.42]);
   const zoom = ref(10);
-
+  const sensorStore = useSensorStore();
+  const { sensors } = storeToRefs(sensorStore);
   const state = reactive({
     location: 'bottomright',
     device: useDevice()
@@ -54,15 +53,15 @@
       ></l-tile-layer>
 
       <l-marker
-        v-for="sensor in props.sensors"
+        v-for="sensor in sensors"
         :key="sensor.id"
         :lat-lng="[sensor.lat, sensor.long]"
       >
         <SensorMapMarker 
           :sensor="sensor"
-          :alertThreshold="alertThreshold"
-          :filterThresholdMaximum="filterThresholdMaximum"
-          :filterThresholdMinimum="filterThresholdMinimum">
+          :alertThreshold="props.alertThreshold"
+          :filterThresholdMaximum="props.filterThresholdMaximum"
+          :filterThresholdMinimum="props.filterThresholdMinimum">
         </SensorMapMarker>
       </l-marker>
     </l-map>
