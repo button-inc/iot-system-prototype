@@ -1,5 +1,6 @@
 <script setup>
   import SensorSideBarFilters from '@/components/sensorSideBarFilters.vue';
+  import SensorSideBarRoutes from '@/components/sensorSideBarRoutes.vue';
   import { useDevice, DEVICE_SIZE } from '@/utils/screenSizeHelper';
   import { reactive, onMounted } from 'vue'
 
@@ -38,10 +39,7 @@
 
         <SensorSideBarFilters></SensorSideBarFilters>
 
-        <section class="routes-list">
-          <div class="text-h6 padding-b-30">Routes</div>
-          <span class="font-italic">No routes to be displayed yet</span>
-        </section>
+        <SensorSideBarRoutes></SensorSideBarRoutes>
 
         <!-- Map Updated button -->
         <v-btn class="map-updated" variant="plain">
@@ -59,8 +57,7 @@
 </template>
 
 <style lang="scss" scoped>
-
-  :deep .v-navigation-drawer {
+ :deep .v-navigation-drawer {
     width: 255px;
     border-radius: 20px 20px 0 0;
     height: 40%;

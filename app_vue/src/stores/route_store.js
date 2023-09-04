@@ -5,7 +5,7 @@ export const useRouteStore = defineStore('route', {
     sensorRouteList: [] // list of sensor objects part of the route
   }),
   getters: {
-    getSensorRoute({sensorRouteList}) {
+    getSensorRouteList({sensorRouteList}) {
       return sensorRouteList;
     },
     getSensorRouteLatLong({sensorRouteList}) {
