@@ -1,6 +1,8 @@
 <script setup>
-  import { ref } from 'vue';
+  import { ref, watch } from 'vue';
   import { LPopup, LIcon } from '@vue-leaflet/vue-leaflet';
+  import { useRouteStore } from '@/stores/route_store';
+  import { storeToRefs } from 'pinia';
 
   const props = defineProps({
     sensor: {
@@ -16,9 +18,37 @@
     filterThresholdMinimum: {
       type: Number
     }
-  })
+  });
 
   const fillPercent = ref(Math.round(props.sensor.fill_level || 0));
+  const { iconUrl, linearProgressColor } = getIconAndProgressColor(getIconName());
+
+  const routeStore = useRouteStore();
+  const isAlreadyInRoute = ref(false);
+  const { getSensorRoute } = storeToRefs(routeStore);
+
+  // watch for changes in stored sensor route array (ie. when a sensor gets added or removed)
+  watch(getSensorRoute, () => {
+    if (routeStore.getSensorRoute.length > 0) {
+      isAlreadyInRoute.value = !!routeStore.getSensorRoute.find(bin => bin.id === props.sensor.id);
+    } else {
+      isAlreadyInRoute.value = false
+    }
+  }, { deep: true })
+
+  function addBinToRoute(sensor) {
+    // only add to route if not already added
+    if (isAlreadyInRoute.value === false) {
+      routeStore.addSensorToRoute(sensor);
+    }
+  }
+
+  function removeBinFromRoute(sensor) {
+    // only add to route if not already added
+    if (isAlreadyInRoute.value === true) {
+      routeStore.removeSensorFromRoute(sensor);
+    }
+  }
 
   function getIconName() {
     const isDefaultState = props.sensor.fill_level
@@ -42,7 +72,7 @@
     return 'healthy';
   }
 
-  const getIconAndProgressColor = (iconName) => {
+  function getIconAndProgressColor(iconName) {
     let iconUrl = ''
     let linearProgressColor = '';
     switch (iconName) {
@@ -64,8 +94,6 @@
     }
     return { iconUrl, linearProgressColor };
   }
-
-  const { iconUrl, linearProgressColor } = getIconAndProgressColor(getIconName());
 </script>
 
 <template>
@@ -116,6 +144,20 @@
       <div class="bin-details__tag-list">
         <span class="bin-details__tag-list-text">Tags:</span>
         <span class="bin-details__tag">{{ props.sensor.asset_tag }}</span>
+      </div>
+      <div class="bin-details__cta-routes">
+        <v-btn variant="flat"
+          class="mt-2 mb-2 text-capitalize"
+          color="#191A1C"
+          :disabled="isAlreadyInRoute"
+          @click="addBinToRoute(props.sensor)">
+          + Add to route
+        </v-btn>
+        <v-btn variant="tonal" v-if="isAlreadyInRoute"
+          class="mt-2 mb-2 text-capitalize"
+          @click="removeBinFromRoute(props.sensor)">
+          - Remove from route
+        </v-btn>
       </div>
     </section>
   </l-popup>
@@ -192,6 +234,7 @@
       height: 32px;
       min-width: 50px;
       background: #2196F3;
+      color: white;
       border-radius: 999px;
       padding: 0 10px;
       width: fit-content;
@@ -210,6 +253,10 @@
       flex-direction: column;
       margin-bottom: 6px;
       @include fontSubTitle2;
+    }
+
+    &__cta-routes button {
+      width: 194px;
     }
   }
 </style>

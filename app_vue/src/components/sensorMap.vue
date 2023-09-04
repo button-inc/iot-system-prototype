@@ -1,10 +1,11 @@
 <script setup>
-  import { reactive, ref, onMounted } from 'vue'
+  import { reactive, ref, onMounted, watch } from 'vue'
   import SensorMapMarker from '@/components/sensorMapMarker.vue';
   import 'leaflet/dist/leaflet.css'
-  import { LMap, LTileLayer, LMarker, LControlZoom } from '@vue-leaflet/vue-leaflet'
+  import { LMap, LTileLayer, LMarker, LControlZoom, LPolyline } from '@vue-leaflet/vue-leaflet'
   import { useDevice, DEVICE_SIZE } from '@/utils/screenSizeHelper';
   import { useSensorStore } from '@/stores/sensors_store';
+  import { useRouteStore } from '@/stores/route_store';
   import { storeToRefs } from 'pinia';
 
   const props = defineProps({
@@ -27,6 +28,14 @@
     location: 'bottomright',
     device: useDevice()
   });
+  const polyLineLatLngs = ref([]);
+
+  const routeStore = useRouteStore();
+  const { getSensorRouteLatLong } = storeToRefs(routeStore);
+
+  watch(getSensorRouteLatLong, () => {
+    polyLineLatLngs.value = routeStore.getSensorRouteLatLong;
+  }, { deep: true })
 
   onMounted(() => {
     positionZoom();
@@ -52,6 +61,7 @@
         layer-type="base"
         name="OpenStreetMap"
       ></l-tile-layer>
+      <l-polyline :lat-lngs="polyLineLatLngs"></l-polyline>
 
       <l-marker
         v-for="sensor in sensors"

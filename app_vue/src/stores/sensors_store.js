@@ -25,7 +25,7 @@ export const useSensorStore = defineStore('sensors', {
     },
     getAllBinVolumes({ allSensors }) {
       return [...new Set(allSensors.flatMap(sensor => sensor.bin_volume || []))];
-    },
+    }
   },
   actions: {
     clearSelected() {
