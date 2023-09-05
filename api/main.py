@@ -234,9 +234,6 @@ def sensational_sensor_list_to_basic_sensor_list(
 
 
 # 🔧 Function to convert TekelekSensor to BasicSensor
-import re
-
-
 def tkl_to_bs(sensor: TekelekSensor) -> BasicSensor:
     lat, long = None, None  # Default values in case of errors
 
@@ -255,46 +252,6 @@ def tkl_to_bs(sensor: TekelekSensor) -> BasicSensor:
                     long = float(match.group(2))
 
     except (AttributeError, TypeError, ValueError) as e:
-        print(f"Error while processing location data: {e}")
-
-    return BasicSensor(
-        id=sensor.ModemSerialNo,
-        sensor_type=SensorType.LIQUID_BIN_LEVEL,
-        fill_level=sensor.PercentFull if sensor.PercentFull is not None else None,
-        lat=lat,
-        long=long,
-        manufacturer=sensor.Make,
-        bin_name=sensor.Name,
-        address_line1=sensor.AddressLine1,
-        address_line2=sensor.AddressLine2,
-        group=sensor.Group,
-        bin_type=sensor.Material,
-        material_type=sensor.Substance,
-        asset_tag=sensor.Shape,
-        bin_volume=sensor.TheoreticalCapacity,
-    )
-
-    lat, long = 0.0, 0.0  # Default values in case of errors
-
-    try:
-        well_known_text = sensor.Location.get("Geography", {}).get(
-            "WellKnownText", None
-        )
-
-        if well_known_text and well_known_text.startswith("POINT"):
-            # Define a regular expression pattern to extract latitude and longitude
-            pattern = r"POINT \((-?\d+\.\d+) (-?\d+\.\d+)\)"
-
-            # Use re.search to find the latitude and longitude values
-            match = re.search(pattern, well_known_text)
-
-            if match:
-                # Extract latitude and longitude from the match object
-                lat = float(match.group(1))
-                long = float(match.group(2))
-
-    except (AttributeError, TypeError, ValueError) as e:
-        # Handle missing or incorrectly formatted data here
         print(f"Error while processing location data: {e}")
 
     return BasicSensor(
