@@ -31,6 +31,7 @@ app = FastAPI()
 
 # whitelist
 origins = [
+    "http://localhost:5173",
     "http://localhost:3000",
     "http://localhost:8081",
     "http://localhost:8082",

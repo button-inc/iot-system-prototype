@@ -14,6 +14,10 @@ RUN npm install
 # copy project files and folders to the current working directory (i.e. 'app' folder)
 COPY ./app_vue .
 
+# Declare build argument for VUE_APP_API_HOST and set it as an environment variable
+ARG VUE_APP_API_HOST
+ENV VUE_APP_API_HOST=${VUE_APP_API_HOST}
+
 # build app for production with minification
 RUN npm run build
 
