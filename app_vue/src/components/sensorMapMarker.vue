@@ -254,6 +254,9 @@
 
     &__cta-routes button {
       width: 184px;
+      @include smallScreens {
+        width: 224px;
+      }
     }
   }
 </style>
