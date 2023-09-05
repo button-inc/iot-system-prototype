@@ -20,7 +20,7 @@
     }
   })
 
-  const center = ref([43.7, -79.42]);
+  const center = ref([43.7, -79.42]); // TODO: update to possibly be user's current location
   const zoom = ref(10);
   const sensorStore = useSensorStore();
   const { sensors } = storeToRefs(sensorStore);
