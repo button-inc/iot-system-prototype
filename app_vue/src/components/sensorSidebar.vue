@@ -9,10 +9,11 @@
   });
 
   onMounted(() => {
-    window.addEventListener("resize", onWindowResize);
+    positionSidebar();
+    window.addEventListener("resize", positionSidebar);
   });
 
-  function onWindowResize() {
+  function positionSidebar() {
     state.device = useDevice();
     if (state.device.size === DEVICE_SIZE.s || state.device.size === DEVICE_SIZE.xs) {
       state.location = 'bottom';
