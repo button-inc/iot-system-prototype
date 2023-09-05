@@ -122,6 +122,7 @@
 </template>
 
 <style lang="scss" scoped>
+
   // custom css
   .popup {
     display: flex;

@@ -29,10 +29,11 @@
   });
 
   onMounted(() => {
-    window.addEventListener("resize", onWindowResize);
+    positionZoom();
+    window.addEventListener("resize", positionZoom);
   });
 
-  function onWindowResize() {
+  function positionZoom() {
     state.device = useDevice();
     if (state.device.size === DEVICE_SIZE.s || state.device.size === DEVICE_SIZE.xs) {
       state.location = 'topright';
