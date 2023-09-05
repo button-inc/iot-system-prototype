@@ -8,7 +8,7 @@
   import axios from 'axios';
 
   // config
-  const API_URL = process.env.VUE_APP_API_HOST || "http://localhost:8080";
+  const ENV_API_BASE_URL = process.env.VUE_APP_API_HOST || "http://localhost:8080";
   const alertThreshold = ref(50);
   const filterThresholdMaximum = ref(100);
   const filterThresholdMinimum = ref(0);
@@ -19,7 +19,7 @@
 
   // make api call to get sensors
   const getLatestReadings = async () => {
-    const response = await axios.get(API_URL + '/latest_readings');
+    const response = await axios.get(ENV_API_BASE_URL + '/latest_readings');
     if (response) {
       sensorStore.setSensors(response.data.sensors);
     }
