@@ -26,6 +26,19 @@ npm run build
 npm run lint
 ```
 
+### Running vue alongside Docker
+
+Terminal 1: (wait for this to complete)
+```
+// in repo root directory
+docker-compose up --build
+```
+
+Terminal 2: (custom script)
+```
+// in repo root directory
+bin/vueLocalDeploy.sh
+```
 
 ## Libraries Used
 ### Vuetify - Material UI Library
@@ -39,22 +52,24 @@ npm run lint
 
 ## Folder structure
 
-(Last Updated as of Aug 29,2023)
+(Last Updated as of Sep 5,2023)
+Note that all of these folders are under app_vue/:
 - src/assets -> holds images, stylesheets, fonts
 - components/shared -> holds components created for global use (ex. generalized button component)
 - components -> holds components pertaining to features that would be placed on our pages
 - data -> holds json mock data files
 - pages -> holds components loaded once on a per-route basis
 - router -> holds index.js which contains our configured routes (default is '/')
-- stores -> holds Vuex/Pinia stores for state management
+- stores -> holds Vuex aka Pinia stores for state management
+- layout -> holds layout based components (ie. navbar/header/footer)
 
 ## Recommended Coding Strategy
 
 ### CSS
 - we are using the BEM approach where possible
-- if a single vuetify class fulfills your need, go ahead and use that
-- don't combine a vuetify class with a custom class (ie. `class="text-subtitle-2 my-custom-class"`) , instead, nest the vuetify css attributes in your custom class (ie. `my-custom-class"`)
-- we have also added vuetify typography in our own mixins located in /assets/stylesheets/mixins
+- if a single vuetify class fulfills your need, go ahead and use that (for ex. https://vuetifyjs.com/en/styles/spacing/ )
+- if you can help it, opt for not combining a vuetify class with a custom class (ie. `class="text-subtitle-2 my-custom-class"`) , instead, nest the vuetify css attributes in your custom class (ie. `my-custom-class"`)
+- we have also added some of the vuetify typography in our own mixins located in /assets/stylesheets/mixins
   - you can feel free to use `@include <mixinName>` in your custom class to avoid rewriting repetitive code
 
 ## Recommended IDE Setup
