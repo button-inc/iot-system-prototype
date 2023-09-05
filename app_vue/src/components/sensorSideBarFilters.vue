@@ -18,7 +18,7 @@
   const state = reactive({
     selectedGroup: null,
     selectedAssetTag: [],
-    selectedBinType: null,
+    selectedBinType: [],
     selectedBinVolume: null,
     selectedFillRange: [0, 100],
     group: [],
@@ -138,6 +138,8 @@
     <v-autocomplete class="filter-list__dropdown"
       v-model="state.selectedBinType"
       label="Bin Type"
+      chips
+      multiple
       :items="state.binType"
       @update:modelValue="updateBinTypeFilter"
     ></v-autocomplete>

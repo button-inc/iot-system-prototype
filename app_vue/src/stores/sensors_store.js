@@ -6,7 +6,7 @@ export const useSensorStore = defineStore('sensors', {
     allSensors: [],
     selectedGroup: null,
     selectedAssetTag: [],
-    selectedBinType: null,
+    selectedBinType: [],
     selectedBinVolume: null,
     selectedFillRange: [0,100]
   }),
@@ -31,7 +31,7 @@ export const useSensorStore = defineStore('sensors', {
     clearSelected() {
       this.selectedGroup = null;
       this.selectedAssetTag = [];
-      this.selectedBinType = null;
+      this.selectedBinType = [];
       this.selectedBinVolume = null;
       this.selectedFillRange = [0, 100];
       this.updateSensorsWithFilters();
@@ -83,8 +83,8 @@ export const useSensorStore = defineStore('sensors', {
   
         // filter for bintype
         const binTypeFilter = () => {
-          if (this.selectedBinType && sensor.bin_type) {
-            return sensor.bin_type === this.selectedBinType ;
+          if (this.selectedBinType && this.selectedBinType.length > 0 && sensor.bin_type) {
+            return this.selectedBinType.includes(sensor.bin_type);
           }
           return true;
         };
