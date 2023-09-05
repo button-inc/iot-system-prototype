@@ -49,7 +49,7 @@ sensors = [
         "clientId": 1,
         "simCardNumber": "12344423",
         "connectivityProvider": "RFS inc",
-        "latest_sensors_data": None,
+        "latest_sensors_data": {"level": 61, "timestamp": 1691381304819},
         "latitude": 43.844880,
         "longitude": -80.057859,
         "bin_name": "Big Purple Bin",

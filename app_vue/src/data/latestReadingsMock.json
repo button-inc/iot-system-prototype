@@ -1,7 +1,23 @@
 {
-  "brighterBins": {},
-  "realFakeSensors": {
-    "1846567335": {
+  "total": 13,
+  "sensors": [
+    {
+      "id": "2453473454",
+      "sensor_type": "liquid bin level",
+      "fill_level": 10,
+      "lat": 43.84488,
+      "long": -80.057859,
+      "manufacturer": "Real Fake Sensors",
+      "bin_name": "Big Purple Bin",
+      "address_line1": "55 John St",
+      "address_line2": "Alton, ON L7K 0C4",
+      "group": "Alton East",
+      "bin_type": "EMW Cathedral Container 10yd",
+      "material_type": "Cardboard",
+      "asset_tag": "up",
+      "bin_volume": "small"
+    },
+    {
       "id": "1846567335",
       "sensor_type": "liquid bin level",
       "fill_level": 84,
@@ -17,25 +33,23 @@
       "asset_tag": "down",
       "bin_volume": "large"
     },
-    "2453473454": {
-      "id": "2453473454",
-      "sensor_type": "liquid bin level",
-      "fill_level": null,
-      "lat": 43.84488,
-      "long": -80.057859,
-      "manufacturer": "Real Fake Sensors",
-      "bin_name": "Big Purple Bin",
-      "address_line1": "55 John St",
-      "address_line2": "Alton, ON L7K 0C4",
-      "group": "Alton East",
+    {
+      "id": "564746584",
+      "sensor_type": "solid bin level",
+      "fill_level": 80,
+      "lat": 43.828165,
+      "long": -80.1,
+      "manufacturer": "Sensational Sensors",
+      "bin_name": "Big Blue Bin",
+      "address_line1": "19556 Mississauga Rd",
+      "address_line2": "Alton, ON L7K 1M5",
+      "group": "Alton North",
       "bin_type": "EMW Cathedral Container 10yd",
       "material_type": "Cardboard",
-      "asset_tag": "up",
-      "bin_volume": "small"
-    }
-  },
-  "sensationalSensors": {
-    "134563456": {
+      "asset_tag": "strange",
+      "bin_volume": "medium"
+    },
+    {
       "id": "134563456",
       "sensor_type": "solid bin level",
       "fill_level": 75,
@@ -51,23 +65,7 @@
       "asset_tag": "strange",
       "bin_volume": "small"
     },
-    "265434817": {
-      "id": "265434817",
-      "sensor_type": "solid bin level",
-      "fill_level": 40,
-      "lat": 43.351197,
-      "long": -79.347344,
-      "manufacturer": "Sensational Sensors",
-      "bin_name": "Cherry Bin",
-      "address_line1": "99473 Fruit Blvd",
-      "address_line2": "Bolton, ON L7E 0Y2",
-      "group": "Bolton South",
-      "bin_type": "EMW Cathedral Container 20yd",
-      "material_type": "Compost",
-      "asset_tag": "top",
-      "bin_volume": "small"
-    },
-    "265434931": {
+    {
       "id": "265434931",
       "sensor_type": "solid bin level",
       "fill_level": 65,
@@ -83,23 +81,7 @@
       "asset_tag": "charm",
       "bin_volume": "large"
     },
-    "265434933": {
-      "id": "265434933",
-      "sensor_type": "solid bin level",
-      "fill_level": 10,
-      "lat": 43.822397,
-      "long": -79.647344,
-      "manufacturer": "Sensational Sensors",
-      "bin_name": "Cheddar Bin",
-      "address_line1": "41234 Cheese Rd",
-      "address_line2": "Bolton, ON L7E 0Y2",
-      "group": "Bolton South",
-      "bin_type": "EMW Cathedral Container 10yd",
-      "material_type": "Plastic",
-      "asset_tag": "bottom",
-      "bin_volume": "small"
-    },
-    "265434945": {
+    {
       "id": "265434945",
       "sensor_type": "solid bin level",
       "fill_level": 25,
@@ -115,23 +97,23 @@
       "asset_tag": "up",
       "bin_volume": "medium"
     },
-    "265434991": {
-      "id": "265434991",
+    {
+      "id": "265434933",
       "sensor_type": "solid bin level",
-      "fill_level": 90,
-      "lat": 43.991197,
-      "long": -79.887344,
+      "fill_level": 10,
+      "lat": 43.822397,
+      "long": -79.647344,
       "manufacturer": "Sensational Sensors",
-      "bin_name": "Corn Bin",
-      "address_line1": "513 Cow Rd",
+      "bin_name": "Cheddar Bin",
+      "address_line1": "41234 Cheese Rd",
       "address_line2": "Bolton, ON L7E 0Y2",
       "group": "Bolton South",
-      "bin_type": "EMW Cathedral Container 20yd",
-      "material_type": "Compost",
-      "asset_tag": "top",
-      "bin_volume": "large"
+      "bin_type": "EMW Cathedral Container 10yd",
+      "material_type": "Plastic",
+      "asset_tag": "bottom",
+      "bin_volume": "small"
     },
-    "265435142": {
+    {
       "id": "265435142",
       "sensor_type": "solid bin level",
       "fill_level": 40,
@@ -147,21 +129,85 @@
       "asset_tag": "strange",
       "bin_volume": "medium"
     },
-    "564746584": {
-      "id": "564746584",
+    {
+      "id": "265434817",
       "sensor_type": "solid bin level",
-      "fill_level": 80,
-      "lat": 43.828165,
-      "long": -80.1,
+      "fill_level": 40,
+      "lat": 43.351197,
+      "long": -79.347344,
       "manufacturer": "Sensational Sensors",
-      "bin_name": "Big Blue Bin",
-      "address_line1": "19556 Mississauga Rd",
-      "address_line2": "Alton, ON L7K 1M5",
-      "group": "Alton North",
-      "bin_type": "EMW Cathedral Container 10yd",
-      "material_type": "Cardboard",
-      "asset_tag": "strange",
-      "bin_volume": "medium"
+      "bin_name": "Cherry Bin",
+      "address_line1": "99473 Fruit Blvd",
+      "address_line2": "Bolton, ON L7E 0Y2",
+      "group": "Bolton South",
+      "bin_type": "EMW Cathedral Container 20yd",
+      "material_type": "Compost",
+      "asset_tag": "top",
+      "bin_volume": "small"
+    },
+    {
+      "id": "265434991",
+      "sensor_type": "solid bin level",
+      "fill_level": 90,
+      "lat": 43.991197,
+      "long": -79.887344,
+      "manufacturer": "Sensational Sensors",
+      "bin_name": "Corn Bin",
+      "address_line1": "513 Cow Rd",
+      "address_line2": "Bolton, ON L7E 0Y2",
+      "group": "Bolton South",
+      "bin_type": "EMW Cathedral Container 20yd",
+      "material_type": "Compost",
+      "asset_tag": "top",
+      "bin_volume": "large"
+    },
+    {
+      "id": "30C2BD3DA32F8EE4",
+      "sensor_type": "solid bin level",
+      "fill_level": 14,
+      "lat": 43.78538968,
+      "long": -79.36672013,
+      "manufacturer": "BrighterBins",
+      "bin_name": "Leslie Park",
+      "address_line1": "5200 Leslie St, North York, ON M2J 2M4",
+      "address_line2": null,
+      "group": null,
+      "bin_type": "Standard park bin",
+      "material_type": "Mixed waste",
+      "asset_tag": "",
+      "bin_volume": ""
+    },
+    {
+      "id": "8CD9834D4694893F",
+      "sensor_type": "solid bin level",
+      "fill_level": 10,
+      "lat": 43.78154777,
+      "long": -79.35045521,
+      "manufacturer": "BrighterBins",
+      "bin_name": "Don Mills Park",
+      "address_line1": "2975 Don Mills Rd W, Toronto, ON",
+      "address_line2": null,
+      "group": null,
+      "bin_type": "Standard park bin",
+      "material_type": "Mixed waste",
+      "asset_tag": "",
+      "bin_volume": ""
+    },
+    {
+      "id": "AE2CD5631BC0EC2D",
+      "sensor_type": "solid bin level",
+      "fill_level": 10,
+      "lat": 43.80861421,
+      "long": -79.35467147,
+      "manufacturer": "BrighterBins",
+      "bin_name": "Cliffwood Park",
+      "address_line1": "280 Cliffwood Rd, North York, ON M2H 2S7",
+      "address_line2": null,
+      "group": null,
+      "bin_type": "Standard park bin",
+      "material_type": "Mixed waste",
+      "asset_tag": "",
+      "bin_volume": ""
     }
-  }
+  ]
 }

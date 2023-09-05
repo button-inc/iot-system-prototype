@@ -19,6 +19,7 @@ export default defineConfig({
         additionalData: `
           @import "@/assets/stylesheets/variables";
           @import "@/assets/stylesheets/mixins";
+          @import "@/assets/stylesheets/functions";
         `
       }
     }

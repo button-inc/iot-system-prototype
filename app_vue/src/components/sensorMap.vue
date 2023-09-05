@@ -1,14 +1,13 @@
 <script setup>
-  import { ref } from 'vue'
+  import { reactive, ref, onMounted } from 'vue'
   import SensorMapMarker from '@/components/sensorMapMarker.vue';
   import 'leaflet/dist/leaflet.css'
   import { LMap, LTileLayer, LMarker, LControlZoom } from '@vue-leaflet/vue-leaflet'
+  import { useDevice, DEVICE_SIZE } from '@/utils/screenSizeHelper';
+  import { useSensorStore } from '@/stores/sensors_store';
+  import { storeToRefs } from 'pinia';
 
   const props = defineProps({
-    sensors: {
-      type: Array,
-      required: true
-    },
     alertThreshold: {
       type: Number
     },
@@ -22,12 +21,32 @@
 
   const center = ref([43.7, -79.42]);
   const zoom = ref(10);
+  const sensorStore = useSensorStore();
+  const { sensors } = storeToRefs(sensorStore);
+  const state = reactive({
+    location: 'bottomright',
+    device: useDevice()
+  });
+
+  onMounted(() => {
+    positionZoom();
+    window.addEventListener("resize", positionZoom);
+  });
+
+  function positionZoom() {
+    state.device = useDevice();
+    if (state.device.size === DEVICE_SIZE.s || state.device.size === DEVICE_SIZE.xs) {
+      state.location = 'topright';
+    } else {
+      state.location = 'bottomright';
+    }
+  }
 </script>
 
 <template>
   <div v-if="sensors" class="sensor-map-container">
     <l-map ref="map" v-model:zoom="zoom" :use-global-leaflet="false" :center="center" :options="{zoomControl: false}">
-      <l-control-zoom position="bottomright"/>
+      <l-control-zoom :position="state.location"/>
       <l-tile-layer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         layer-type="base"
@@ -35,15 +54,15 @@
       ></l-tile-layer>
 
       <l-marker
-        v-for="sensor in props.sensors"
+        v-for="sensor in sensors"
         :key="sensor.id"
         :lat-lng="[sensor.lat, sensor.long]"
       >
         <SensorMapMarker 
           :sensor="sensor"
-          :alertThreshold="alertThreshold"
-          :filterThresholdMaximum="filterThresholdMaximum"
-          :filterThresholdMinimum="filterThresholdMinimum">
+          :alertThreshold="props.alertThreshold"
+          :filterThresholdMaximum="props.filterThresholdMaximum"
+          :filterThresholdMinimum="props.filterThresholdMinimum">
         </SensorMapMarker>
       </l-marker>
     </l-map>
@@ -51,10 +70,23 @@
 </template>
 
 <style lang="scss" scoped>
+  // leaflet css override
+  :deep .leaflet-popup-content-wrapper {
+    width: 300px;
+    height: 300px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+
+    @include smallScreens {
+      width: inherit;
+      height: inherit;
+    }
+  }
+
+  // custom css
   .sensor-map-container {
     width: 100%;
-    height: calc(100vh - 65px);
-    margin-top: 64px;
+    height: 100vh;
 
     // leaflet library popup close button override
     :deep .leaflet-container a.leaflet-popup-close-button{
