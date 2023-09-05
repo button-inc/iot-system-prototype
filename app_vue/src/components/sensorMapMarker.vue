@@ -127,6 +127,11 @@
   .popup {
     display: flex;
     align-items: flex-start;
+    width: 250px;
+
+    @include smallScreens {
+      width: inherit;
+    }
 
     &__sidebar {
       display: flex;

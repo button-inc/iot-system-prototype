@@ -70,6 +70,20 @@
 </template>
 
 <style lang="scss" scoped>
+  // leaflet css override
+  :deep .leaflet-popup-content-wrapper {
+    width: 300px;
+    height: 300px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+
+    @include smallScreens {
+      width: inherit;
+      height: inherit;
+    }
+  }
+
+  // custom css
   .sensor-map-container {
     width: 100%;
     height: 100vh;
