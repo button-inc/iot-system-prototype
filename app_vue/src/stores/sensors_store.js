@@ -8,7 +8,8 @@ export const useSensorStore = defineStore('sensors', {
     selectedAssetTag: [],
     selectedBinType: [],
     selectedBinVolume: null,
-    selectedFillRange: [0,100]
+    selectedFillRange: [0,100],
+    selectedMaterialType: []
   }),
   getters: {
     getTotalSensors({ sensors }) {
@@ -25,6 +26,9 @@ export const useSensorStore = defineStore('sensors', {
     },
     getAllBinVolumes({ allSensors }) {
       return [...new Set(allSensors.flatMap(sensor => sensor.bin_volume || []))];
+    },
+    getAllMaterialTypes({ allSensors }) {
+      return [...new Set(allSensors.flatMap(sensor => sensor.material_type || []))];
     }
   },
   actions: {
@@ -34,6 +38,7 @@ export const useSensorStore = defineStore('sensors', {
       this.selectedBinType = [];
       this.selectedBinVolume = null;
       this.selectedFillRange = [0, 100];
+      this.selectedMaterialType = [];
       this.updateSensorsWithFilters();
     },
     setSensors(value) {
@@ -54,6 +59,9 @@ export const useSensorStore = defineStore('sensors', {
     },
     setSelectedFillRange(fillRange) {
       this.selectedFillRange = fillRange;
+    },
+    setSelectedMaterialType(materialType) {
+      this.selectedMaterialType = materialType;
     },
     updateSensorsWithFilters() {
       this.sensors = this.allSensors.filter(sensor => {
@@ -96,9 +104,17 @@ export const useSensorStore = defineStore('sensors', {
           }
           return true;
         };
-        
+
+        // filter for materialType
+        const materialTypeFilter = () => {
+          if (this.selectedMaterialType && this.selectedMaterialType.length > 0 && sensor.material_type) {
+            return this.selectedMaterialType.includes(sensor.material_type);
+          }
+          return true;
+        };
+
         // combining results of all filters together
-        return fillRangeFilter() && groupFilter() && assetTagFilter() && binTypeFilter() && binVolumeFilter();
+        return fillRangeFilter() && groupFilter() && assetTagFilter() && binTypeFilter() && binVolumeFilter() && materialTypeFilter();
       })
     }
   },

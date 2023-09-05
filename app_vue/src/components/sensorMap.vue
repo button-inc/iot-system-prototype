@@ -80,7 +80,14 @@
 </template>
 
 <style lang="scss" scoped>
-  // leaflet css override
+  // leaflet css override for mobile views
+  :deep .leaflet-popup-content {
+    margin: 13px 0 13px 0;
+
+    @include smallScreens {
+      margin: 20px;
+    }
+  }
   :deep .leaflet-popup-content-wrapper {
     width: 300px;
     height: 300px;

@@ -21,7 +21,7 @@
   });
 
   const fillPercent = ref(Math.round(props.sensor.fill_level || 0));
-  const { iconUrl, linearProgressColor } = getIconAndProgressColor(getIconName());
+  const { iconUrl, linearProgressColor } = getIconAndProgressColor(getBinIconName());
 
   const routeStore = useRouteStore();
   const isAlreadyInRoute = ref(false);
@@ -50,7 +50,7 @@
     }
   }
 
-  function getIconName() {
+  function getBinIconName() {
     const isDefaultState = props.sensor.fill_level
       ? props.sensor.fill_level < props.filterThresholdMinimum 
       || props.sensor.fill_level > props.filterThresholdMaximum
@@ -60,16 +60,16 @@
       ? props.alertThreshold && props.sensor.fill_level > props.alertThreshold
       : false;
     
-    const isErrorState = !props.sensor.fill_level;
+    const isErrorState = props.sensor.error;
 
-    if (isErrorState) {
+    if (isErrorState) { // shows error icon
       return 'error';
-    } else if (isDefaultState) {
+    } else if (isDefaultState) { // filtered out state TODO: remove
       return 'default';
-    } else if (isFullState) {
+    } else if (isFullState) { // shows red bin
       return 'full';
     }
-    return 'healthy';
+    return 'healthy'; // shows green bin
   }
 
   function getIconAndProgressColor(iconName) {
@@ -100,6 +100,44 @@
   <l-icon :icon-size="[25, 25]" :icon-anchor="[13, 0]" :icon-url="iconUrl" />
 
   <l-popup class="popup">
+    <section class="bin-details">
+      <span class="text-h6">{{ props.sensor.bin_name }}</span>
+      <div class="bin-details__address color-cyan-blue">
+        <span>{{ props.sensor.address_line1 }}</span>
+        <span>{{ props.sensor.address_line2 }}</span>
+      </div>
+      <div class="bin-details__group">
+        <span class="color-gray-grey">Group</span>
+        {{ props.sensor.group }}
+      </div>
+      <div class="bin-details__bin-type">
+        <span class="color-gray-grey">Bin type</span>
+        {{ props.sensor.bin_type }}
+      </div>
+      <div class="bin-details__bin-volume">
+        <span class="color-gray-grey">Bin Volume: </span>
+        {{ props.sensor.bin_volume }}
+      </div>
+      <div class="bin-details__tag-list">
+        <span class="bin-details__tag-list-text">Tags:</span>
+        <span class="bin-details__tag">{{ props.sensor.asset_tag }}</span>
+      </div>
+      <div class="bin-details__cta-routes">
+        <v-btn variant="flat"
+          class="mt-2 mb-2"
+          color="#191A1C"
+          :disabled="isAlreadyInRoute"
+          @click="addBinToRoute(props.sensor)">
+          + Add to route
+        </v-btn>
+        <v-btn variant="tonal" v-if="isAlreadyInRoute"
+          class="mt-2 mb-2"
+          @click="removeBinFromRoute(props.sensor)">
+          - Remove from route
+        </v-btn>
+      </div>
+    </section>
+
     <section class="popup__sidebar">
       <div class="fill-level">
         <template v-if="fillPercent === null">level not captured</template>
@@ -118,46 +156,6 @@
       <div class="material-type">
         <img class="material-type__image" src="@/assets/images/open-box.png"/>
         <span class="material-type__description">{{ props.sensor.material_type }}</span>
-      </div>
-    </section>
-
-
-    <section class="bin-details">
-      <span class="text-h6">{{ props.sensor.bin_name }}</span>
-      <span class="text-subtitle-2">ID: {{ props.sensor.id }}</span>
-      <div class="bin-details__address">
-        <span>{{ props.sensor.address_line1 }}</span>
-        <span>{{ props.sensor.address_line2 }}</span>
-      </div>
-      <div class="bin-details__group">
-        <span class="font-weight-bold">Group</span>
-        {{ props.sensor.group }}
-      </div>
-      <div class="bin-details__bin-type">
-        <span class="font-weight-bold">Bin type</span>
-        {{ props.sensor.bin_type }}
-      </div>
-      <div class="bin-details__bin-volume">
-        <span class="font-weight-bold">Bin Volume: </span>
-        {{ props.sensor.bin_volume }}
-      </div>
-      <div class="bin-details__tag-list">
-        <span class="bin-details__tag-list-text">Tags:</span>
-        <span class="bin-details__tag">{{ props.sensor.asset_tag }}</span>
-      </div>
-      <div class="bin-details__cta-routes">
-        <v-btn variant="flat"
-          class="mt-2 mb-2 text-capitalize"
-          color="#191A1C"
-          :disabled="isAlreadyInRoute"
-          @click="addBinToRoute(props.sensor)">
-          + Add to route
-        </v-btn>
-        <v-btn variant="tonal" v-if="isAlreadyInRoute"
-          class="mt-2 mb-2 text-capitalize"
-          @click="removeBinFromRoute(props.sensor)">
-          - Remove from route
-        </v-btn>
       </div>
     </section>
   </l-popup>
@@ -233,16 +231,15 @@
       justify-content: center;
       height: 32px;
       min-width: 50px;
-      background: #2196F3;
-      color: white;
+      background: rgba(0, 0, 0, 0.08);
       border-radius: 999px;
       padding: 0 10px;
       width: fit-content;
     }
 
     &__tag-list-text {
-      font-weight: 700;
       margin-bottom: 6px;
+      color: $grey;
     }
 
     &__tag-list,
@@ -256,7 +253,7 @@
     }
 
     &__cta-routes button {
-      width: 194px;
+      width: 184px;
     }
   }
 </style>
