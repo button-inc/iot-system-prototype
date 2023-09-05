@@ -34,5 +34,7 @@ services:
       dockerfile: app_vue/Dockerfile
     ports:
       - "80:5173"
+    environment:
+      - VUE_APP_API_HOST=http://api:8080
     depends_on:
       - api

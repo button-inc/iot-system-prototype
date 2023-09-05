@@ -18,6 +18,6 @@ sudo -s
 git pull origin develop
 
 # Build and start the Docker containers using docker-compose
-docker-compose --file prod.docker-compose.yml up --build -d 
+docker-compose --file prod.docker-compose.yml up --build 
 
 EOF
