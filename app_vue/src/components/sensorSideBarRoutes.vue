@@ -36,9 +36,6 @@
         <div class="d-flex align-center justify-space-between">
           <span>{{ sensorRouteList.length }} Bins </span>
           <div>
-            <v-btn class="pl-0" variant="plain" @click="routeStore.clearSensorRoute">
-              <vue-feather type="trash-2"></vue-feather>
-            </v-btn>
             <v-btn class="pa-0" variant="plain" @click="isOpen = !isOpen">
               <vue-feather :type="isOpen ? 'chevron-up':'chevron-down'"></vue-feather>
             </v-btn>
@@ -53,12 +50,20 @@
             </div>
           </div>
           <!-- TODO: placeholders -->
-          <v-btn class="pa-0" variant="plain" :disabled="!isOptimizeRouteEnabled" @click="optimizeRouteClicked">
-            Optimize route
-          </v-btn>
-          <v-btn class="pa-0" variant="plain">
-            Export route
-          </v-btn>
+          <div class="d-flex align-center justify-space-between">
+            <div>
+              <v-btn class="pa-0" variant="plain" :disabled="!isOptimizeRouteEnabled" @click="optimizeRouteClicked">
+                Optimize route
+              </v-btn>
+              <v-btn class="pa-0" variant="plain">
+                Export route
+              </v-btn>
+            </div>
+            <v-btn class="pl-0 align-self-end" variant="plain" @click="routeStore.clearSensorRoute">
+              <vue-feather type="trash-2"></vue-feather>
+            </v-btn>
+          </div>
+
         </template>
       </div>
     </div>
