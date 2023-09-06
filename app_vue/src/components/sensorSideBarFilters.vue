@@ -105,6 +105,7 @@
     state.selectedBinType = null;
     state.selectedBinVolume = null;
     state.selectedFillRange = [0, 100];
+    state.selectedMaterialType = [];
   }
 
 </script>
