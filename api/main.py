@@ -133,6 +133,7 @@ class BrighterBinsSensorReading(BaseModel):
 # 📝 Model to represent a BrighterBinsSensor
 class BrighterBinsSensor(BaseModel):
     id: str
+    row_id: int | None
     readings: list[BrighterBinsSensorReading] | None
     is_extended_uplink: int
     manufacturer: str
@@ -196,15 +197,16 @@ def rfs_to_bs(sensor: RealFakeSensor) -> BasicSensor:
     )
 
 
-# 🔧 Function to convert RealFakeSensor dictionary to BasicSensor dictionary
-def rfs_dict_to_bs_dict(
+# 🔧 Function to convert RealFakeSensor dictionary to BasicSensor list
+def rfs_dict_to_bs_list(
     sensors: dict[str, RealFakeSensor | None]
-) -> dict[str, BasicSensor | None]:
-    bs_dict = {}
+) -> list[BasicSensor | None]:
+    bs_list = []
     for index, sensor_id in enumerate(sensors):
         if sensor_id in sensors:
-            bs_dict[sensor_id] = rfs_to_bs(sensors[sensor_id])
-    return bs_dict
+            bs_list.append(rfs_to_bs(sensors[sensor_id]))
+
+    return bs_list
 
 
 # 🔧 Function to convert SensationalSensor to BasicSensor
@@ -227,10 +229,16 @@ def sensational_sensor_to_basic_sensor(sensor: SensationalSensor) -> BasicSensor
     )
 
 
-def sensational_sensor_list_to_basic_sensor_list(
-    sensors: list[SensationalSensor],
-) -> list[BasicSensor]:
-    return [sensational_sensor_to_basic_sensor(sensor) for sensor in sensors]
+# 🔧 Function to convert SensationalSensor dictionary to BasicSensor list
+def ss_dict_to_bs_list(
+    sensors: dict[str, SensationalSensor | None]
+) -> list[BasicSensor | None]:
+    bs_list = []
+    for index, sensor_id in enumerate(sensors):
+        if sensor_id in sensors:
+            bs_list.append(sensational_sensor_to_basic_sensor(sensors[sensor_id]))
+
+    return bs_list
 
 
 # 🔧 Function to convert TekelekSensor to BasicSensor
@@ -254,7 +262,7 @@ def tkl_to_bs(sensor: TekelekSensor) -> BasicSensor:
     except (AttributeError, TypeError, ValueError) as e:
         print(f"Error while processing location data: {e}")
 
-    return BasicSensor(
+    bs = BasicSensor(
         id=sensor.ModemSerialNo,
         sensor_type=SensorType.LIQUID_BIN_LEVEL,
         fill_level=sensor.PercentFull if sensor.PercentFull is not None else None,
@@ -270,16 +278,18 @@ def tkl_to_bs(sensor: TekelekSensor) -> BasicSensor:
         asset_tag=sensor.Shape,
         bin_volume=sensor.TheoreticalCapacity,
     )
+    return bs
 
 
 # 🔧 Function to convert TeklekSensor dictionary to BasicSensor dictionary
 def tkl_dict_to_bs_dict(sensors: List[Dict[str, Union[str, int, float, None]]]) -> dict:
     bs_dict = {}
     # loop to iterate through each obj in the TekelekSensor list
-    for index, sensor_data in enumerate(sensors):
+    for sensor_data in sensors:
         try:
             # create a TekelekSensor object (sensor_obj) by passing the dictionary sensor_data as keyword argument
             sensor_obj = TekelekSensor(**sensor_data)
+
             # print(f"sensor_obj : {sensor_obj }")
             # convert the TekelekSensor into a BasicSensor and store it in the bs_dict dictionary.
             bs_dict[sensor_obj.ModemSerialNo] = tkl_to_bs(sensor_obj)
@@ -414,9 +424,9 @@ def make_http_request(url, method="GET", headers=None, params=None, data=None):
 
 
 # Caches for sensor data
-rfs_cache = {}
+rfs_cache = []
 ss_cache = []
-bb_cache = []
+bb_cache = {}
 last_run_timestamp = 0
 tkl_cache = {}
 
@@ -429,11 +439,11 @@ def set_rfs_and_ss_cache():
     # Convert the sensors to the common "BasicSensor" type and cache their values
     # rfs and ss are mock so they have a simple case, we can fetch once and never again, they won't change.
     rfs_response = requests.get(REAL_FAKE_SENSORS_BASE_URL + "/sensors").json()
-    rfs_as_bs = rfs_list_to_bs_list(rfs_response["sensors"])
+    rfs_as_bs = rfs_dict_to_bs_list(rfs_response)
     rfs_cache = rfs_as_bs
     # print(f"rfs_cache: {rfs_cache}")
     ss_response = requests.get(SENSATIONAL_SENSORS_BASE_URL + "/sensors").json()
-    ss_cache = sensational_sensor_list_to_basic_sensor_list(ss_response["sensors"])
+    ss_cache = ss_dict_to_bs_list(ss_response)
     return
 
 
@@ -522,7 +532,7 @@ def update_bb_cache() -> None:
 
     # fully populate bb_cache if this is the first time this is being run
     if last_run_timestamp == 0:
-        print("Fetching initial data...")
+        print("BrighterBins cache: Fetching initial data...")
         readingsEndTime = round(time.time() * 1000)
         # start around July 28, for no particular reason
         readingsStartTime = 1690592310000
@@ -589,14 +599,20 @@ def update_bb_cache() -> None:
 def get_latest_readings():
     global rfs_cache
     global ss_cache
+    global bb_cache
+    global tkl_cache
 
     bb_readings = []
-    for id in bb_cache:
+    for index, sensor in enumerate(bb_cache):
         bb_readings.append(
-            brighterbins_sensor_to_basic_sensor_with_reading(bb_cache[id])
+            brighterbins_sensor_to_basic_sensor_with_reading(bb_cache[sensor])
         )
 
-    latest_readings = bb_readings + rfs_cache + ss_cache + tkl_cache
+    tkl_readings = []
+    for index, sensor in enumerate(tkl_cache):
+        tkl_readings.append(tkl_cache[sensor])
+
+    latest_readings = bb_readings + rfs_cache + ss_cache + tkl_readings
     return {"sensors": latest_readings}
 
 
