@@ -38,6 +38,8 @@ origins = [
     "http://0.0.0.0:8081",
     "http://0.0.0.0:8082",
     "http://wav.button.build",
+    "http://34.123.69.225/",
+    "http://34.123.69.225:80"
 ]
 
 app.add_middleware(
