@@ -3,7 +3,8 @@
   import { useRouteStore } from '@/stores/route_store';
   import { storeToRefs } from 'pinia';
   import { v4 as uuidv4 } from 'uuid';
-  
+  import { getOptimizedRoute } from '@/utils/screenSizeHelper';
+
   const routeStore = useRouteStore();
   const { sensorRouteList, getEnableOptimizeRoute } = storeToRefs(routeStore);
   const isOptimizeRouteEnabled = ref(true);
@@ -13,11 +14,12 @@
     isOptimizeRouteEnabled.value = routeStore.getEnableOptimizeRoute;
   })
 
-  function optimizeRouteClicked() {
+  async function optimizeRouteClicked() {
     // update status of optimize route button to be disabled after first click
-    routeStore.setEnableOptimizedRoute(false);
+    //routeStore.setEnableOptimizedRoute(false);
 
     // TODO: add call to google api
+    await getOptimizedRoute();
   }
 
   function exportRouteClicked() {
@@ -92,9 +94,9 @@
             }">
             <div v-if="sensorRouteList && sensorRouteList.length > 1">
               <!-- TODO: add back optimize route button alongside google api implementation -->
-              <!-- <v-btn class="pa-0" variant="plain" :disabled="!isOptimizeRouteEnabled" @click="optimizeRouteClicked">
+              <v-btn class="pa-0" variant="plain" :disabled="!isOptimizeRouteEnabled" @click="optimizeRouteClicked">
                 Optimize route
-              </v-btn> -->
+              </v-btn>
               <v-btn class="pa-0 routes-list__export" variant="plain" @click="exportRouteClicked">
                 Export route
                 <vue-feather type="upload"></vue-feather>
