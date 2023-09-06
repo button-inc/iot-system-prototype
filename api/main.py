@@ -2,6 +2,7 @@
 from enum import Enum
 import re
 import time
+import traceback
 import requests
 
 import gspread
@@ -52,8 +53,6 @@ origins = [
     "http://0.0.0.0:8081",
     "http://0.0.0.0:8082",
     "http://wav.button.build",
-    "http://34.123.69.225/",
-    "http://34.123.69.225:80"
 ]
 
 # 🔑 Add CORS middleware to the application
@@ -169,6 +168,8 @@ class TekelekSensor(BaseModel):
     DateLastModified: Optional[str]
     Note: Optional[str]
     Location: Optional[dict] = None
+
+
     ContainerType: str
     OrderTriggerPercentage: str
     Group: Optional[str] = (None,)
@@ -179,24 +180,29 @@ class TekelekSensor(BaseModel):
 
 # 🔧 Function to convert RealFakeSensor to BasicSensor
 def rfs_to_bs(sensor: RealFakeSensor) -> BasicSensor:
-    return BasicSensor(
-        id=sensor["sensorsID"],
-        sensor_type=SensorType.LIQUID_BIN_LEVEL,
-        fill_level=sensor["latest_sensors_data"]["level"]
-        if sensor["latest_sensors_data"]
-        else None,
-        lat=sensor["latitude"],
-        long=sensor["longitude"],
-        manufacturer=sensor["sensorCompany"],
-        bin_name=sensor["bin_name"],
-        address_line1=sensor["address_line1"],
-        address_line2=sensor["address_line2"],
-        group=sensor["group"],
-        bin_type=sensor["bin_type"],
-        material_type=sensor["material_type"],
-        asset_tag=sensor["asset_tag"],
-        bin_volume=sensor["bin_volume"],
-    )
+    try:
+        return BasicSensor(
+            id=sensor["sensorsID"],
+            sensor_type=SensorType.LIQUID_BIN_LEVEL,
+            fill_level=sensor["latest_sensors_data"]["level"]
+            if sensor.get("latest_sensors_data")
+            else None,
+            lat=sensor["latitude"],
+            long=sensor["longitude"],
+            manufacturer=sensor["sensorCompany"],
+            bin_name=sensor["bin_name"],
+            address_line1=sensor["address_line1"],
+            address_line2=sensor["address_line2"],
+            group=sensor["group"],
+            bin_type=sensor["bin_type"],
+            material_type=sensor["material_type"],
+            asset_tag=sensor["asset_tag"],
+            bin_volume=sensor["bin_volume"],
+        )
+    except Exception as e:
+        handle_error("An error occurred while processing the sensor data.", e, "rfs_to_bs")
+        return None  # Return None to indicate an error in creating the BasicSensor object
+       
 
 
 # 🔧 Function to convert RealFakeSensor dictionary to BasicSensor list
@@ -206,29 +212,38 @@ def rfs_dict_to_bs_list(
     bs_list = []
     for index, sensor_id in enumerate(sensors):
         if sensor_id in sensors:
-            bs_list.append(rfs_to_bs(sensors[sensor_id]))
+            try:
+                bs_list.append(rfs_to_bs(sensors[sensor_id]))
+            except Exception as e:
+                handle_error("An error occurred while processing sensor data.", e, "rfs_dict_to_bs_list")
+                bs_list.append(None)  # Append None to the result list to indicate an error
 
     return bs_list
 
 
 # 🔧 Function to convert SensationalSensor to BasicSensor
 def sensational_sensor_to_basic_sensor(sensor: SensationalSensor) -> BasicSensor:
-    return BasicSensor(
-        id=sensor["id"],
-        sensor_type=SensorType.SOLID_BIN_LEVEL,
-        fill_level=sensor["fill_level"] if sensor["fill_level"] else None,
-        lat=sensor["lat"],
-        long=sensor["long"],
-        manufacturer=sensor["man"],
-        bin_name=sensor["bin_name"],
-        address_line1=sensor["address_line1"],
-        address_line2=sensor["address_line2"],
-        group=sensor["group"],
-        bin_type=sensor["bin_type"],
-        material_type=sensor["material_type"],
-        asset_tag=sensor["asset_tag"],
-        bin_volume=sensor["bin_volume"],
-    )
+    try:
+        return BasicSensor(
+            id=sensor["id"],
+            sensor_type=SensorType.SOLID_BIN_LEVEL,
+            fill_level=sensor["fill_level"] if sensor["fill_level"] else None,
+            lat=sensor["lat"],
+            long=sensor["long"],
+            manufacturer=sensor["man"],
+            bin_name=sensor["bin_name"],
+            address_line1=sensor["address_line1"],
+            address_line2=sensor["address_line2"],
+            group=sensor["group"],
+            bin_type=sensor["bin_type"],
+            material_type=sensor["material_type"],
+            asset_tag=sensor["asset_tag"],
+            bin_volume=sensor["bin_volume"],
+        )    
+    except Exception as e:
+        handle_error("An error occurred while processing the sensor data.", e, "sensational_sensor_to_basic_sensor")
+        return None  # Return None to indicate an error in creating the BasicSensor object
+
 
 
 # 🔧 Function to convert SensationalSensor dictionary to BasicSensor list
@@ -238,7 +253,11 @@ def ss_dict_to_bs_list(
     bs_list = []
     for index, sensor_id in enumerate(sensors):
         if sensor_id in sensors:
-            bs_list.append(sensational_sensor_to_basic_sensor(sensors[sensor_id]))
+            try:
+                bs_list.append(sensational_sensor_to_basic_sensor(sensors[sensor_id]))
+            except Exception as e:
+                handle_error("An error occurred while processing sensor data.", e, "ss_dict_to_bs_list")
+                bs_list.append(None)  # Append None to the result list to indicate an error
 
     return bs_list
 
@@ -261,26 +280,28 @@ def tkl_to_bs(sensor: TekelekSensor) -> BasicSensor:
                     lat = float(match.group(1))
                     long = float(match.group(2))
 
-    except (AttributeError, TypeError, ValueError) as e:
-        print(f"Error while processing location data: {e}")
+        bs = BasicSensor(
+            id=sensor.ModemSerialNo,
+            sensor_type=SensorType.LIQUID_BIN_LEVEL,
+            fill_level=sensor.PercentFull if sensor.PercentFull is not None else None,
+            lat=lat,
+            long=long,
+            manufacturer=sensor.Make,
+            bin_name=sensor.Name,
+            address_line1=sensor.AddressLine1,
+            address_line2=sensor.AddressLine2,
+            group=sensor.Group,
+            bin_type=sensor.Material,
+            material_type=sensor.Substance,
+            asset_tag=sensor.Shape,
+            bin_volume=sensor.TheoreticalCapacity,
+        )
+        return bs
 
-    bs = BasicSensor(
-        id=sensor.ModemSerialNo,
-        sensor_type=SensorType.LIQUID_BIN_LEVEL,
-        fill_level=sensor.PercentFull if sensor.PercentFull is not None else None,
-        lat=lat,
-        long=long,
-        manufacturer=sensor.Make,
-        bin_name=sensor.Name,
-        address_line1=sensor.AddressLine1,
-        address_line2=sensor.AddressLine2,
-        group=sensor.Group,
-        bin_type=sensor.Material,
-        material_type=sensor.Substance,
-        asset_tag=sensor.Shape,
-        bin_volume=sensor.TheoreticalCapacity,
-    )
-    return bs
+    except Exception as e:
+        handle_error("An error occurred while creating the BasicSensor object.", e, "tkl_to_bs")
+        return None  # Return None to indicate an error in creating the BasicSensor object
+
 
 
 # 🔧 Function to convert TeklekSensor dictionary to BasicSensor dictionary
@@ -291,14 +312,12 @@ def tkl_dict_to_bs_dict(sensors: List[Dict[str, Union[str, int, float, None]]]) 
         try:
             # create a TekelekSensor object (sensor_obj) by passing the dictionary sensor_data as keyword argument
             sensor_obj = TekelekSensor(**sensor_data)
-
-            # print(f"sensor_obj : {sensor_obj }")
             # convert the TekelekSensor into a BasicSensor and store it in the bs_dict dictionary.
             bs_dict[sensor_obj.ModemSerialNo] = tkl_to_bs(sensor_obj)
         except (ValueError, KeyError, TypeError) as e:
-            print(f"Error processing sensor {sensor_obj.ModemSerialNo}: {e}")
-            # Optionally, continue to the next iteration
-            continue
+            handle_error(f"Error processing sensor {sensor_obj.ModemSerialNo}: {e}", e, "tkl_dict_to_bs_dict")
+            bs_dict.append(None)  # Append None to the result list to indicate an error
+
     return bs_dict
 
 
@@ -306,25 +325,28 @@ def tkl_dict_to_bs_dict(sensors: List[Dict[str, Union[str, int, float, None]]]) 
 def brighterbins_sensor_to_basic_sensor_with_reading(
     sensor: BrighterBinsSensor,
 ) -> BasicSensor:
-    return BasicSensor(
-        id=sensor["id"],
-        sensor_type=SensorType.SOLID_BIN_LEVEL,
-        fill_level=sensor["readings"][-1]["fillLevel"]
-        if (sensor["readings"] and len(sensor["readings"]) > 0)
-        else None,
-        lat=sensor["lat"],
-        long=sensor["long"],
-        manufacturer="BrighterBins",
-        bin_name=sensor["bin_name"],
-        address_line1=sensor["address"],
-        address_line2=None,
-        group=None,
-        bin_type="Standard park bin",
-        material_type="Mixed waste",
-        bin_volume=sensor["bin_volume"],
-        asset_tag=sensor["asset_tag"],
-    )
-
+    try:
+        return BasicSensor(
+            id=sensor["id"],
+            sensor_type=SensorType.SOLID_BIN_LEVEL,
+            fill_level=sensor["readings"][-1]["fillLevel"]
+            if (sensor["readings"] and len(sensor["readings"]) > 0)
+            else None,
+            lat=sensor["lat"],
+            long=sensor["long"],
+            manufacturer="BrighterBins",
+            bin_name=sensor["bin_name"],
+            address_line1=sensor["address"],
+            address_line2=None,
+            group=None,
+            bin_type="Standard park bin",
+            material_type="Mixed waste",
+            bin_volume=sensor["bin_volume"],
+            asset_tag=sensor["asset_tag"],
+        )
+    except Exception as e:
+        handle_error("An error occurred while creating the BasicSensor object.", e, "brighterbins_sensor_to_basic_sensor_with_reading")
+        return None  # Return None to indicate an error in creating the BasicSensor object
 
 # 🔧 Function to fetch BrighterBins API token
 def get_brighterbins_token():
@@ -341,32 +363,23 @@ def get_brighterbins_token():
         if "token" in response_json:
             return response_json["token"]
         elif "secode" in response_json:
-            print(
-                "Error in get_brighterbins_token: An error occurred while trying to fetch the token."
-            )
-            print("Error:", response_json["message"])
+            handle_error("An error occurred while trying to fetch the token: " + response_json["message"], None, "get_brighterbins_token")
             return None
         else:
             # Handle unexpected response format
-            print(
-                "Error in get_brighterbins_token: An unexpected response format was received."
-            )
-            print("Response:", response_json)
+            handle_error("An unexpected response format was received: " + str(response_json), None, "get_brighterbins_token")
             return None
 
     except requests.exceptions.RequestException as e:
         # Handle connection or request errors
-        print("Error in get_brighterbins_token: A request error occurred.")
-        print("Error:", e)
+        handle_error("A request error occurred.", e, "get_brighterbins_token")
         return None
 
     except ValueError as e:
         # Handle JSON decoding error
-        print("Error in get_brighterbins_token: A JSON decoding error occurred.")
-        print("Error:", e)
+        handle_error("A JSON decoding error occurred.", e, "get_brighterbins_token")
         return None
-
-
+    
 # 🔧 Function to fetch Tekelek API token
 def get_tekelek_token():
     url = "https://phoenixidentityserverprod.azurewebsites.net/connect/token"
@@ -383,28 +396,26 @@ def get_tekelek_token():
         # Use the generic request function to make the request
         response_json = make_http_request(url, method="POST", data=payload)
 
+        # Handle the case where response_json is None (an error occurred in make_http_request)
+        if response_json is None:
+            handle_error("An error occurred while making the request.", None, "get_tekelek_token")
+            return None
+
         # Check if the response contains the "access_token" key
         if "access_token" in response_json:
             return response_json["access_token"]
         elif "error" in response_json:
-            print(
-                "Error in get_tekelek_token: An error occurred while trying to fetch the token."
-            )
-            print("Error:", response_json["error"])
+            handle_error("An error occurred while trying to fetch the token: " + response_json["error"], None, "get_tekelek_token")
             return None
         else:
             # Handle unexpected response format
-            print(
-                "Error in get_tekelek_token: An unexpected response format was received."
-            )
-            print("Response:", response_json)
+            handle_error("An unexpected response format was received: " + str(response_json), None, "get_tekelek_token")
             return None
 
     except Exception as e:
         # Handle any unexpected errors
-        print("Error in get_tekelek_token:", e)
+        handle_error("An unexpected error occurred.", e, "get_tekelek_token")
         return None
-
 
 # 🔧 Function for making HTTP requests
 def make_http_request(url, method="GET", headers=None, params=None, data=None):
@@ -415,15 +426,23 @@ def make_http_request(url, method="GET", headers=None, params=None, data=None):
         response.raise_for_status()  # Check for HTTP errors
         return response.json()
     except requests.exceptions.RequestException as request_err:
-        print("An error occurred while making the request:", request_err)
+        handle_error("An error occurred while making the request.", request_err, "make_http_request")
         return None
     except ValueError as value_err:
-        print("An error occurred while parsing JSON response:", value_err)
+        handle_error("An error occurred while parsing JSON response.", value_err, "make_http_request")
         return None
     except Exception as e:
-        print("An unexpected HTTP request error occurred:", e)
+        handle_error("An unexpected HTTP request error occurred.", e, "make_http_request")
         return None
 
+# 🔧 Function for generic error handling
+def handle_error(message, e, function_name=None):
+    error_message = f"ERROR: function '{function_name}': {message}" if function_name else message
+    print(error_message)
+    if e is not None:
+        print("ERROR INFO:", str(e))
+        traceback.print_exc()
+    # ... ? raise or log or send alerts, etc. ?...
 
 # Caches for sensor data
 rfs_cache = []
@@ -438,15 +457,16 @@ tkl_cache = {}
 def set_rfs_and_ss_cache():
     global rfs_cache
     global ss_cache
-    # Convert the sensors to the common "BasicSensor" type and cache their values
-    # rfs and ss are mock so they have a simple case, we can fetch once and never again, they won't change.
-    rfs_response = requests.get(REAL_FAKE_SENSORS_BASE_URL + "/sensors").json()
-    rfs_as_bs = rfs_dict_to_bs_list(rfs_response)
-    rfs_cache = rfs_as_bs
-    # print(f"rfs_cache: {rfs_cache}")
-    ss_response = requests.get(SENSATIONAL_SENSORS_BASE_URL + "/sensors").json()
-    ss_cache = ss_dict_to_bs_list(ss_response)
-    return
+    try:
+        rfs_response = requests.get(REAL_FAKE_SENSORS_BASE_URL + "/sensors").json()
+        rfs_as_bs = rfs_dict_to_bs_list(rfs_response)
+        rfs_cache = rfs_as_bs
+
+        ss_response = requests.get(SENSATIONAL_SENSORS_BASE_URL + "/sensors").json()
+        ss_cache = ss_dict_to_bs_list(ss_response)
+
+    except Exception as e:
+        handle_error("An error occurred while populating rfs_cache and ss_cache.", e, "set_rfs_and_ss_cache")
 
 
 #  🤖 Event handler: Populate Tekelek data in tkl_cache with initial data on start up
@@ -457,6 +477,11 @@ def set_tkl_cache():
         print("Tekelek sensor data cache: fetching sensor data...")
         # get api token
         tekelek_api_token = get_tekelek_token()
+
+        # Check if the token retrieval was successful
+        if tekelek_api_token is None:
+            handle_error("Failed to retrieve Tekelek API token.", None, "set_tkl_cache")
+            return  # Return early to avoid further processing
 
         # Define the base URL
         base_url = "https://phoenixapiprod.azurewebsites.net/api/"
@@ -517,7 +542,7 @@ def set_tkl_cache():
             print("Tekelek sensor data cache: fetch complete")
 
     except Exception as e:
-        print("An unexpected error occurred:", e)
+        handle_error("An error occurred while populating tkl_cache.", e, "set_tkl_cache")
 
 
 #  🤖 Event handler: Fetch BrighterBins historical data and update bb_cache hourly
@@ -529,71 +554,81 @@ def set_tkl_cache():
 def update_bb_cache() -> None:
     global bb_cache
     global last_run_timestamp
-    brighterbins_api_token = get_brighterbins_token()
-    url = "https://api.brighterbins.com/bins/timeseries"
+    try:
+        brighterbins_api_token = get_brighterbins_token()
 
-    # fully populate bb_cache if this is the first time this is being run
-    if last_run_timestamp == 0:
-        print("BrighterBins cache: Fetching initial data...")
-        readingsEndTime = round(time.time() * 1000)
-        # start around July 28, for no particular reason
-        readingsStartTime = 1690592310000
-        last_run_timestamp = readingsEndTime + 1
-        # get all the sensors data from the google sheet
-        sheet = sa.open("BrighterBins_mock_data")
-        worksheet = sheet.worksheet("bins_data")
-        records = worksheet.get_all_records()
+        # Check if the token retrieval was successful
+        if brighterbins_api_token is None:
+            handle_error("Failed to retrieve BrighterBins API token.", None, "update_bb_cache")
+            return  # Return early to avoid further processing
+        
+        url = "https://api.brighterbins.com/bins/timeseries"
 
-        for index, record in enumerate(records):
-            id = record["id"]
-            response = requests.request(
-                "POST",
-                url,
-                headers={"Authorization": "Bearer " + brighterbins_api_token},
-                data={
-                    "from": readingsStartTime,
-                    "to": readingsEndTime,
-                    "id": id,
-                },
-            ).json()
-            readings = (
-                []
-                if len(response["data"]["series"]) == 0
-                else response["data"]["series"]
-            )
-            sensor = {
-                "id": id,
-                "row_id": index + 2,
-                "bin_name": record["name"],
-                "address": record["address"],
-                "lat": record["lat"],
-                "long": record["long"],
-                "bin_volume": record["bin_volume"],
-                "asset_tag": record["tags"],
-                "readings": readings,
-            }
-            bb_cache[id] = sensor
-        print("Initial fetch complete")
-    else:
-        print("Fetching latest data...")
-        for id in bb_cache:
+        # fully populate bb_cache if this is the first time this is being run
+        if last_run_timestamp == 0:
+            print("BrighterBins cache: Fetching initial data...")
             readingsEndTime = round(time.time() * 1000)
-            readingsStartTime = last_run_timestamp + 1
+            # start around July 28, for no particular reason
+            readingsStartTime = 1690592310000
             last_run_timestamp = readingsEndTime + 1
-            response = requests.request(
-                "POST",
-                url,
-                headers={"Authorization": "Bearer " + brighterbins_api_token},
-                data={
-                    "from": readingsStartTime,
-                    "to": readingsEndTime,
+            # get all the sensors data from the google sheet
+            sheet = sa.open("BrighterBins_mock_data")
+            worksheet = sheet.worksheet("bins_data")
+            records = worksheet.get_all_records()
+
+            for index, record in enumerate(records):
+                id = record["id"]
+                response = requests.request(
+                    "POST",
+                    url,
+                    headers={"Authorization": "Bearer " + brighterbins_api_token},
+                    data={
+                        "from": readingsStartTime,
+                        "to": readingsEndTime,
+                        "id": id,
+                    },
+                ).json()
+                readings = (
+                    []
+                    if len(response["data"]["series"]) == 0
+                    else response["data"]["series"]
+                )
+                sensor = {
                     "id": id,
-                },
-            ).json()
-            bb_cache[id]["readings"] = (
-                bb_cache[id]["readings"] + response["data"]["series"]
-            )
-        print("Latest fetch complete")
+                    "row_id": index + 2,
+                    "bin_name": record.get("name", ""),  # Handle None with an empty string
+                    "address": record.get("address", ""),  
+                    "lat": record.get("lat", ""),  
+                    "long": record.get("long", ""),  
+                    "bin_volume": record.get("bin_volume", ""),  
+                    "asset_tag": record.get("tags", ""),  
+                    "readings": readings,
+                }
+                bb_cache[id] = sensor
+            print("Initial fetch complete")
+        else:
+            print("Fetching latest data...")
+            for id in bb_cache:
+                readingsEndTime = round(time.time() * 1000)
+                readingsStartTime = last_run_timestamp + 1
+                last_run_timestamp = readingsEndTime + 1
+                response = requests.request(
+                    "POST",
+                    url,
+                    headers={"Authorization": "Bearer " + brighterbins_api_token},
+                    data={
+                        "from": readingsStartTime,
+                        "to": readingsEndTime,
+                        "id": id,
+                    },
+                ).json()
+                bb_cache[id]["readings"] = (
+                    bb_cache[id]["readings"] + response["data"]["series"]
+                )
+            print("Latest fetch complete")
+
+    except Exception as e:
+        handle_error("An error occurred while updating bb_cache.", e, "update_bb_cache")
 
 
 # 🚀 API endpoint: Get the latest readings from all types of sensors
@@ -604,18 +639,24 @@ def get_latest_readings():
     global bb_cache
     global tkl_cache
 
-    bb_readings = []
-    for index, sensor in enumerate(bb_cache):
-        bb_readings.append(
-            brighterbins_sensor_to_basic_sensor_with_reading(bb_cache[sensor])
-        )
+    try:
+        bb_readings = []
+        for index, sensor in enumerate(bb_cache):
+            bb_readings.append(
+                brighterbins_sensor_to_basic_sensor_with_reading(bb_cache[sensor])
+            )
 
-    tkl_readings = []
-    for index, sensor in enumerate(tkl_cache):
-        tkl_readings.append(tkl_cache[sensor])
+        tkl_readings = []
+        for index, sensor in enumerate(tkl_cache):
+            tkl_readings.append(tkl_cache[sensor])
 
-    latest_readings = bb_readings + rfs_cache + ss_cache + tkl_readings
-    return {"sensors": latest_readings}
+        latest_readings = bb_readings + rfs_cache + ss_cache + tkl_readings
+        return {"sensors": latest_readings}
+
+    except Exception as e:
+        handle_error("An error occurred while fetching latest readings.", e, "get_latest_readings")
+        # Return an empty JSON response in case of an error
+        return {"sensors": []}
 
 
 # @app.get("/sensors/{sensor_id}")
