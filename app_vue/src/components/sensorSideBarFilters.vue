@@ -1,9 +1,13 @@
 <script setup>
   import { reactive, ref, watch } from 'vue'
   import { useSensorStore } from '@/stores/sensors_store';
+  import { useRouteStore } from '@/stores/route_store';
   import { storeToRefs } from 'pinia';
 
   const thresholdRange = ref([0,100]);
+
+  // route store
+  const routeStore = useRouteStore();
 
   // sensor store
   const sensorStore = useSensorStore();
@@ -57,35 +61,40 @@
     state.materialType = sensorStore.getAllMaterialTypes;
   })
 
+  function updateSensorsShown() {
+    routeStore.clearSensorRoute();
+    sensorStore.updateSensorsWithFilters();
+  }
+
   // when change event is received from form, update sensor store
   function updateGroupFilter() {
     sensorStore.setSelectedGroup(state.selectedGroup);
-    sensorStore.updateSensorsWithFilters();
+    updateSensorsShown();
   }
 
   function updateAssetTagFilter() {
     sensorStore.setSelectedAssetTag(state.selectedAssetTag);
-    sensorStore.updateSensorsWithFilters();
+    updateSensorsShown();
   }
 
   function updateBinTypeFilter() {
     sensorStore.setSelectedBinType(state.selectedBinType);
-    sensorStore.updateSensorsWithFilters();
+    updateSensorsShown();
   }
 
   function updateBinVolumeFilter() {
     sensorStore.setSelectedBinVolume(state.selectedBinVolume);
-    sensorStore.updateSensorsWithFilters();
+    updateSensorsShown();
   }
 
   function updateFillRangeFilter() {
     sensorStore.setSelectedFillRange(state.selectedFillRange);
-    sensorStore.updateSensorsWithFilters();
+    updateSensorsShown();
   }
 
   function updateMaterialTypeFilter() {
     sensorStore.setSelectedMaterialType(state.selectedMaterialType);
-    sensorStore.updateSensorsWithFilters();
+    updateSensorsShown();
   }
 
   function clearFilters() {
