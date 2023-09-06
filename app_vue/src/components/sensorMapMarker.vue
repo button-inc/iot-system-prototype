@@ -95,7 +95,7 @@
 </script>
 
 <template>
-  <l-icon :icon-size="[22, 22]" :icon-anchor="[13, 0]" :icon-url="iconUrl" />
+  <l-icon :icon-size="[19, 23]" :icon-anchor="[13, 0]" :icon-url="iconUrl" />
 
   <l-popup class="popup">
     <section class="bin-details">

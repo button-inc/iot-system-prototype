@@ -65,6 +65,10 @@
 
 <style lang="scss" scoped>
   // leaflet css override for mobile views
+
+  // :deep .leaflet-pane .leaflet-layer { // handles map opacity level
+  //   opacity: 0.90 !important;
+  // }
   :deep .leaflet-popup-content {
     margin: 13px 0 13px 0;
 
