@@ -3,7 +3,7 @@ import axios from 'axios';
 // google api call to optimize route
 // https://developers.google.com/maps/documentation/routes/opt-way
 export const getOptimizedRoute = async () => {
-  const googApiKey = 'AIzaSyAgixnED4py56GFy-b2hlfYgofEyISUjSo';
+  const googApiKey = '';
   //TODO: add routes.optimizedIntermediateWaypointIndex to the field mask when ready to use optimized waypoint
   const googFieldMask = 'routes.duration,routes.distanceMeters'; 
 
