@@ -1,14 +1,24 @@
 <script setup>
-  import { watch, ref } from 'vue'
+  import { ref, watch } from 'vue'
   import { useRouteStore } from '@/stores/route_store';
   import { storeToRefs } from 'pinia';
 
   const routeStore = useRouteStore();
-  const { sensorRouteList } = storeToRefs(routeStore);
+  const { sensorRouteList, getEnableOptimizeRoute } = storeToRefs(routeStore);
   const isOpen = ref(false);
-  watch(sensorRouteList, () => {
+  const isOptimizeRouteEnabled = ref(true);
 
-  }, { deep: true })
+  // listen for status of optimize route button
+  watch(getEnableOptimizeRoute, () => {
+    isOptimizeRouteEnabled.value = routeStore.getEnableOptimizeRoute;
+  })
+
+  const optimizeRouteClicked = () => {
+    // update status of optimize route button to be disabled after first click
+    routeStore.setEnableOptimizedRoute(false);
+
+    // TODO: add call to google api
+  }
 
 </script>
 
@@ -43,7 +53,7 @@
             </div>
           </div>
           <!-- TODO: placeholders -->
-          <v-btn class="pa-0" variant="plain">
+          <v-btn class="pa-0" variant="plain" :disabled="!isOptimizeRouteEnabled" @click="optimizeRouteClicked">
             Optimize route
           </v-btn>
           <v-btn class="pa-0" variant="plain">
