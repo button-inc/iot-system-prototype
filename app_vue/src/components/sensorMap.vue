@@ -8,18 +8,6 @@
   import { useRouteStore } from '@/stores/route_store';
   import { storeToRefs } from 'pinia';
 
-  const props = defineProps({
-    alertThreshold: {
-      type: Number
-    },
-    filterThresholdMaximum: {
-      type: Number
-    },
-    filterThresholdMinimum: {
-      type: Number
-    }
-  })
-
   const center = ref([43.7, -79.42]); // TODO: update to possibly be user's current location
   const zoom = ref(10);
   const sensorStore = useSensorStore();
@@ -68,11 +56,7 @@
         :key="sensor.id"
         :lat-lng="[sensor.lat, sensor.long]"
       >
-        <SensorMapMarker 
-          :sensor="sensor"
-          :alertThreshold="props.alertThreshold"
-          :filterThresholdMaximum="props.filterThresholdMaximum"
-          :filterThresholdMinimum="props.filterThresholdMinimum">
+        <SensorMapMarker :sensor="sensor">
         </SensorMapMarker>
       </l-marker>
     </l-map>
