@@ -1,4 +1,6 @@
+# 📦 Import necessary modules and packages
 from enum import Enum
+import re
 import time
 import requests
 
@@ -12,14 +14,25 @@ from fastapi_utils.tasks import repeat_every
 
 from pydantic import BaseModel
 import os
+from datetime import datetime
+from typing import Optional, List, Dict, Union
 
+# 🌐 Load environment variables from .env file
 load_dotenv()
+
+# 🛠️ Get environment configurations
 env = os.environ.get("ENVIRONMENT")
 bb_email = os.environ.get("BB_EMAIL")
 bb_password = os.environ.get("BB_PASSWORD")
+tkl_client = os.environ.get("TEKELEK_CLIENT")
+tkl_password = os.environ.get("TEKELEK_PASSWORD")
+tkl_secret = os.environ.get("TEKELEK_TOKEN")
+tkl_username = os.environ.get("TEKELEK_USERNAME")
+
+# 📚 Authenticate with Google Sheets service account
 sa = gspread.service_account(filename="google_sheets_sa_key.json")
 
-# Set base URLs based on the environment
+# 🌎 Set base URLs based on the environment
 if env == "prod":
     REAL_FAKE_SENSORS_BASE_URL = "http://real-fake-sensors:8081"
     SENSATIONAL_SENSORS_BASE_URL = "http://sensational-sensors:8082"
@@ -27,9 +40,10 @@ else:
     REAL_FAKE_SENSORS_BASE_URL = "http://localhost:8081"
     SENSATIONAL_SENSORS_BASE_URL = "http://localhost:8082"
 
+# 🚀 Initialize FastAPI application
 app = FastAPI()
 
-# whitelist
+# 🌐 Define CORS origins that are allowed to access the API
 origins = [
     "http://localhost:5173",
     "http://localhost:3000",
@@ -42,6 +56,7 @@ origins = [
     "http://34.123.69.225:80"
 ]
 
+# 🔑 Add CORS middleware to the application
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -51,19 +66,19 @@ app.add_middleware(
 )
 
 
+# 📊 Enum to represent sensor types
 class SensorType(Enum):
     LIQUID_BIN_LEVEL = "liquid bin level"
     SOLID_BIN_LEVEL = "solid bin level"
 
 
-# This is our mock generic type.
-# A real generic type is still needed, and this format is unlikely to be the final format.
+# 📝 Model to represent a basic sensor
 class BasicSensor(BaseModel):
     id: str
     sensor_type: SensorType
     fill_level: int | None
-    lat: float
-    long: float
+    lat: float | None
+    long: float | None
     manufacturer: str
     bin_name: str | None
     address_line1: str
@@ -75,7 +90,7 @@ class BasicSensor(BaseModel):
     bin_volume: str
 
 
-# Fake sensors (mock data)
+# 📝 Model to represent a RealFakeSensor
 class RealFakeSensor(BaseModel):
     sensorsID: str
     sensorCompany: str
@@ -91,7 +106,7 @@ class RealFakeSensor(BaseModel):
     bin_volume: str
 
 
-# Fake sensors (mock data)
+# 📝 Model to represent a SensationalSensor
 class SensationalSensor(BaseModel):
     id: str
     sensor_type: SensorType
@@ -104,7 +119,7 @@ class SensationalSensor(BaseModel):
     bin_volume: str
 
 
-# BrighterBins are real.
+# 📝 Model to represent a BrighterBinsSensorReading
 class BrighterBinsSensorReading(BaseModel):
     epoch_ms: int
     rawDistance: int
@@ -117,8 +132,10 @@ class BrighterBinsSensorReading(BaseModel):
     rssi: int
 
 
+# 📝 Model to represent a BrighterBinsSensor
 class BrighterBinsSensor(BaseModel):
     id: str
+    row_id: int | None
     readings: list[BrighterBinsSensorReading] | None
     is_extended_uplink: int
     manufacturer: str
@@ -127,6 +144,40 @@ class BrighterBinsSensor(BaseModel):
     long: float
 
 
+# 📝 Model to represent a TeklekSensor
+class TekelekSensor(BaseModel):
+    ID: int
+    ModemSerialNo: str
+    Name: str
+    Shape: str
+    TheoreticalCapacity: float
+    SafePercentage: int
+    NominalCapacity: float
+    Diameter: float
+    Bund: bool
+    Height: float
+    Width: float
+    Length: float
+    SensorOffset: float
+    OutletHeight: float
+    Make: str
+    Model: str
+    Substance: str
+    Material: str
+    AccountNo: Optional[str]
+    DateCreated: str
+    DateLastModified: Optional[str]
+    Note: Optional[str]
+    Location: Optional[dict] = None
+    ContainerType: str
+    OrderTriggerPercentage: str
+    Group: Optional[str] = (None,)
+    AddressLine1: Optional[str] = (None,)
+    AddressLine2: Optional[str] = (None,)
+    PercentFull: Optional[float] = None
+
+
+# 🔧 Function to convert RealFakeSensor to BasicSensor
 def rfs_to_bs(sensor: RealFakeSensor) -> BasicSensor:
     return BasicSensor(
         id=sensor["sensorsID"],
@@ -148,10 +199,19 @@ def rfs_to_bs(sensor: RealFakeSensor) -> BasicSensor:
     )
 
 
-def rfs_list_to_bs_list(sensors: list[RealFakeSensor]) -> list[BasicSensor]:
-    return [rfs_to_bs(sensor) for sensor in sensors]
+# 🔧 Function to convert RealFakeSensor dictionary to BasicSensor list
+def rfs_dict_to_bs_list(
+    sensors: dict[str, RealFakeSensor | None]
+) -> list[BasicSensor | None]:
+    bs_list = []
+    for index, sensor_id in enumerate(sensors):
+        if sensor_id in sensors:
+            bs_list.append(rfs_to_bs(sensors[sensor_id]))
+
+    return bs_list
 
 
+# 🔧 Function to convert SensationalSensor to BasicSensor
 def sensational_sensor_to_basic_sensor(sensor: SensationalSensor) -> BasicSensor:
     return BasicSensor(
         id=sensor["id"],
@@ -171,12 +231,78 @@ def sensational_sensor_to_basic_sensor(sensor: SensationalSensor) -> BasicSensor
     )
 
 
-def sensational_sensor_list_to_basic_sensor_list(
-    sensors: list[SensationalSensor],
-) -> list[BasicSensor]:
-    return [sensational_sensor_to_basic_sensor(sensor) for sensor in sensors]
+# 🔧 Function to convert SensationalSensor dictionary to BasicSensor list
+def ss_dict_to_bs_list(
+    sensors: dict[str, SensationalSensor | None]
+) -> list[BasicSensor | None]:
+    bs_list = []
+    for index, sensor_id in enumerate(sensors):
+        if sensor_id in sensors:
+            bs_list.append(sensational_sensor_to_basic_sensor(sensors[sensor_id]))
+
+    return bs_list
 
 
+# 🔧 Function to convert TekelekSensor to BasicSensor
+def tkl_to_bs(sensor: TekelekSensor) -> BasicSensor:
+    lat, long = None, None  # Default values in case of errors
+
+    try:
+        location = sensor.Location
+
+        if location:
+            well_known_text = location.get("Geography", {}).get("WellKnownText", None)
+
+            if well_known_text and well_known_text.startswith("POINT"):
+                pattern = r"POINT \((-?\d+\.\d+) (-?\d+\.\d+)\)"
+                match = re.search(pattern, well_known_text)
+
+                if match:
+                    lat = float(match.group(1))
+                    long = float(match.group(2))
+
+    except (AttributeError, TypeError, ValueError) as e:
+        print(f"Error while processing location data: {e}")
+
+    bs = BasicSensor(
+        id=sensor.ModemSerialNo,
+        sensor_type=SensorType.LIQUID_BIN_LEVEL,
+        fill_level=sensor.PercentFull if sensor.PercentFull is not None else None,
+        lat=lat,
+        long=long,
+        manufacturer=sensor.Make,
+        bin_name=sensor.Name,
+        address_line1=sensor.AddressLine1,
+        address_line2=sensor.AddressLine2,
+        group=sensor.Group,
+        bin_type=sensor.Material,
+        material_type=sensor.Substance,
+        asset_tag=sensor.Shape,
+        bin_volume=sensor.TheoreticalCapacity,
+    )
+    return bs
+
+
+# 🔧 Function to convert TeklekSensor dictionary to BasicSensor dictionary
+def tkl_dict_to_bs_dict(sensors: List[Dict[str, Union[str, int, float, None]]]) -> dict:
+    bs_dict = {}
+    # loop to iterate through each obj in the TekelekSensor list
+    for sensor_data in sensors:
+        try:
+            # create a TekelekSensor object (sensor_obj) by passing the dictionary sensor_data as keyword argument
+            sensor_obj = TekelekSensor(**sensor_data)
+
+            # print(f"sensor_obj : {sensor_obj }")
+            # convert the TekelekSensor into a BasicSensor and store it in the bs_dict dictionary.
+            bs_dict[sensor_obj.ModemSerialNo] = tkl_to_bs(sensor_obj)
+        except (ValueError, KeyError, TypeError) as e:
+            print(f"Error processing sensor {sensor_obj.ModemSerialNo}: {e}")
+            # Optionally, continue to the next iteration
+            continue
+    return bs_dict
+
+
+# 🔧 Function to convert BrighterBinsSensor to BasicSensor with latest reading
 def brighterbins_sensor_to_basic_sensor_with_reading(
     sensor: BrighterBinsSensor,
 ) -> BasicSensor:
@@ -200,41 +326,206 @@ def brighterbins_sensor_to_basic_sensor_with_reading(
     )
 
 
-@app.get("/token")
+# 🔧 Function to fetch BrighterBins API token
 def get_brighterbins_token():
     global bb_email
     global bb_password
     url = "https://api.brighterbins.com/auth/login"
     payload = {"email": bb_email, "password": bb_password}
-    response = requests.request("POST", url, data=payload).json()
-    return response["token"]
+
+    try:
+        response = requests.request("POST", url, data=payload)
+        response_json = response.json()
+
+        # Check if the response contains the "token" key
+        if "token" in response_json:
+            return response_json["token"]
+        elif "secode" in response_json:
+            print(
+                "Error in get_brighterbins_token: An error occurred while trying to fetch the token."
+            )
+            print("Error:", response_json["message"])
+            return None
+        else:
+            # Handle unexpected response format
+            print(
+                "Error in get_brighterbins_token: An unexpected response format was received."
+            )
+            print("Response:", response_json)
+            return None
+
+    except requests.exceptions.RequestException as e:
+        # Handle connection or request errors
+        print("Error in get_brighterbins_token: A request error occurred.")
+        print("Error:", e)
+        return None
+
+    except ValueError as e:
+        # Handle JSON decoding error
+        print("Error in get_brighterbins_token: A JSON decoding error occurred.")
+        print("Error:", e)
+        return None
 
 
-rfs_cache = {}
+# 🔧 Function to fetch Tekelek API token
+def get_tekelek_token():
+    url = "https://phoenixidentityserverprod.azurewebsites.net/connect/token"
+    payload = {
+        "client_id": tkl_client,
+        "client_secret": tkl_secret,
+        "grant_type": "password",
+        "scope": "openid",
+        "username": tkl_username,
+        "password": tkl_password,
+    }
+
+    try:
+        # Use the generic request function to make the request
+        response_json = make_http_request(url, method="POST", data=payload)
+
+        # Check if the response contains the "access_token" key
+        if "access_token" in response_json:
+            return response_json["access_token"]
+        elif "error" in response_json:
+            print(
+                "Error in get_tekelek_token: An error occurred while trying to fetch the token."
+            )
+            print("Error:", response_json["error"])
+            return None
+        else:
+            # Handle unexpected response format
+            print(
+                "Error in get_tekelek_token: An unexpected response format was received."
+            )
+            print("Response:", response_json)
+            return None
+
+    except Exception as e:
+        # Handle any unexpected errors
+        print("Error in get_tekelek_token:", e)
+        return None
+
+
+# 🔧 Function for making HTTP requests
+def make_http_request(url, method="GET", headers=None, params=None, data=None):
+    try:
+        response = requests.request(
+            method, url, headers=headers, params=params, data=data
+        )
+        response.raise_for_status()  # Check for HTTP errors
+        return response.json()
+    except requests.exceptions.RequestException as request_err:
+        print("An error occurred while making the request:", request_err)
+        return None
+    except ValueError as value_err:
+        print("An error occurred while parsing JSON response:", value_err)
+        return None
+    except Exception as e:
+        print("An unexpected HTTP request error occurred:", e)
+        return None
+
+
+# Caches for sensor data
+rfs_cache = []
 ss_cache = []
-bb_cache = []
+bb_cache = {}
 last_run_timestamp = 0
+tkl_cache = {}
 
 
+#  🤖 Event handler: Populate rfs_cache and ss_cache with initial data on start up
 @app.on_event("startup")
 def set_rfs_and_ss_cache():
     global rfs_cache
     global ss_cache
-
     # Convert the sensors to the common "BasicSensor" type and cache their values
-    # rfs and ss are mock so they have a simplecase, we can fetch once and never again, they won't change.
+    # rfs and ss are mock so they have a simple case, we can fetch once and never again, they won't change.
     rfs_response = requests.get(REAL_FAKE_SENSORS_BASE_URL + "/sensors").json()
-    rfs_as_bs = rfs_list_to_bs_list(rfs_response["sensors"])
+    rfs_as_bs = rfs_dict_to_bs_list(rfs_response)
     rfs_cache = rfs_as_bs
+    # print(f"rfs_cache: {rfs_cache}")
     ss_response = requests.get(SENSATIONAL_SENSORS_BASE_URL + "/sensors").json()
-    ss_cache = sensational_sensor_list_to_basic_sensor_list(ss_response["sensors"])
+    ss_cache = ss_dict_to_bs_list(ss_response)
     return
 
 
-# For BrighterBins, we need to fetch all of the historical data at server start,
-# and then append the latest readings from each sensor once per hour.
+#  🤖 Event handler: Populate Tekelek data in tkl_cache with initial data on start up
 @app.on_event("startup")
-@repeat_every(seconds=60 * 60)  # 1 hour
+def set_tkl_cache():
+    global tkl_cache
+    try:
+        print("Tekelek sensor data cache: fetching sensor data...")
+        # get api token
+        tekelek_api_token = get_tekelek_token()
+
+        # Define the base URL
+        base_url = "https://phoenixapiprod.azurewebsites.net/api/"
+
+        # Make a request to get all sensor data from tank records
+        tanks_url = base_url + "tanks"
+        tanks_response = make_http_request(
+            tanks_url,
+            method="GET",
+            headers={"Authorization": "Bearer " + tekelek_api_token},
+        )
+
+        if tanks_response:
+            records = tanks_response
+
+            # Iterate tank records to get additional information from related API endpoints
+            for index, record in enumerate(records):
+                serialNo = record["ModemSerialNo"]
+
+                # get the sensor address, etc. details
+                details_url = base_url + "modems/details/" + serialNo
+                details_response = make_http_request(
+                    details_url,
+                    method="GET",
+                    headers={"Authorization": "Bearer " + tekelek_api_token},
+                )
+
+                record["Group"] = (
+                    details_response["Group"] if details_response is not None else ""
+                )
+                record["AddressLine1"] = (
+                    details_response["AddressLine1"]
+                    if details_response is not None
+                    else ""
+                )
+                record["AddressLine2"] = (
+                    details_response["AddressLine2"]
+                    if details_response is not None
+                    else ""
+                )
+
+                # get the latest sensor fill reading
+                latest_reading_url = base_url + "latestReading/" + serialNo
+                reading_response = make_http_request(
+                    latest_reading_url,
+                    method="GET",
+                    headers={"Authorization": "Bearer " + tekelek_api_token},
+                )
+
+                record["PercentFull"] = (
+                    reading_response["PercentFull"]
+                    if reading_response is not None
+                    else None
+                )
+
+            # Convert TekelekSensor list to BasicSensor objects dictionary
+            tkl_cache = tkl_dict_to_bs_dict(records)
+            print("Tekelek sensor data cache: fetch complete")
+
+    except Exception as e:
+        print("An unexpected error occurred:", e)
+
+
+#  🤖 Event handler: Fetch BrighterBins historical data and update bb_cache hourly
+# The purpose is to maintain a historical record of sensor readings over time.
+# This allows the program to access and analyze past readings without repeatedly querying the API for the same data
+# event handler continues to run periodically, in the background, due to the @repeat_every decorator
+@app.on_event("startup")
+@repeat_every(seconds=60 * 60)  # Every 1 hour
 def update_bb_cache() -> None:
     global bb_cache
     global last_run_timestamp
@@ -243,7 +534,7 @@ def update_bb_cache() -> None:
 
     # fully populate bb_cache if this is the first time this is being run
     if last_run_timestamp == 0:
-        print("Fetching initial data...")
+        print("BrighterBins cache: Fetching initial data...")
         readingsEndTime = round(time.time() * 1000)
         # start around July 28, for no particular reason
         readingsStartTime = 1690592310000
@@ -303,28 +594,56 @@ def update_bb_cache() -> None:
                 bb_cache[id]["readings"] + response["data"]["series"]
             )
         print("Latest fetch complete")
-    return
 
 
+# 🚀 API endpoint: Get the latest readings from all types of sensors
 @app.get("/latest_readings")
 def get_latest_readings():
     global rfs_cache
     global ss_cache
+    global bb_cache
+    global tkl_cache
 
     bb_readings = []
-    for id in bb_cache:
+    for index, sensor in enumerate(bb_cache):
         bb_readings.append(
-            brighterbins_sensor_to_basic_sensor_with_reading(bb_cache[id])
+            brighterbins_sensor_to_basic_sensor_with_reading(bb_cache[sensor])
         )
 
-    latest_readings = bb_readings + rfs_cache + ss_cache
+    tkl_readings = []
+    for index, sensor in enumerate(tkl_cache):
+        tkl_readings.append(tkl_cache[sensor])
+
+    latest_readings = bb_readings + rfs_cache + ss_cache + tkl_readings
     return {"sensors": latest_readings}
 
 
-# @app.put("/update_bb_name/{row_id}/")
-# def update_name(row_id: int, name: str):
-#     sheet = sa.open("BrighterBins_mock_data")
-#     worksheet = sheet.worksheet("bins_data")
-#     worksheet.update_cell(row_id, 2, name)
-#     # update the cache here maybe? else fetch latest.
-#     return {"success": True}
+# @app.get("/sensors/{sensor_id}")
+# def query_sensor_by_id(sensor_id: str) -> Sensor:
+#     if sensor_id not in sensors:
+#         raise HTTPException(
+#             status_code=404, detail=f"Sensor iwth id {sensor_id} does not exist"
+#         )
+#     return sensors[sensor_id]
+
+
+# Selection = dict[str, str | int | SensorType | None]
+
+
+# @app.get("/sensors/")
+# def query_sensor_by_parameters(
+#     # sensor_type: SensorType | None = None,
+#     min_fill_level: int | None = None,
+#     # sim: str | None = None,
+# ) -> dict[str, Selection]:
+#     def check_sensor(sensor: Sensor) -> bool:
+#         return all(
+#             (
+#                 # sensor_type is None or sensor.sensor_type == sensor_type,
+#                 min_fill_level is None or sensor.fill_level >= min_fill_level,
+#                 # sim is None or sensor.sim == sim,
+#             )
+#         )
+
+#     selection = [sensor for sensor in sensors.values() if check_sensor(sensor)]
+#     return {"selection": selection}
