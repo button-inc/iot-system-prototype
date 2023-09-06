@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 export const useRouteStore = defineStore('route', {
   state: () => ({
     sensorRouteList: [], // list of sensor objects part of the route
-    enableOptimizeRoute: true
+    enableOptimizeRoute: true, // enables optimize route button to be clicked
   }),
   getters: {
     getSensorRouteList({sensorRouteList}) {

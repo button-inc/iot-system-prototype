@@ -2,7 +2,8 @@
   import { ref, watch } from 'vue'
   import { useRouteStore } from '@/stores/route_store';
   import { storeToRefs } from 'pinia';
-
+  import { v4 as uuidv4 } from 'uuid';
+  
   const routeStore = useRouteStore();
   const { sensorRouteList, getEnableOptimizeRoute } = storeToRefs(routeStore);
   const isOpen = ref(false);
@@ -20,6 +21,44 @@
     // TODO: add call to google api
   }
 
+  function exportRouteClicked() {
+    // columns
+    let csv = 'Order,Sensor Type,Fill Level,Latitude,Longitude,Manufacturer,Bin Name,Address Line 1,Address Line 2,Group,Bin Type,Material Type,Asset Tag,Bin Volume\n';
+
+    // grab required data to be exported
+    const csvObjectArray = routeStore.sensorRouteList.map((sensor, index) => {
+      return {
+        order: index + 1,
+        sensor_type: sensor.sensor_type,
+        fill_level: sensor.fill_level,
+        lat: sensor.lat,
+        long: sensor.long,
+        manufacturer: sensor.manufacturer,
+        bin_name: sensor.bin_name,
+        address_line1: sensor.address_line1,
+        address_line2: sensor.address_line2.replace(',',''), // typically has a comma which will interfere with csv
+        group: sensor.group,
+        bin_type: sensor.bin_type,
+        material_type: sensor.material_type,
+        asset_tag: sensor.asset_tag,
+        bin_volume: sensor.bin_volume
+      };
+    })
+
+    // convert JSON to csv rows
+    csvObjectArray.forEach((sensor) => {
+      const csvRow = Object.values(sensor).toString(); // outputs json to a value string separated by commas
+      csv += csvRow + "\n";
+    });
+ 
+    // export
+    const anchor = document.createElement('a');
+    anchor.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    anchor.target = '_blank';
+    anchor.download = `Route-${uuidv4()}.csv`;
+    anchor.click();
+  }
+
 </script>
 
 <template>
@@ -32,11 +71,11 @@
         No route to be displayed yet
       </span>
       <!-- route is present -->
-      <div v-else>
-        <div class="d-flex align-center justify-space-between">
+      <div class="w-100 h-100" v-else>
+        <div tabindex="0" class="w-100 h-100 d-flex align-center justify-space-between cursor-pointer" @click="isOpen = !isOpen">
           <span>{{ sensorRouteList.length }} Bins </span>
           <div>
-            <v-btn class="pa-0" variant="plain" @click="isOpen = !isOpen">
+            <v-btn class="pa-0" variant="plain">
               <vue-feather :type="isOpen ? 'chevron-up':'chevron-down'"></vue-feather>
             </v-btn>
           </div>
@@ -49,13 +88,16 @@
               <span>{{ sensor.address_line2 }}</span>
             </div>
           </div>
-          <!-- TODO: placeholders -->
-          <div class="d-flex align-center justify-space-between">
-            <div>
+          <div class="d-flex align-center" 
+            :class="{
+              'justify-space-between': sensorRouteList && sensorRouteList.length > 1, 
+              'justify-end': sensorRouteList && sensorRouteList.length <= 1
+            }">
+            <div v-if="sensorRouteList && sensorRouteList.length > 1">
               <v-btn class="pa-0" variant="plain" :disabled="!isOptimizeRouteEnabled" @click="optimizeRouteClicked">
                 Optimize route
               </v-btn>
-              <v-btn class="pa-0" variant="plain">
+              <v-btn class="pa-0" variant="plain" @click="exportRouteClicked">
                 Export route
               </v-btn>
             </div>
