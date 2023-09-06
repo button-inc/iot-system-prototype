@@ -13,7 +13,7 @@
     isOptimizeRouteEnabled.value = routeStore.getEnableOptimizeRoute;
   })
 
-  const optimizeRouteClicked = () => {
+  function optimizeRouteClicked() {
     // update status of optimize route button to be disabled after first click
     routeStore.setEnableOptimizedRoute(false);
 
