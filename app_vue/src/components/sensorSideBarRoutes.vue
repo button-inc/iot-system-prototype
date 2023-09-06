@@ -94,9 +94,10 @@
               'justify-end': sensorRouteList && sensorRouteList.length <= 1
             }">
             <div v-if="sensorRouteList && sensorRouteList.length > 1">
-              <v-btn class="pa-0" variant="plain" :disabled="!isOptimizeRouteEnabled" @click="optimizeRouteClicked">
+              <!-- TODO: add back optimize route button alongside google api implementation -->
+              <!-- <v-btn class="pa-0" variant="plain" :disabled="!isOptimizeRouteEnabled" @click="optimizeRouteClicked">
                 Optimize route
-              </v-btn>
+              </v-btn> -->
               <v-btn class="pa-0" variant="plain" @click="exportRouteClicked">
                 Export route
               </v-btn>
