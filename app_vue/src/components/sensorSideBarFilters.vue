@@ -12,19 +12,22 @@
     getAllGroupOptions,
     getAllAssetTags,
     getAllBinTypes,
-    getAllBinVolumes } = storeToRefs(sensorStore);
+    getAllBinVolumes,
+    getAllMaterialTypes } = storeToRefs(sensorStore);
 
   // component reactive variables
   const state = reactive({
     selectedGroup: null,
     selectedAssetTag: [],
-    selectedBinType: null,
+    selectedBinType: [],
     selectedBinVolume: null,
     selectedFillRange: [0, 100],
+    selectedMaterialType: [],
     group: [],
     assetTag: [],
     binType: [],
     binVolume: [],
+    materialType: [],
     totalSensors: 0,
     showFillLabel: false
   });
@@ -50,6 +53,10 @@
     state.binVolume = sensorStore.getAllBinVolumes;
   })
 
+  watch(getAllMaterialTypes, () => {
+    state.materialType = sensorStore.getAllMaterialTypes;
+  })
+
   // when change event is received from form, update sensor store
   function updateGroupFilter() {
     sensorStore.setSelectedGroup(state.selectedGroup);
@@ -73,6 +80,11 @@
 
   function updateFillRangeFilter() {
     sensorStore.setSelectedFillRange(state.selectedFillRange);
+    sensorStore.updateSensorsWithFilters();
+  }
+
+  function updateMaterialTypeFilter() {
+    sensorStore.setSelectedMaterialType(state.selectedMaterialType);
     sensorStore.updateSensorsWithFilters();
   }
 
@@ -138,6 +150,8 @@
     <v-autocomplete class="filter-list__dropdown"
       v-model="state.selectedBinType"
       label="Bin Type"
+      chips
+      multiple
       :items="state.binType"
       @update:modelValue="updateBinTypeFilter"
     ></v-autocomplete>
@@ -147,6 +161,15 @@
       label="Bin Volume"
       :items="state.binVolume"
       @update:modelValue="updateBinVolumeFilter"
+    ></v-autocomplete>
+
+    <v-autocomplete class="filter-list__dropdown"
+      v-model="state.selectedMaterialType"
+      label="Material Type"
+      chips
+      multiple
+      :items="state.materialType"
+      @update:modelValue="updateMaterialTypeFilter"
     ></v-autocomplete>
 
   </section>
