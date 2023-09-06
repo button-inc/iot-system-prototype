@@ -15,7 +15,7 @@
   })
 
   async function optimizeRouteClicked() {
-    // update status of optimize route button to be disabled after first click
+    // button to be disabled after first click
     //routeStore.setEnableOptimizedRoute(false);
 
     // TODO: add call to google api
