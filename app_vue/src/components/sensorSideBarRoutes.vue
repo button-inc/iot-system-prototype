@@ -3,7 +3,7 @@
   import { useRouteStore } from '@/stores/route_store';
   import { storeToRefs } from 'pinia';
   import { v4 as uuidv4 } from 'uuid';
-  import { getOptimizedRoute } from '@/utils/screenSizeHelper';
+  import { getOptimizedRoute } from '@/utils/optimizeRouteHelper';
 
   const routeStore = useRouteStore();
   const { sensorRouteList, getEnableOptimizeRoute } = storeToRefs(routeStore);
