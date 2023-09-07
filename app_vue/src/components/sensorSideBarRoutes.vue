@@ -16,7 +16,7 @@
 
   async function optimizeRouteClicked() {
     // button to be disabled after first click
-    //routeStore.setEnableOptimizedRoute(false);
+    routeStore.setEnableOptimizedRoute(false);
 
     // TODO: add call to google api
     await getOptimizedRoute();
@@ -77,7 +77,10 @@
         <div tabindex="0" class="w-100 h-100 d-flex align-center justify-space-between cursor-pointer">
           <span class="font-body">{{ sensorRouteList.length }} Bins </span>
         </div>
+
+        <!-- route list -->
         <section>
+          <!-- route list items -->
           <div v-for="(sensor, index) in sensorRouteList" :key="sensor.id" class="d-flex align-center routes-list__route mt-4">
             <vue-feather v-if="index === 0" class="color-green" type="disc"></vue-feather>
             <vue-feather v-if="index > 0 && index < (sensorRouteList.length - 1)" class="transform-rotate-270" type="git-commit"></vue-feather>
@@ -87,13 +90,14 @@
               <span>{{ sensor.address_line2 }}</span>
             </div>
           </div>
+
+          <!-- route call-to-actions -->
           <div class="d-flex align-center" 
             :class="{
               'justify-space-between': sensorRouteList && sensorRouteList.length > 1, 
               'justify-end': sensorRouteList && sensorRouteList.length <= 1
             }">
             <div v-if="sensorRouteList && sensorRouteList.length > 1">
-              <!-- TODO: add back optimize route button alongside google api implementation -->
               <v-btn class="pa-0" variant="plain" :disabled="!isOptimizeRouteEnabled" @click="optimizeRouteClicked">
                 Optimize route
               </v-btn>
