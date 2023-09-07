@@ -3,6 +3,7 @@
   import { LPopup, LIcon } from '@vue-leaflet/vue-leaflet';
   import { useRouteStore } from '@/stores/route_store';
   import { storeToRefs } from 'pinia';
+  import { getIconAndProgressColor } from '@/utils/mapMarkerHelper';
 
   const props = defineProps({
     sensor: {
@@ -13,7 +14,7 @@
 
   // set html element variables
   const fillPercent = ref(Math.round(props.sensor.fill_level || 0));
-  const { iconUrl, linearProgressColor } = getIconAndProgressColor();
+  const { iconUrl, linearProgressColor } = getIconAndProgressColor(props.sensor);
 
   // route store
   const routeStore = useRouteStore();
@@ -43,58 +44,6 @@
     }
   }
 
-  // linearProgressColor -> used by Vuetify to determine progress bar color
-  // iconURL -> used by Vuetify to display bin icon
-  function getIconAndProgressColor() {
-
-    // mini-helper function
-    const getBinIconName = () => {
-      const isErrorState = props.sensor.error;
-      const isFullState = props.sensor.fill_level && props.sensor.fill_level >= 75;
-      const isHalfFullState = props.sensor.fill_level && props.sensor.fill_level >= 50 && props.sensor.fill_level < 75;
-      const isEmptyState = props.sensor.fill_level && props.sensor.fill_level < 50;
-
-      if (isErrorState) { // shows error icon
-        return 'error';
-      } else if (isFullState) {
-        return 'full';
-      } else if (isHalfFullState) {
-        return 'half-full';
-      } else if (isEmptyState) {
-        return 'empty';
-      }
-      return 'empty'; // default
-    }
-
-    const iconName = getBinIconName();
-    let iconUrl = ''
-    let linearProgressColor = '';
-    const RED = '#C92828';
-    const GREEN = 'green';
-    const ORANGE = '#F07F2D';
-    switch (iconName) {
-      case 'error':
-        iconUrl = 'src/assets/images/alert-bin.png';
-        linearProgressColor = RED;
-        break;
-      case 'full':
-        iconUrl = 'src/assets/images/full-bin.png';
-        linearProgressColor = RED;
-        break;
-      case 'half-full':
-        iconUrl = 'src/assets/images/half-full-bin.png';
-        linearProgressColor = ORANGE;
-        break;
-      case 'empty':
-        iconUrl = 'src/assets/images/empty-bin.png';
-        linearProgressColor = GREEN;
-        break;
-      default: // default is empty bin
-        iconUrl = 'src/assets/images/empty-bin.png';
-        linearProgressColor = GREEN;
-    }
-    return { iconUrl, linearProgressColor };
-  }
 </script>
 
 <template>
