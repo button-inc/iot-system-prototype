@@ -3,6 +3,7 @@
   import { LPopup, LIcon } from '@vue-leaflet/vue-leaflet';
   import { useRouteStore } from '@/stores/route_store';
   import { storeToRefs } from 'pinia';
+  import { getIconAndProgressColor, getMaterialTypeIconURL } from '@/utils/mapMarkerHelper';
 
   const props = defineProps({
     sensor: {
@@ -13,7 +14,7 @@
 
   // set html element variables
   const fillPercent = ref(Math.round(props.sensor.fill_level || 0));
-  const { iconUrl, linearProgressColor } = getIconAndProgressColor();
+  const { iconUrl, linearProgressColor } = getIconAndProgressColor(props.sensor);
 
   // route store
   const routeStore = useRouteStore();
@@ -43,59 +44,10 @@
     }
   }
 
-  // linearProgressColor -> used by Vuetify to determine progress bar color
-  // iconURL -> used by Vuetify to display bin icon
-  function getIconAndProgressColor() {
-
-    // mini-helper function
-    const getBinIconName = () => {
-      const isErrorState = props.sensor.error;
-      const isFullState = props.sensor.fill_level && props.sensor.fill_level >= 75;
-      const isHalfFullState = props.sensor.fill_level && props.sensor.fill_level >= 50 && props.sensor.fill_level < 75;
-      const isEmptyState = props.sensor.fill_level && props.sensor.fill_level < 50;
-
-      if (isErrorState) { // shows error icon
-        return 'error';
-      } else if (isFullState) {
-        return 'full';
-      } else if (isHalfFullState) {
-        return 'half-full';
-      } else if (isEmptyState) {
-        return 'empty';
-      }
-      return 'empty'; // default
-    }
-
-    const iconName = getBinIconName();
-    let iconUrl = ''
-    let linearProgressColor = '';
-    switch (iconName) {
-      case 'error':
-        iconUrl = 'src/assets/images/alert-bin.png';
-        linearProgressColor = 'red';
-        break;
-      case 'full':
-        iconUrl = 'src/assets/images/full-bin.png';
-        linearProgressColor = 'red';
-        break;
-      case 'half-full':
-        iconUrl = 'src/assets/images/half-full-bin.png';
-        linearProgressColor = 'primary';
-        break;
-      case 'empty':
-        iconUrl = 'src/assets/images/empty-bin.png';
-        linearProgressColor = 'green';
-        break;
-      default: // default is empty bin
-        iconUrl = 'src/assets/images/empty-bin.png';
-        linearProgressColor = 'green';
-    }
-    return { iconUrl, linearProgressColor };
-  }
 </script>
 
 <template>
-  <l-icon :icon-size="[19, 23]" :icon-anchor="[13, 0]" :icon-url="iconUrl" />
+  <l-icon :icon-size="[19, 23]" :icon-anchor="[10, 18]" :icon-url="iconUrl" />
 
   <l-popup class="popup">
     <section class="bin-details">
@@ -152,7 +104,8 @@
       </div>
 
       <div class="material-type">
-        <img class="material-type__image" src="@/assets/images/open-box.png"/>
+        <v-img class="material-type__image" :src="getMaterialTypeIconURL(props.sensor.material_type)" width="40" height="40" />
+        <!-- <img class="material-type__image" :src="getMaterialTypeIconURL(props.sensor.material_type)"/> -->
         <span class="material-type__description">{{ props.sensor.material_type }}</span>
       </div>
     </section>

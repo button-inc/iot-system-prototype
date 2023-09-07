@@ -16,9 +16,13 @@
 
   // make api call to get sensors
   const getLatestReadings = async () => {
-    const response = await axios.get(ENV_API_BASE_URL + '/latest_readings');
-    if (response) {
-      sensorStore.setSensors(response.data.sensors);
+    try {
+      const response = await axios.get(ENV_API_BASE_URL + '/latest_readings');
+      if (response) {
+        sensorStore.setSensors(response.data.sensors);
+      }
+    } catch(e) {
+      console.error('error getting latest readings', e);
     }
   };
   
