@@ -69,26 +69,29 @@
     const iconName = getBinIconName();
     let iconUrl = ''
     let linearProgressColor = '';
+    const RED = '#C92828';
+    const GREEN = 'green';
+    const ORANGE = '#F07F2D';
     switch (iconName) {
       case 'error':
         iconUrl = 'src/assets/images/alert-bin.png';
-        linearProgressColor = 'red';
+        linearProgressColor = RED;
         break;
       case 'full':
         iconUrl = 'src/assets/images/full-bin.png';
-        linearProgressColor = 'red';
+        linearProgressColor = RED;
         break;
       case 'half-full':
         iconUrl = 'src/assets/images/half-full-bin.png';
-        linearProgressColor = 'primary';
+        linearProgressColor = ORANGE;
         break;
       case 'empty':
         iconUrl = 'src/assets/images/empty-bin.png';
-        linearProgressColor = 'green';
+        linearProgressColor = GREEN;
         break;
       default: // default is empty bin
         iconUrl = 'src/assets/images/empty-bin.png';
-        linearProgressColor = 'green';
+        linearProgressColor = GREEN;
     }
     return { iconUrl, linearProgressColor };
   }
