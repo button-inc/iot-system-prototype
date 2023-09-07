@@ -106,7 +106,7 @@
             @start="drag=true"
             @end="routeOrganized">
             <template #item="{ element: sensor, index }">
-              <li class="routes-list__items">
+              <li class="routes-list__items" :class="{'margin-b-0' : sensorRouteList.length === 1}">
                 <vue-feather v-if="index === 0" class="color-green" type="disc"></vue-feather>
                 <vue-feather v-if="index > 0 && index < (sensorRouteList.length - 1)" class="transform-rotate-270" type="git-commit"></vue-feather>
                 <vue-feather v-if="index === (sensorRouteList.length - 1) && index !== 0" class="color-red" type="map-pin"></vue-feather>
@@ -133,7 +133,7 @@
                 <vue-feather type="upload"></vue-feather>
               </v-btn>
             </div>
-            <v-btn class="pl-0 align-self-end" variant="plain" @click="routeStore.clearSensorRoute">
+            <v-btn class="routes-list__delete pl-0 align-self-end" variant="plain" @click="routeStore.clearSensorRoute">
               <vue-feather type="trash-2"></vue-feather>
             </v-btn>
           </div>
@@ -183,6 +183,7 @@
     &__items {
       cursor: pointer;
     }
+
     :deep .v-btn--size-default {
       min-width: 24px;
     }
