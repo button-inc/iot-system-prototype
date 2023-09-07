@@ -20,8 +20,12 @@
     // button to be disabled after first click
     // routeStore.setEnableOptimizedRoute(false);
 
-    // TODO: add call to google api
-    await getOptimizedRoute();
+    const googResponse = await getOptimizedRoute(sensorRouteList);
+    if (googResponse && googResponse.routes) {
+      const routeOrder = googResponse.routes[0]?.optimizedIntermediateWaypointIndex; // [0,3,4]
+      routeStore.updateWithOptimizedRoute(routeOrder);
+    }
+
   }
 
   function exportRouteClicked() {
@@ -109,7 +113,7 @@
               'justify-end': sensorRouteList && sensorRouteList.length <= 1
             }">
             <div v-if="sensorRouteList && sensorRouteList.length > 1">
-              <v-btn v-if="sensorRouteList.length >= 3" class="pa-0" variant="plain" :disabled="!isOptimizeRouteEnabled" @click="optimizeRouteClicked">
+              <v-btn v-if="sensorRouteList.length >= 4" class="pa-0" variant="plain" :disabled="!isOptimizeRouteEnabled" @click="optimizeRouteClicked">
                 Optimize route
               </v-btn>
               <v-btn class="pa-0 routes-list__export" variant="plain" @click="exportRouteClicked">

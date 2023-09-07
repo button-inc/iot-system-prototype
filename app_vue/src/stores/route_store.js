@@ -37,6 +37,29 @@ export const useRouteStore = defineStore('route', {
     },
     setEnableOptimizedRoute(value) {
       this.enableOptimizeRoute = value;
+    },
+    // reorders intermediate points in our sensorRouteList according to a list of given indexes (routeOrder)
+    updateWithOptimizedRoute(routeOrder) {
+      // variable to hold our intermediate waypoints for update (no start/end point included)
+      const intermediates = [...this.sensorRouteList];
+      intermediates.shift(); // remove start point
+      intermediates.pop(); // remove end point
+
+      // refer to google route order and match it to our defined route
+      // copy result to temp
+      let temp = [];
+      const arrLength = intermediates.length;
+      for (let i = 0; i < arrLength; i++) {
+        temp[routeOrder[i]] = intermediates[i];
+      }
+
+      // replace intermediate waypoint array with temp
+      for (let j = 0; j < arrLength; j++) {
+        intermediates[j] = temp[j];
+      }
+
+      // update saved routelist with new route order
+      this.sensorRouteList.splice(1, intermediates.length, ...intermediates);
     }
   },
 })

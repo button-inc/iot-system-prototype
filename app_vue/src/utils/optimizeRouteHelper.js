@@ -1,14 +1,6 @@
 import axios from 'axios';
 
-// google api call to optimize route
-// https://developers.google.com/maps/documentation/routes/opt-way
-export const getOptimizedRoute = async () => {
-  const googApiKey = 'AIzaSyAgixnED4py56GFy-b2hlfYgofEyISUjSo'; //TODO: move to .env
-  //TODO: add routes.optimizedIntermediateWaypointIndex to the field mask when ready to use optimized waypoint
-  const googFieldMask = 'routes.duration,routes.distanceMeters,routes.optimizedIntermediateWaypointIndex'; 
-
-  const URL = 'https://routes.googleapis.com/directions/v2:computeRoutes';
-  // sample data
+const getGoogPayload = () => {
   const data = {
     "origin": { // specify starting point
       "location":{
@@ -54,8 +46,19 @@ export const getOptimizedRoute = async () => {
     },
     "languageCode": "en-US",
     "units": "IMPERIAL",
-    "optimizeWaypointOrder": "true", // TODO: uncomment to enable special feature that charges us advanced:route pricing
+    "optimizeWaypointOrder": "true", // note this special feature being true charges us advanced:route pricing
   };
+  return data;
+};
+
+// google api call to optimize route
+// https://developers.google.com/maps/documentation/routes/opt-way
+export const getOptimizedRoute = async (sensorRouteList) => {
+  // google headers
+  const googApiKey = 'AIzaSyAgixnED4py56GFy-b2hlfYgofEyISUjSo'; //TODO: move to .env
+  const googFieldMask = 'routes.duration,routes.distanceMeters,routes.optimizedIntermediateWaypointIndex';
+  const URL = 'https://routes.googleapis.com/directions/v2:computeRoutes';
+  const data = getGoogPayload();
   const config = {
     headers: {
       'Content-Type': 'application/json',
@@ -67,17 +70,7 @@ export const getOptimizedRoute = async () => {
   try {
     const response = await axios.post(URL, data, config);
     if (response) {
-      console.log('response', response);
-      /*
-      response should return index indicating optimal order for routes defined in "intermediate"
-      if defined correct googFieldMask
-      "optimizedIntermediateWaypointIndex": [
-          3,
-          2,
-          0,
-          1
-      ]
-      */
+      return response.data;
     }
   } catch(e) {
     console.log('error getting optimized route', e);
