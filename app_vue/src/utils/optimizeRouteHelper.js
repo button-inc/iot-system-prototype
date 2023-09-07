@@ -1,38 +1,34 @@
 import axios from 'axios';
 
-const getGoogPayload = () => {
+const getGoogPayload = (sensorRouteList) => {
+  const waypointArr = [...sensorRouteList]; // ensures original variable isnt modified
+  const origin = waypointArr.shift(); // grab first sensor in route
+  const destination = waypointArr.pop(); // grab last sensor in route
+  const intermediates = waypointArr.map(waypoint => {
+    return {
+      "location":{
+        "latLng":{
+          "latitude": waypoint.lat,
+          "longitude": waypoint.long
+        }
+      }
+    }
+  });
   const data = {
     "origin": { // specify starting point
       "location":{
         "latLng":{
-          "latitude": 37.419734,
-          "longitude": -122.0827784
+          "latitude": origin.lat,
+          "longitude": origin.long
         }
       }
     },
-    "intermediates": [ // in-between
-      {
-        "location":{
-          "latLng":{
-            "latitude": 37.417670,
-            "longitude": -122.069595
-          }
-        }
-      },
-      {
-        "location":{
-          "latLng":{
-            "latitude": 37.427670,
-            "longitude": -122.069595
-          }
-        }
-      }
-    ],
+    intermediates,
     "destination":{ // specify ending point
       "location":{
         "latLng":{
-          "latitude": 37.417670,
-          "longitude": -122.079595
+          "latitude": destination.lat,
+          "longitude": destination.long
         }
       }
     },
@@ -54,18 +50,23 @@ const getGoogPayload = () => {
 // google api call to optimize route
 // https://developers.google.com/maps/documentation/routes/opt-way
 export const getOptimizedRoute = async (sensorRouteList) => {
+
+  if (sensorRouteList && sensorRouteList.length === 0) {
+    return;
+  }
   // google headers
   const googApiKey = 'AIzaSyAgixnED4py56GFy-b2hlfYgofEyISUjSo'; //TODO: move to .env
   const googFieldMask = 'routes.duration,routes.distanceMeters,routes.optimizedIntermediateWaypointIndex';
   const URL = 'https://routes.googleapis.com/directions/v2:computeRoutes';
-  const data = getGoogPayload();
+  const data = getGoogPayload(sensorRouteList);
+
   const config = {
     headers: {
       'Content-Type': 'application/json',
       'X-Goog-FieldMask': googFieldMask,
       'X-Goog-Api-Key': googApiKey
     }
-  }
+  };
 
   try {
     const response = await axios.post(URL, data, config);

@@ -7,8 +7,9 @@
   import draggable from 'vuedraggable';
 
   const routeStore = useRouteStore();
-  const { sensorRouteList, getEnableOptimizeRoute } = storeToRefs(routeStore);
+  const { sensorRouteList, getEnableOptimizeRoute, getIsRouteOptimized } = storeToRefs(routeStore);
   const isOptimizeRouteEnabled = ref(true);
+  const isRouteOptimized = ref(false);
   const drag = ref(false);
 
   // listen for status of optimize route button
@@ -16,16 +17,27 @@
     isOptimizeRouteEnabled.value = routeStore.getEnableOptimizeRoute;
   })
 
+  watch(getIsRouteOptimized, () => {
+    isRouteOptimized.value = routeStore.getIsRouteOptimized;
+  })
+
   async function optimizeRouteClicked() {
     // button to be disabled after first click
-    // routeStore.setEnableOptimizedRoute(false);
+    routeStore.setEnableOptimizedRoute(false);
 
-    const googResponse = await getOptimizedRoute(sensorRouteList);
+    // make a call to google
+    const googResponse = await getOptimizedRoute(routeStore.getSensorRouteList);
     if (googResponse && googResponse.routes) {
       const routeOrder = googResponse.routes[0]?.optimizedIntermediateWaypointIndex; // [0,3,4]
-      routeStore.updateWithOptimizedRoute(routeOrder);
+      routeStore.updateWithOptimizedRoute(routeOrder); // update current route
+      routeStore.setIsRouteOptimized(true); // set flag is optimized to true
     }
 
+  }
+
+  function routeOrganized() {
+    drag.value = false; // completed drag
+    routeStore.setIsRouteOptimized(false);
   }
 
   function exportRouteClicked() {
@@ -92,7 +104,7 @@
             tag="div"
             item-key="id"
             @start="drag=true"
-            @end="drag=false">
+            @end="routeOrganized">
             <template #item="{ element: sensor, index }">
               <li class="routes-list__items">
                 <vue-feather v-if="index === 0" class="color-green" type="disc"></vue-feather>
@@ -113,8 +125,8 @@
               'justify-end': sensorRouteList && sensorRouteList.length <= 1
             }">
             <div v-if="sensorRouteList && sensorRouteList.length > 1">
-              <v-btn v-if="sensorRouteList.length >= 4" class="pa-0" variant="plain" :disabled="!isOptimizeRouteEnabled" @click="optimizeRouteClicked">
-                Optimize route
+              <v-btn v-if="sensorRouteList.length >= 4" class="pa-0" variant="plain" :disabled="isRouteOptimized" @click="optimizeRouteClicked">
+                {{ isRouteOptimized ? 'Optimized!' : 'Optimize route' }}
               </v-btn>
               <v-btn class="pa-0 routes-list__export" variant="plain" @click="exportRouteClicked">
                 Export route
