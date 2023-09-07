@@ -44,7 +44,7 @@
   <div v-if="sensors" class="sensor-map-container">
     <l-map ref="map" v-model:zoom="zoom" :use-global-leaflet="false" :center="center" :options="{zoomControl: false}">
       <l-control-zoom :position="state.location"/>
-      <!-- alternative maps: -->
+      <!-- alternative maps (for aesthetic): -->
       <!-- favourite: https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png -->
       <!-- another one: https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png -->
       <l-tile-layer
@@ -69,9 +69,9 @@
 <style lang="scss" scoped>
   // leaflet css override for mobile views
 
-  // :deep .leaflet-pane .leaflet-layer { // handles map opacity level
-  //   opacity: 0.90 !important;
-  // }
+  :deep .leaflet-pane .leaflet-layer { // handles map opacity level
+    opacity: 0.70 !important;
+  }
   :deep .leaflet-popup-content {
     margin: 13px 0 13px 0;
 
