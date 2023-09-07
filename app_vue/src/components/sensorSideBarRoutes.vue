@@ -4,10 +4,12 @@
   import { storeToRefs } from 'pinia';
   import { v4 as uuidv4 } from 'uuid';
   import { getOptimizedRoute } from '@/utils/optimizeRouteHelper';
+  import draggable from 'vuedraggable';
 
   const routeStore = useRouteStore();
   const { sensorRouteList, getEnableOptimizeRoute } = storeToRefs(routeStore);
   const isOptimizeRouteEnabled = ref(true);
+  const drag = ref(false);
 
   // listen for status of optimize route button
   watch(getEnableOptimizeRoute, () => {
@@ -65,7 +67,7 @@
 <template>
   <section class="routes-list">
     <div class="text-h6 padding-b-16">Routes</div>
-    <div class="padding-b-16">1 route(s) found</div>
+    <div v-if="sensorRouteList && sensorRouteList.length !== 0" class="padding-b-16">1 route(s) found</div>
     <div class="py-4 px-4 routes-list__route-container">
       <!-- no route present -->
       <span v-if="sensorRouteList && sensorRouteList.length === 0" 
@@ -81,7 +83,27 @@
         <!-- route list -->
         <section>
           <!-- route list items -->
-          <div v-for="(sensor, index) in sensorRouteList" :key="sensor.id" class="d-flex align-center routes-list__route mt-4">
+          <draggable 
+            v-model="sensorRouteList" 
+            tag="div"
+            item-key="id"
+            @start="drag=true"
+            @end="drag=false">
+            <template #item="{ element: sensor, index }">
+              <li class="routes-list__items">
+                <vue-feather v-if="index === 0" class="color-green" type="disc"></vue-feather>
+                <vue-feather v-if="index > 0 && index < (sensorRouteList.length - 1)" class="transform-rotate-270" type="git-commit"></vue-feather>
+                <vue-feather v-if="index === (sensorRouteList.length - 1) && index !== 0" class="color-red" type="map-pin"></vue-feather>
+                <div class="d-flex flex-column ml-2">
+                  <span>{{ sensor.address_line1 }}</span>
+                  <span>{{ sensor.address_line2 }}</span>
+                </div>
+              </li>
+            </template>
+          </draggable>
+
+          <!-- route list items -->
+          <!-- <div v-for="(sensor, index) in sensorRouteList" :key="sensor.id" class="d-flex align-center routes-list__route mt-4">
             <vue-feather v-if="index === 0" class="color-green" type="disc"></vue-feather>
             <vue-feather v-if="index > 0 && index < (sensorRouteList.length - 1)" class="transform-rotate-270" type="git-commit"></vue-feather>
             <vue-feather v-if="index === (sensorRouteList.length - 1) && index !== 0" class="color-red" type="map-pin"></vue-feather>
@@ -89,7 +111,7 @@
               <span>{{ sensor.address_line1 }}</span>
               <span>{{ sensor.address_line2 }}</span>
             </div>
-          </div>
+          </div> -->
 
           <!-- route call-to-actions -->
           <div class="d-flex align-center" 
@@ -153,6 +175,9 @@
       align-items: center;
     }
 
+    &__items {
+      cursor: pointer;
+    }
     :deep .v-btn--size-default {
       min-width: 24px;
     }
