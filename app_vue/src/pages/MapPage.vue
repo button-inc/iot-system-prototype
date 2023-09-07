@@ -1,6 +1,6 @@
 <script setup>
   // import data from '@/data/latestReadingsMock.json'; // imports MOCK data file
-  import { ref, onMounted } from 'vue';
+  import { onMounted } from 'vue';
   import SensorMap from '@/components/sensorMap.vue';
   import SensorSidebar from '@/components/sensorSidebar.vue';
   import { useSensorStore } from '@/stores/sensors_store';
@@ -9,9 +9,6 @@
 
   // config
   const ENV_API_BASE_URL = process.env.VUE_APP_API_HOST || "http://localhost:8080";
-  const alertThreshold = ref(50);
-  const filterThresholdMaximum = ref(100);
-  const filterThresholdMinimum = ref(0);
   
   // prepare sensor store
   const sensorStore = useSensorStore();
@@ -37,11 +34,7 @@
       
       <NavigationBar></NavigationBar>
       <SensorSidebar></SensorSidebar>
-      <SensorMap
-        :alertThreshold="alertThreshold"
-        :filterThresholdMaximum="filterThresholdMaximum"
-        :filterThresholdMinimum="filterThresholdMinimum">
-      </SensorMap>
+      <SensorMap></SensorMap>
 
     </v-layout>
     

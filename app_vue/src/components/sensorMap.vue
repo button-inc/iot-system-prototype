@@ -8,18 +8,6 @@
   import { useRouteStore } from '@/stores/route_store';
   import { storeToRefs } from 'pinia';
 
-  const props = defineProps({
-    alertThreshold: {
-      type: Number
-    },
-    filterThresholdMaximum: {
-      type: Number
-    },
-    filterThresholdMinimum: {
-      type: Number
-    }
-  })
-
   const center = ref([43.7, -79.42]); // TODO: update to possibly be user's current location
   const zoom = ref(10);
   const sensorStore = useSensorStore();
@@ -56,6 +44,9 @@
   <div v-if="sensors" class="sensor-map-container">
     <l-map ref="map" v-model:zoom="zoom" :use-global-leaflet="false" :center="center" :options="{zoomControl: false}">
       <l-control-zoom :position="state.location"/>
+      <!-- alternative maps (for aesthetic): -->
+      <!-- favourite: https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png -->
+      <!-- another one: https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png -->
       <l-tile-layer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         layer-type="base"
@@ -68,11 +59,7 @@
         :key="sensor.id"
         :lat-lng="[sensor.lat, sensor.long]"
       >
-        <SensorMapMarker 
-          :sensor="sensor"
-          :alertThreshold="props.alertThreshold"
-          :filterThresholdMaximum="props.filterThresholdMaximum"
-          :filterThresholdMinimum="props.filterThresholdMinimum">
+        <SensorMapMarker :sensor="sensor">
         </SensorMapMarker>
       </l-marker>
     </l-map>
@@ -81,6 +68,10 @@
 
 <style lang="scss" scoped>
   // leaflet css override for mobile views
+
+  :deep .leaflet-pane .leaflet-layer { // handles map opacity level
+    opacity: 0.70 !important;
+  }
   :deep .leaflet-popup-content {
     margin: 13px 0 13px 0;
 

@@ -8,21 +8,14 @@
     sensor: {
       type: Object,
       required: true
-    },
-    alertThreshold: {
-      type: Number
-    },
-    filterThresholdMaximum: {
-      type: Number
-    },
-    filterThresholdMinimum: {
-      type: Number
     }
   });
 
+  // set html element variables
   const fillPercent = ref(Math.round(props.sensor.fill_level || 0));
-  const { iconUrl, linearProgressColor } = getIconAndProgressColor(getBinIconName());
+  const { iconUrl, linearProgressColor } = getIconAndProgressColor();
 
+  // route store
   const routeStore = useRouteStore();
   const isAlreadyInRoute = ref(false);
   const { getSensorRouteList } = storeToRefs(routeStore);
@@ -50,54 +43,59 @@
     }
   }
 
-  function getBinIconName() {
-    const isDefaultState = props.sensor.fill_level
-      ? props.sensor.fill_level < props.filterThresholdMinimum 
-      || props.sensor.fill_level > props.filterThresholdMaximum
-      : false;
+  // linearProgressColor -> used by Vuetify to determine progress bar color
+  // iconURL -> used by Vuetify to display bin icon
+  function getIconAndProgressColor() {
 
-    const isFullState = props.sensor.fill_level
-      ? props.alertThreshold && props.sensor.fill_level > props.alertThreshold
-      : false;
-    
-    const isErrorState = props.sensor.error;
+    // mini-helper function
+    const getBinIconName = () => {
+      const isErrorState = props.sensor.error;
+      const isFullState = props.sensor.fill_level && props.sensor.fill_level >= 75;
+      const isHalfFullState = props.sensor.fill_level && props.sensor.fill_level >= 50 && props.sensor.fill_level < 75;
+      const isEmptyState = props.sensor.fill_level && props.sensor.fill_level < 50;
 
-    if (isErrorState) { // shows error icon
-      return 'error';
-    } else if (isDefaultState) { // filtered out state TODO: remove
-      return 'default';
-    } else if (isFullState) { // shows red bin
-      return 'full';
+      if (isErrorState) { // shows error icon
+        return 'error';
+      } else if (isFullState) {
+        return 'full';
+      } else if (isHalfFullState) {
+        return 'half-full';
+      } else if (isEmptyState) {
+        return 'empty';
+      }
+      return 'empty'; // default
     }
-    return 'healthy'; // shows green bin
-  }
 
-  function getIconAndProgressColor(iconName) {
+    const iconName = getBinIconName();
     let iconUrl = ''
     let linearProgressColor = '';
     switch (iconName) {
       case 'error':
-        iconUrl = 'https://cdn-icons-png.flaticon.com/128/1304/1304037.png';
-        linearProgressColor = 'error';
+        iconUrl = 'src/assets/images/alert-bin.png';
+        linearProgressColor = 'red';
         break;
       case 'full':
-        iconUrl = 'https://cdn-icons-png.flaticon.com/128/5028/5028066.png';
-        linearProgressColor = 'error';
+        iconUrl = 'src/assets/images/full-bin.png';
+        linearProgressColor = 'red';
         break;
-      case 'healthy':
-        iconUrl = 'https://cdn-icons-png.flaticon.com/128/542/542775.png';
-        linearProgressColor = 'success';
-        break;
-      default:
-        iconUrl = 'https://cdn-icons-png.flaticon.com/128/484/484662.png';
+      case 'half-full':
+        iconUrl = 'src/assets/images/half-full-bin.png';
         linearProgressColor = 'primary';
+        break;
+      case 'empty':
+        iconUrl = 'src/assets/images/empty-bin.png';
+        linearProgressColor = 'green';
+        break;
+      default: // default is empty bin
+        iconUrl = 'src/assets/images/empty-bin.png';
+        linearProgressColor = 'green';
     }
     return { iconUrl, linearProgressColor };
   }
 </script>
 
 <template>
-  <l-icon :icon-size="[25, 25]" :icon-anchor="[13, 0]" :icon-url="iconUrl" />
+  <l-icon :icon-size="[19, 23]" :icon-anchor="[13, 0]" :icon-url="iconUrl" />
 
   <l-popup class="popup">
     <section class="bin-details">
