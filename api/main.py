@@ -11,11 +11,14 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.session import FastAPISessionMaker
 from fastapi_utils.tasks import repeat_every
+from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 import os
 from datetime import datetime
 from typing import Optional, List, Dict, Union
+
+from starlette.responses import JSONResponse
 
 # 🌐 Load environment variables from .env file
 load_dotenv()
@@ -617,6 +620,39 @@ def get_latest_readings():
     latest_readings = bb_readings + rfs_cache + ss_cache + tkl_readings
     return {"sensors": latest_readings}
 
+
+conf = ConnectionConfig(
+    MAIL_USERNAME = "username",
+    MAIL_PASSWORD = "**********",
+    MAIL_FROM = "test@email.com",
+    MAIL_PORT = 587,
+    MAIL_SERVER = "mail server",
+    MAIL_FROM_NAME="Desired Name",
+    #MAIL_STARTTLS = True,
+    #MAIL_SSL_TLS = False,
+    USE_CREDENTIALS = True,
+    VALIDATE_CERTS = True
+)
+class EmailSchema(BaseModel):
+    email: str
+
+@app.post("/email")
+async def simple_send(email: EmailSchema):
+    try:
+        print(email)
+        html = """<p>Hi this test mail, thanks for using Fastapi-mail</p> """
+
+        message = MessageSchema(
+            subject="Fastapi-Mail module",
+            recipients=email.dict().get("email"),
+            body=html,
+            subtype=MessageType.html)
+
+        fm = FastMail(conf)
+        await fm.send_message(message)
+        return JSONResponse(status_code=200, content={"message": "email has been sent"})
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 # @app.get("/sensors/{sensor_id}")
 # def query_sensor_by_id(sensor_id: str) -> Sensor:

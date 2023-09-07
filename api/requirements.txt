@@ -5,3 +5,4 @@ uvicorn>=0.15.0,<0.16.0
 requests
 python-dotenv
 gspread>=5.10.0
+fastapi-mail=1.0.1
