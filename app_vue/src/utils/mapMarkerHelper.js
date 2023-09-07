@@ -16,6 +16,20 @@ const getBinIconName = (sensor) => {
   return 'empty'; // default
 }
 
+export const getMaterialTypeIconURL = (materialType) => {
+  if (!materialType) {
+    return '@/assets/images/open-box.png';
+  }
+  const materialMap = {
+    'Cardboard': 'src/assets/images/cardboard.svg', //confirmed
+    'Plastic': 'src/assets/images/plastic.svg', // confirmed
+    'Compost': 'src/assets/images/compost.svg', // confirmed
+    'Oil': 'src/assets/images/oil-drum.svg', // TODO: confirm actual data returned for mat type
+    'Trash': 'src/assets/images/trash.svg' // TODO: confirm actual data returned for mat type
+  };
+  return materialMap[materialType];
+}
+
 // linearProgressColor -> used by Vuetify to determine progress bar color
 // iconURL -> used by Vuetify to display bin icon
 export const getIconAndProgressColor = (sensor) => {

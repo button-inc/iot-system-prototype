@@ -3,7 +3,7 @@
   import { LPopup, LIcon } from '@vue-leaflet/vue-leaflet';
   import { useRouteStore } from '@/stores/route_store';
   import { storeToRefs } from 'pinia';
-  import { getIconAndProgressColor } from '@/utils/mapMarkerHelper';
+  import { getIconAndProgressColor, getMaterialTypeIconURL } from '@/utils/mapMarkerHelper';
 
   const props = defineProps({
     sensor: {
@@ -104,7 +104,8 @@
       </div>
 
       <div class="material-type">
-        <img class="material-type__image" src="@/assets/images/open-box.png"/>
+        <v-img class="material-type__image" :src="getMaterialTypeIconURL(props.sensor.material_type)" width="40" height="40" />
+        <!-- <img class="material-type__image" :src="getMaterialTypeIconURL(props.sensor.material_type)"/> -->
         <span class="material-type__description">{{ props.sensor.material_type }}</span>
       </div>
     </section>
