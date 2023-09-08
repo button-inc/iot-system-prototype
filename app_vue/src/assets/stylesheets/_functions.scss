@@ -15,6 +15,14 @@
   padding-top: 22px;
 }
 
+.padding-b-16 {
+  padding-bottom: 16px;
+}
+
+.padding-t-16 {
+  padding-top: 16px;
+}
+
 .padding-b-12 {
   padding-bottom: 12px;
 }
@@ -31,6 +39,10 @@
   padding-top: 8px;
 }
 
+.margin-b-0 {
+  margin-bottom: 0;
+}
+
 
 // colors
 .color-gray-grey {
@@ -39,4 +51,26 @@
 
 .color-cyan-blue {
   color: #2196F3;
+}
+
+.color-green {
+  color: #009E08;
+}
+
+.color-red {
+  color: #C92828;
+}
+
+// text 
+.font-body {
+  @include fontBody;
+}
+
+// misc
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.transform-rotate-270 {
+  transform: rotate(270deg);
 }

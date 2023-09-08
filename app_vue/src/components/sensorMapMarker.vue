@@ -1,77 +1,93 @@
 <script setup>
-  import { ref } from 'vue';
+  import { ref, watch } from 'vue';
   import { LPopup, LIcon } from '@vue-leaflet/vue-leaflet';
+  import { useRouteStore } from '@/stores/route_store';
+  import { storeToRefs } from 'pinia';
+  import { getIconAndProgressColor, getMaterialTypeIconURL } from '@/utils/mapMarkerHelper';
 
   const props = defineProps({
     sensor: {
       type: Object,
       required: true
-    },
-    alertThreshold: {
-      type: Number
-    },
-    filterThresholdMaximum: {
-      type: Number
-    },
-    filterThresholdMinimum: {
-      type: Number
     }
-  })
+  });
 
+  // set html element variables
   const fillPercent = ref(Math.round(props.sensor.fill_level || 0));
+  const { iconUrl, linearProgressColor } = getIconAndProgressColor(props.sensor);
 
-  function getIconName() {
-    const isDefaultState = props.sensor.fill_level
-      ? props.sensor.fill_level < props.filterThresholdMinimum 
-      || props.sensor.fill_level > props.filterThresholdMaximum
-      : false;
-
-    const isFullState = props.sensor.fill_level
-      ? props.alertThreshold && props.sensor.fill_level > props.alertThreshold
-      : false;
-    
-    const isErrorState = !props.sensor.fill_level;
-
-    if (isErrorState) {
-      return 'error';
-    } else if (isDefaultState) {
-      return 'default';
-    } else if (isFullState) {
-      return 'full';
+  // route store
+  const routeStore = useRouteStore();
+  const isAlreadyInRoute = ref(false);
+  const { getSensorRouteList } = storeToRefs(routeStore);
+  
+  // watch for changes in stored sensor route array (ie. when a sensor gets added or removed)
+  watch(getSensorRouteList, () => {
+    if (routeStore.getSensorRouteList.length > 0) {
+      isAlreadyInRoute.value = !!routeStore.getSensorRouteList.find(bin => bin.id === props.sensor.id);
+    } else {
+      isAlreadyInRoute.value = false
     }
-    return 'healthy';
+  }, { deep: true })
+
+  function addBinToRoute(sensor) {
+    // only add to route if not already added
+    if (isAlreadyInRoute.value === false) {
+      routeStore.addSensorToRoute(sensor);
+    }
   }
 
-  const getIconAndProgressColor = (iconName) => {
-    let iconUrl = ''
-    let linearProgressColor = '';
-    switch (iconName) {
-      case 'error':
-        iconUrl = 'https://cdn-icons-png.flaticon.com/128/1304/1304037.png';
-        linearProgressColor = 'error';
-        break;
-      case 'full':
-        iconUrl = 'https://cdn-icons-png.flaticon.com/128/5028/5028066.png';
-        linearProgressColor = 'error';
-        break;
-      case 'healthy':
-        iconUrl = 'https://cdn-icons-png.flaticon.com/128/542/542775.png';
-        linearProgressColor = 'success';
-        break;
-      default:
-        iconUrl = 'https://cdn-icons-png.flaticon.com/128/484/484662.png';
-        linearProgressColor = 'primary';
+  function removeBinFromRoute(sensor) {
+    // only add to route if not already added
+    if (isAlreadyInRoute.value === true) {
+      routeStore.removeSensorFromRoute(sensor);
     }
-    return { iconUrl, linearProgressColor };
   }
 
-  const { iconUrl, linearProgressColor } = getIconAndProgressColor(getIconName());
 </script>
 
 <template>
-  <l-icon :icon-size="[25, 25]" :icon-anchor="[13, 0]" :icon-url="iconUrl" />
+  <l-icon :icon-size="[19, 23]" :icon-anchor="[10, 18]" :icon-url="iconUrl" />
 
   <l-popup class="popup">
+    <section class="bin-details">
+      <span class="text-h6">{{ props.sensor.bin_name }}</span>
+      <div class="bin-details__address color-cyan-blue" v-if="props.sensor.address_line1 || props.sensor.address_line2">
+        <span v-if="props.sensor.address_line1">{{ props.sensor.address_line1 }}</span>
+        <span v-if="props.sensor.address_line2">{{ props.sensor.address_line2 }}</span>
+      </div>
+      <div class="bin-details__group" v-if="props.sensor.group">
+        <span class="color-gray-grey">Group</span>
+        {{ props.sensor.group }}
+      </div>
+      <div class="bin-details__bin-type">
+        <span class="color-gray-grey">Bin type</span>
+        {{ props.sensor.bin_type }}
+      </div>
+      <div class="bin-details__bin-volume">
+        <span class="color-gray-grey">Bin Volume: </span>
+        {{ props.sensor.bin_volume }}
+      </div>
+      <div class="bin-details__tag-list">
+        <span class="bin-details__tag-list-text">Tags:</span>
+        <span class="bin-details__tag">{{ props.sensor.asset_tag }}</span>
+      </div>
+      <div class="bin-details__cta-routes">
+        <v-btn variant="flat"
+          class="mt-2 mb-2"
+          color="#191A1C"
+          :disabled="isAlreadyInRoute"
+          @click="addBinToRoute(props.sensor)">
+          + Add to route
+        </v-btn>
+        <v-btn variant="tonal" v-if="isAlreadyInRoute"
+          class="mt-2 mb-2"
+          @click="removeBinFromRoute(props.sensor)">
+          - Remove from route
+        </v-btn>
+      </div>
+    </section>
+
     <section class="popup__sidebar">
       <div class="fill-level">
         <template v-if="fillPercent === null">level not captured</template>
@@ -88,34 +104,9 @@
       </div>
 
       <div class="material-type">
-        <img class="material-type__image" src="@/assets/images/open-box.png"/>
+        <v-img class="material-type__image" :src="getMaterialTypeIconURL(props.sensor.material_type)" width="40" height="40" />
+        <!-- <img class="material-type__image" :src="getMaterialTypeIconURL(props.sensor.material_type)"/> -->
         <span class="material-type__description">{{ props.sensor.material_type }}</span>
-      </div>
-    </section>
-
-
-    <section class="bin-details">
-      <span class="text-h6">{{ props.sensor.bin_name }}</span>
-      <span class="text-subtitle-2">ID: {{ props.sensor.id }}</span>
-      <div class="bin-details__address">
-        <span>{{ props.sensor.address_line1 }}</span>
-        <span>{{ props.sensor.address_line2 }}</span>
-      </div>
-      <div class="bin-details__group">
-        <span class="font-weight-bold">Group</span>
-        {{ props.sensor.group }}
-      </div>
-      <div class="bin-details__bin-type">
-        <span class="font-weight-bold">Bin type</span>
-        {{ props.sensor.bin_type }}
-      </div>
-      <div class="bin-details__bin-volume">
-        <span class="font-weight-bold">Bin Volume: </span>
-        {{ props.sensor.bin_volume }}
-      </div>
-      <div class="bin-details__tag-list">
-        <span class="bin-details__tag-list-text">Tags:</span>
-        <span class="bin-details__tag">{{ props.sensor.asset_tag }}</span>
       </div>
     </section>
   </l-popup>
@@ -191,15 +182,15 @@
       justify-content: center;
       height: 32px;
       min-width: 50px;
-      background: #2196F3;
+      background: rgba(0, 0, 0, 0.08);
       border-radius: 999px;
       padding: 0 10px;
       width: fit-content;
     }
 
     &__tag-list-text {
-      font-weight: 700;
       margin-bottom: 6px;
+      color: $grey;
     }
 
     &__tag-list,
@@ -210,6 +201,13 @@
       flex-direction: column;
       margin-bottom: 6px;
       @include fontSubTitle2;
+    }
+
+    &__cta-routes button {
+      width: 184px;
+      @include smallScreens {
+        width: 224px;
+      }
     }
   }
 </style>

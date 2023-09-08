@@ -6,9 +6,10 @@ export const useSensorStore = defineStore('sensors', {
     allSensors: [],
     selectedGroup: null,
     selectedAssetTag: [],
-    selectedBinType: null,
+    selectedBinType: [],
     selectedBinVolume: null,
-    selectedFillRange: [0,100]
+    selectedFillRange: [0,100],
+    selectedMaterialType: []
   }),
   getters: {
     getTotalSensors({ sensors }) {
@@ -26,14 +27,18 @@ export const useSensorStore = defineStore('sensors', {
     getAllBinVolumes({ allSensors }) {
       return [...new Set(allSensors.flatMap(sensor => sensor.bin_volume || []))];
     },
+    getAllMaterialTypes({ allSensors }) {
+      return [...new Set(allSensors.flatMap(sensor => sensor.material_type || []))];
+    }
   },
   actions: {
     clearSelected() {
       this.selectedGroup = null;
       this.selectedAssetTag = [];
-      this.selectedBinType = null;
+      this.selectedBinType = [];
       this.selectedBinVolume = null;
       this.selectedFillRange = [0, 100];
+      this.selectedMaterialType = [];
       this.updateSensorsWithFilters();
     },
     setSensors(value) {
@@ -54,6 +59,9 @@ export const useSensorStore = defineStore('sensors', {
     },
     setSelectedFillRange(fillRange) {
       this.selectedFillRange = fillRange;
+    },
+    setSelectedMaterialType(materialType) {
+      this.selectedMaterialType = materialType;
     },
     updateSensorsWithFilters() {
       this.sensors = this.allSensors.filter(sensor => {
@@ -83,8 +91,8 @@ export const useSensorStore = defineStore('sensors', {
   
         // filter for bintype
         const binTypeFilter = () => {
-          if (this.selectedBinType && sensor.bin_type) {
-            return sensor.bin_type === this.selectedBinType ;
+          if (this.selectedBinType && this.selectedBinType.length > 0 && sensor.bin_type) {
+            return this.selectedBinType.includes(sensor.bin_type);
           }
           return true;
         };
@@ -96,9 +104,17 @@ export const useSensorStore = defineStore('sensors', {
           }
           return true;
         };
-        
+
+        // filter for materialType
+        const materialTypeFilter = () => {
+          if (this.selectedMaterialType && this.selectedMaterialType.length > 0 && sensor.material_type) {
+            return this.selectedMaterialType.includes(sensor.material_type);
+          }
+          return true;
+        };
+
         // combining results of all filters together
-        return fillRangeFilter() && groupFilter() && assetTagFilter() && binTypeFilter() && binVolumeFilter();
+        return fillRangeFilter() && groupFilter() && assetTagFilter() && binTypeFilter() && binVolumeFilter() && materialTypeFilter();
       })
     }
   },
