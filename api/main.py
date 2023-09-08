@@ -3,7 +3,7 @@ from enum import Enum
 import re
 import time
 import requests
-from mail_services import EmailSchema, get_fm
+from mail_services import EmailSchema, get_email_msg, get_fm
 
 import gspread
 from dotenv import load_dotenv
@@ -629,18 +629,19 @@ def get_latest_readings():
 
 @app.post("/email")
 async def simple_send(email: EmailSchema) -> JSONResponse:
-    html = """<p>Hi this test mail, thanks for using Fastapi-mail</p> """
 
-    message = MessageSchema(
-        subject="WAVSmart IoT Notify",
-        recipients=email.dict().get("email"),
-        body=html,
-        #subtype=MessageType.html
-    )
+    msg = get_email_msg(
+        recipients=email.dict().get("email"), 
+        body=email.dict().get("body")
+        )
 
     fm = get_fm()
-    await fm.send_message(message)
-    return JSONResponse(status_code=200, content={"message": "email has been sent"})
+    
+    await fm.send_message(msg)
+    return JSONResponse(
+        status_code=200, 
+        content={"message": "email has been sent"}
+        )
 
 
 # @app.get("/sensors/{sensor_id}")

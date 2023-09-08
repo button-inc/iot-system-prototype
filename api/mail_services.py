@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 import os
-from fastapi_mail import FastMail, ConnectionConfig
+from fastapi_mail import FastMail, ConnectionConfig, MessageSchema
 from pydantic import BaseModel, EmailStr
 from typing import List
 
@@ -28,7 +28,17 @@ conf = ConnectionConfig(
 
 class EmailSchema(BaseModel):
     email: List[EmailStr]
+    body: str
 
 def get_fm():
     return FastMail(conf)
+
+def get_email_msg(recipients, body):
+
+    return MessageSchema(
+        subject="WAVSmart IoT Notify",
+        recipients=recipients,
+        body=body,
+        #subtype=MessageType.html
+    )
 
