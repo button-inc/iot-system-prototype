@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const getGoogPayload = (sensorRouteList) => {
-  const waypointArr = [...sensorRouteList]; // ensures original variable isnt modified
+const getGoogPayload = (selectedRouteList) => {
+  const waypointArr = [...selectedRouteList]; // ensures original variable isnt modified
   const origin = waypointArr.shift(); // grab first sensor in route
   const destination = waypointArr.pop(); // grab last sensor in route
   
@@ -51,16 +51,16 @@ const getGoogPayload = (sensorRouteList) => {
 
 // google api call to optimize route
 // https://developers.google.com/maps/documentation/routes/opt-way
-export const getOptimizedRoute = async (sensorRouteList) => {
+export const getOptimizedRoute = async (selectedRouteList) => {
 
-  if (sensorRouteList && sensorRouteList.length === 0) {
+  if (selectedRouteList && selectedRouteList.length === 0) {
     return;
   }
   // google headers
   const googApiKey = 'AIzaSyAgixnED4py56GFy-b2hlfYgofEyISUjSo'; //TODO: move to .env
   const googFieldMask = 'routes.duration,routes.distanceMeters,routes.optimizedIntermediateWaypointIndex';
   const URL = 'https://routes.googleapis.com/directions/v2:computeRoutes';
-  const data = getGoogPayload(sensorRouteList);
+  const data = getGoogPayload(selectedRouteList);
 
   const config = {
     headers: {

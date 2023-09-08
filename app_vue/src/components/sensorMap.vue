@@ -19,10 +19,10 @@
   const polyLineLatLngs = ref([]);
 
   const routeStore = useRouteStore();
-  const { getSensorRouteLatLong } = storeToRefs(routeStore);
+  const { getSelectedRouteLatLong } = storeToRefs(routeStore);
 
-  watch(getSensorRouteLatLong, () => {
-    polyLineLatLngs.value = routeStore.getSensorRouteLatLong;
+  watch(getSelectedRouteLatLong, () => {
+    polyLineLatLngs.value = routeStore.getSelectedRouteLatLong;
   }, { deep: true })
 
   onMounted(() => {

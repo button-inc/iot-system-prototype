@@ -7,7 +7,7 @@
   import draggable from 'vuedraggable';
 
   const routeStore = useRouteStore();
-  const { sensorRouteList, getEnableOptimizeRoute, getIsRouteOptimized } = storeToRefs(routeStore);
+  const { selectedRouteList, getEnableOptimizeRoute, getIsRouteOptimized } = storeToRefs(routeStore);
   const isOptimizeRouteEnabled = ref(true);
   const isRouteOptimized = ref(false);
   const drag = ref(false);
@@ -26,7 +26,7 @@
     routeStore.setEnableOptimizedRoute(false);
 
     // make a call to google
-    const googResponse = await getOptimizedRoute(routeStore.getSensorRouteList);
+    const googResponse = await getOptimizedRoute(routeStore.getSelectedRouteList);
     if (googResponse && googResponse.routes) {
       const routeOrder = googResponse.routes[0]?.optimizedIntermediateWaypointIndex; // [0,3,4]
       routeStore.updateWithOptimizedRoute(routeOrder); // update current route
@@ -45,7 +45,7 @@
     let csv = 'Order,Sensor Type,Fill Level,Latitude,Longitude,Manufacturer,Bin Name,Address Line 1,Address Line 2,Group,Bin Type,Material Type,Asset Tag,Bin Volume\n';
 
     // grab required data to be exported
-    const csvObjectArray = routeStore.sensorRouteList.map((sensor, index) => {
+    const csvObjectArray = routeStore.selectedRouteList.map((sensor, index) => {
       return {
         order: index + 1,
         sensor_type: sensor.sensor_type,
@@ -83,33 +83,33 @@
 <template>
   <section class="routes-list">
     <div class="text-h6 padding-b-16">Routes</div>
-    <div v-if="sensorRouteList && sensorRouteList.length !== 0" class="padding-b-16">1 route(s) found</div>
+    <div v-if="selectedRouteList && selectedRouteList.length !== 0" class="padding-b-16">1 route(s) found</div>
     <div class="py-4 px-4 routes-list__route-container">
       <!-- no route present -->
-      <span v-if="sensorRouteList && sensorRouteList.length === 0" 
+      <span v-if="selectedRouteList && selectedRouteList.length === 0" 
         class="font-italic">
         No route to be displayed yet
       </span>
       <!-- route is present -->
       <div class="w-100 h-100" v-else>
         <div tabindex="0" class="w-100 h-100 d-flex align-center justify-space-between cursor-pointer">
-          <span class="font-body">{{ sensorRouteList.length }} Bins </span>
+          <span class="font-body">{{ selectedRouteList.length }} Bins </span>
         </div>
 
         <!-- route list -->
         <section>
           <!-- route list items -->
           <draggable 
-            v-model="sensorRouteList" 
+            v-model="selectedRouteList" 
             tag="div"
             item-key="id"
             @start="drag=true"
             @end="routeOrganized">
             <template #item="{ element: sensor, index }">
-              <li class="routes-list__items" :class="{'margin-b-0' : sensorRouteList.length === 1}">
+              <li class="routes-list__items" :class="{'margin-b-0' : selectedRouteList.length === 1}">
                 <vue-feather v-if="index === 0" class="color-green" type="disc"></vue-feather>
-                <vue-feather v-if="index > 0 && index < (sensorRouteList.length - 1)" class="transform-rotate-270" type="git-commit"></vue-feather>
-                <vue-feather v-if="index === (sensorRouteList.length - 1) && index !== 0" class="color-red" type="map-pin"></vue-feather>
+                <vue-feather v-if="index > 0 && index < (selectedRouteList.length - 1)" class="transform-rotate-270" type="git-commit"></vue-feather>
+                <vue-feather v-if="index === (selectedRouteList.length - 1) && index !== 0" class="color-red" type="map-pin"></vue-feather>
                 <div class="d-flex flex-column ml-2">
                   <span>{{ sensor.address_line1 }}</span>
                   <span>{{ sensor.address_line2 }}</span>
@@ -121,11 +121,11 @@
           <!-- route call-to-actions -->
           <div class="d-flex align-center" 
             :class="{
-              'justify-space-between': sensorRouteList && sensorRouteList.length > 1, 
-              'justify-end': sensorRouteList && sensorRouteList.length <= 1
+              'justify-space-between': selectedRouteList && selectedRouteList.length > 1, 
+              'justify-end': selectedRouteList && selectedRouteList.length <= 1
             }">
-            <div v-if="sensorRouteList && sensorRouteList.length > 1">
-              <v-btn v-if="sensorRouteList.length >= 4" class="pa-0" variant="plain" :disabled="isRouteOptimized" @click="optimizeRouteClicked">
+            <div v-if="selectedRouteList && selectedRouteList.length > 1">
+              <v-btn v-if="selectedRouteList.length >= 4" class="pa-0" variant="plain" :disabled="isRouteOptimized" @click="optimizeRouteClicked">
                 {{ isRouteOptimized ? 'Optimized!' : 'Optimize route' }}
               </v-btn>
               <v-btn class="pa-0 routes-list__export" variant="plain" @click="exportRouteClicked">

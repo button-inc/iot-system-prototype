@@ -19,12 +19,12 @@
   // route store
   const routeStore = useRouteStore();
   const isAlreadyInRoute = ref(false);
-  const { getSensorRouteList } = storeToRefs(routeStore);
+  const { getSelectedRouteList } = storeToRefs(routeStore);
   
   // watch for changes in stored sensor route array (ie. when a sensor gets added or removed)
-  watch(getSensorRouteList, () => {
-    if (routeStore.getSensorRouteList.length > 0) {
-      isAlreadyInRoute.value = !!routeStore.getSensorRouteList.find(bin => bin.id === props.sensor.id);
+  watch(getSelectedRouteList, () => {
+    if (routeStore.getSelectedRouteList.length > 0) {
+      isAlreadyInRoute.value = !!routeStore.getSelectedRouteList.find(bin => bin.id === props.sensor.id);
     } else {
       isAlreadyInRoute.value = false
     }

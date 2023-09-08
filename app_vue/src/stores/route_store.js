@@ -2,17 +2,17 @@ import { defineStore } from 'pinia'
 
 export const useRouteStore = defineStore('route', {
   state: () => ({
-    sensorRouteList: [], // list of sensor objects part of the route
+    selectedRouteList: [], // list of sensor objects part of the route
     enableOptimizeRoute: true, // enables optimize route button to be clicked
     isRouteOptimized: false
   }),
   getters: {
-    getSensorRouteList({sensorRouteList}) {
-      return sensorRouteList;
+    getSelectedRouteList({selectedRouteList}) {
+      return selectedRouteList;
     },
-    getSensorRouteLatLong({sensorRouteList}) {
-      if (sensorRouteList.length > 0) {
-        return sensorRouteList.map(sensor => [sensor.lat, sensor.long]);
+    getSelectedRouteLatLong({selectedRouteList}) {
+      if (selectedRouteList.length > 0) {
+        return selectedRouteList.map(sensor => [sensor.lat, sensor.long]);
       }
       return [];
     },
@@ -25,22 +25,22 @@ export const useRouteStore = defineStore('route', {
   },
   actions: {
     addSensorToRoute(sensor) {
-      this.sensorRouteList.push(sensor);
+      this.selectedRouteList.push(sensor);
       // reset
       this.enableOptimizeRoute = true;
       this.isRouteOptimized = false;
     },
     removeSensorFromRoute(sensor) {
-      const index = this.sensorRouteList.indexOf(sensor);
+      const index = this.selectedRouteList.indexOf(sensor);
       if (index > -1) {
-        this.sensorRouteList.splice(index, 1);
+        this.selectedRouteList.splice(index, 1);
       }
       // reset
       this.enableOptimizeRoute = true;
       this.isRouteOptimized = false;
     },
     clearSensorRoute() {
-      this.sensorRouteList = [];
+      this.selectedRouteList = [];
       // reset
       this.enableOptimizeRoute = true;
       this.isRouteOptimized = false;
@@ -51,11 +51,11 @@ export const useRouteStore = defineStore('route', {
     setIsRouteOptimized(value) {
       this.isRouteOptimized = value;
     },
-    // reorders intermediate points in our sensorRouteList according to a list of given indexes (routeOrder)
+    // reorders intermediate points in our selectedRouteList according to a list of given indexes (routeOrder)
     updateWithOptimizedRoute(routeOrder) {
       // assuming routeOrder looks like [originLocationSensor, midLocationSensor1...midLocationSensor4, destinationLocaitonSensor]
       // variable to hold our intermediate waypoints for update (no start/end point included)
-      const intermediates = [...this.sensorRouteList];
+      const intermediates = [...this.selectedRouteList];
       intermediates.shift(); // remove start point
       intermediates.pop(); // remove end point
 
@@ -73,7 +73,7 @@ export const useRouteStore = defineStore('route', {
       }
 
       // update saved routelist with new route order
-      this.sensorRouteList.splice(1, intermediates.length, ...intermediates);
+      this.selectedRouteList.splice(1, intermediates.length, ...intermediates);
     }
   },
 })
