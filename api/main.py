@@ -3,6 +3,7 @@ from enum import Enum
 import re
 import time
 import requests
+from mail_services import EmailSchema, get_fm
 
 import gspread
 from dotenv import load_dotenv
@@ -11,9 +12,9 @@ from fastapi import FastAPI, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.session import FastAPISessionMaker
 from fastapi_utils.tasks import repeat_every
-from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
+from fastapi_mail import  MessageSchema
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 import os
 from datetime import datetime
 from typing import Any, Optional, List, Dict, Union
@@ -626,21 +627,6 @@ def get_latest_readings():
     return {"sensors": latest_readings}
 
 
-conf = ConnectionConfig(
-    MAIL_USERNAME = mailgun_username,
-    MAIL_PASSWORD = mailgun_password,
-    MAIL_FROM = mail_form,
-    MAIL_PORT = mail_port,
-    MAIL_SERVER = mail_server,
-    MAIL_FROM_NAME="WavSmart Notification", # Replace with a name you'd like the email to be sent from
-    MAIL_TLS = True,
-    MAIL_SSL = False,
-    USE_CREDENTIALS = True,
-    VALIDATE_CERTS = True
-)
-class EmailSchema(BaseModel):
-    email: List[EmailStr]
-
 @app.post("/email")
 async def simple_send(email: EmailSchema) -> JSONResponse:
     html = """<p>Hi this test mail, thanks for using Fastapi-mail</p> """
@@ -652,7 +638,7 @@ async def simple_send(email: EmailSchema) -> JSONResponse:
         #subtype=MessageType.html
     )
 
-    fm = FastMail(conf)
+    fm = get_fm()
     await fm.send_message(message)
     return JSONResponse(status_code=200, content={"message": "email has been sent"})
 
