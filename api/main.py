@@ -628,7 +628,7 @@ def get_latest_readings():
 
 
 @app.post("/email")
-async def simple_send(email: EmailSchema) -> JSONResponse:
+async def send_email(email: EmailSchema) -> JSONResponse:
 
     msg = get_email_msg(
         recipients=email.dict().get("email"), 
@@ -636,7 +636,7 @@ async def simple_send(email: EmailSchema) -> JSONResponse:
         )
 
     fm = get_fm()
-    
+
     await fm.send_message(msg)
     return JSONResponse(
         status_code=200, 
