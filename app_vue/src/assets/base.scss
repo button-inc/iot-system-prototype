@@ -17,3 +17,10 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+li {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 16px 0;
+}

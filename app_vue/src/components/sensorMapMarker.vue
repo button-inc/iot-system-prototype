@@ -3,26 +3,20 @@
   import { LPopup, LIcon } from '@vue-leaflet/vue-leaflet';
   import { useRouteStore } from '@/stores/route_store';
   import { storeToRefs } from 'pinia';
+  import { getIconAndProgressColor, getMaterialTypeIconURL } from '@/utils/mapMarkerHelper';
 
   const props = defineProps({
     sensor: {
       type: Object,
       required: true
-    },
-    alertThreshold: {
-      type: Number
-    },
-    filterThresholdMaximum: {
-      type: Number
-    },
-    filterThresholdMinimum: {
-      type: Number
     }
   });
 
+  // set html element variables
   const fillPercent = ref(Math.round(props.sensor.fill_level || 0));
-  const { iconUrl, linearProgressColor } = getIconAndProgressColor(getBinIconName());
+  const { iconUrl, linearProgressColor } = getIconAndProgressColor(props.sensor);
 
+  // route store
   const routeStore = useRouteStore();
   const isAlreadyInRoute = ref(false);
   const { getSensorRouteList } = storeToRefs(routeStore);
@@ -50,54 +44,10 @@
     }
   }
 
-  function getBinIconName() {
-    const isDefaultState = props.sensor.fill_level
-      ? props.sensor.fill_level < props.filterThresholdMinimum 
-      || props.sensor.fill_level > props.filterThresholdMaximum
-      : false;
-
-    const isFullState = props.sensor.fill_level
-      ? props.alertThreshold && props.sensor.fill_level > props.alertThreshold
-      : false;
-    
-    const isErrorState = props.sensor.error;
-
-    if (isErrorState) { // shows error icon
-      return 'error';
-    } else if (isDefaultState) { // filtered out state TODO: remove
-      return 'default';
-    } else if (isFullState) { // shows red bin
-      return 'full';
-    }
-    return 'healthy'; // shows green bin
-  }
-
-  function getIconAndProgressColor(iconName) {
-    let iconUrl = ''
-    let linearProgressColor = '';
-    switch (iconName) {
-      case 'error':
-        iconUrl = 'https://cdn-icons-png.flaticon.com/128/1304/1304037.png';
-        linearProgressColor = 'error';
-        break;
-      case 'full':
-        iconUrl = 'https://cdn-icons-png.flaticon.com/128/5028/5028066.png';
-        linearProgressColor = 'error';
-        break;
-      case 'healthy':
-        iconUrl = 'https://cdn-icons-png.flaticon.com/128/542/542775.png';
-        linearProgressColor = 'success';
-        break;
-      default:
-        iconUrl = 'https://cdn-icons-png.flaticon.com/128/484/484662.png';
-        linearProgressColor = 'primary';
-    }
-    return { iconUrl, linearProgressColor };
-  }
 </script>
 
 <template>
-  <l-icon :icon-size="[25, 25]" :icon-anchor="[13, 0]" :icon-url="iconUrl" />
+  <l-icon :icon-size="[19, 23]" :icon-anchor="[10, 18]" :icon-url="iconUrl" />
 
   <l-popup class="popup">
     <section class="bin-details">
@@ -154,7 +104,8 @@
       </div>
 
       <div class="material-type">
-        <img class="material-type__image" src="@/assets/images/open-box.png"/>
+        <v-img class="material-type__image" :src="getMaterialTypeIconURL(props.sensor.material_type)" width="40" height="40" />
+        <!-- <img class="material-type__image" :src="getMaterialTypeIconURL(props.sensor.material_type)"/> -->
         <span class="material-type__description">{{ props.sensor.material_type }}</span>
       </div>
     </section>
