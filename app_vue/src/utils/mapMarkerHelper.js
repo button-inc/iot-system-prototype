@@ -24,8 +24,12 @@ export const getMaterialTypeIconURL = (materialType) => {
     'Cardboard': 'src/assets/images/cardboard.svg', //confirmed
     'Plastic': 'src/assets/images/plastic.svg', // confirmed
     'Compost': 'src/assets/images/compost.svg', // confirmed
-    'Oil': 'src/assets/images/oil-drum.svg', // TODO: confirm actual data returned for mat type
-    'Trash': 'src/assets/images/trash.svg' // TODO: confirm actual data returned for mat type
+    'Diesel': 'src/assets/images/oil-drum.svg',
+    'Dyed Diesel': 'src/assets/images/oil-drum.svg',
+    'Kerosene': 'src/assets/images/oil-drum.svg',
+    'Water': 'src/assets/images/plastic.svg', // TODO: confirm water icon
+    'Gas Oil': 'src/assets/images/oil-drum.svg',
+    'Mixed waste': 'src/assets/images/trash.svg'
   };
   return materialMap[materialType];
 }
