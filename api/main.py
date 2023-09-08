@@ -7,7 +7,7 @@ import requests
 import gspread
 from dotenv import load_dotenv
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.session import FastAPISessionMaker
 from fastapi_utils.tasks import repeat_every
@@ -16,7 +16,7 @@ from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from pydantic import BaseModel, EmailStr
 import os
 from datetime import datetime
-from typing import Optional, List, Dict, Union
+from typing import Any, Optional, List, Dict, Union
 
 from starlette.responses import JSONResponse
 
@@ -27,6 +27,11 @@ load_dotenv()
 env = os.environ.get("ENVIRONMENT")
 bb_email = os.environ.get("BB_EMAIL")
 bb_password = os.environ.get("BB_PASSWORD")
+mailgun_username = os.environ.get("MAILGUN_USERNAME")
+mailgun_password = os.environ.get("MAILGUN_PASSWORD")
+mail_form = os.environ.get("MAIL_FROM")
+mail_port = os.environ.get("MAIL_PORT")
+mail_server = os.environ.get("MAIL_SERVER")
 tkl_client = os.environ.get("TEKELEK_CLIENT")
 tkl_password = os.environ.get("TEKELEK_PASSWORD")
 tkl_secret = os.environ.get("TEKELEK_TOKEN")
@@ -453,7 +458,7 @@ def set_rfs_and_ss_cache():
 
 
 #  🤖 Event handler: Populate Tekelek data in tkl_cache with initial data on start up
-@app.on_event("startup")
+#@app.on_event("startup")
 def set_tkl_cache():
     global tkl_cache
     try:
@@ -622,37 +627,35 @@ def get_latest_readings():
 
 
 conf = ConnectionConfig(
-    MAIL_USERNAME = "username",
-    MAIL_PASSWORD = "**********",
-    MAIL_FROM = "test@email.com",
-    MAIL_PORT = 587,
-    MAIL_SERVER = "mail server",
-    MAIL_FROM_NAME="Desired Name",
-    #MAIL_STARTTLS = True,
-    #MAIL_SSL_TLS = False,
+    MAIL_USERNAME = mailgun_username,
+    MAIL_PASSWORD = mailgun_password,
+    MAIL_FROM = mail_form,
+    MAIL_PORT = mail_port,
+    MAIL_SERVER = mail_server,
+    MAIL_FROM_NAME="WavSmart Notification", # Replace with a name you'd like the email to be sent from
+    MAIL_TLS = True,
+    MAIL_SSL = False,
     USE_CREDENTIALS = True,
     VALIDATE_CERTS = True
 )
 class EmailSchema(BaseModel):
-    email: str
+    email: List[EmailStr]
 
 @app.post("/email")
-async def simple_send(email: EmailSchema):
-    try:
-        print(email)
-        html = """<p>Hi this test mail, thanks for using Fastapi-mail</p> """
+async def simple_send(email: EmailSchema) -> JSONResponse:
+    html = """<p>Hi this test mail, thanks for using Fastapi-mail</p> """
 
-        message = MessageSchema(
-            subject="Fastapi-Mail module",
-            recipients=email.dict().get("email"),
-            body=html,
-            subtype=MessageType.html)
+    message = MessageSchema(
+        subject="WAVSmart IoT Notify",
+        recipients=email.dict().get("email"),
+        body=html,
+        #subtype=MessageType.html
+    )
 
-        fm = FastMail(conf)
-        await fm.send_message(message)
-        return JSONResponse(status_code=200, content={"message": "email has been sent"})
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    fm = FastMail(conf)
+    await fm.send_message(message)
+    return JSONResponse(status_code=200, content={"message": "email has been sent"})
+
 
 # @app.get("/sensors/{sensor_id}")
 # def query_sensor_by_id(sensor_id: str) -> Sensor:
