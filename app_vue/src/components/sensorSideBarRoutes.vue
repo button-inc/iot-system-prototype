@@ -54,9 +54,9 @@
         long: sensor.long,
         manufacturer: sensor.manufacturer,
         bin_name: sensor.bin_name,
-        address_line1: sensor.address_line1,
-        address_line2: sensor.address_line2.replace(',',''), // typically has a comma which will interfere with csv
-        group: sensor.group,
+        address_line1: sensor.address_line1 || '',
+        address_line2: sensor.address_line2 ? sensor.address_line2.replace(',','') : '', // typically has a comma which will interfere with csv
+        group: sensor || '',
         bin_type: sensor.bin_type,
         material_type: sensor.material_type,
         asset_tag: sensor.asset_tag,
