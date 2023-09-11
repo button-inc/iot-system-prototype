@@ -654,6 +654,14 @@ async def send_alerts(email: AlertEmailSchema) -> JSONResponse:
 
     # 1. Filter sensors with fill_level > a threshold
     high_filled_sensors = [sensor for sensor in sensors_latest_readings if sensor.fill_level > alter_lvl]
+    if not high_filled_sensors:
+        email_schema = EmailSchema(
+            recipient_list=recipient_list, 
+            body="no sensors with fill level above " + str(alter_lvl)
+            )
+
+        response = await send_email(email_schema)
+        return response 
 
     # 2. Format the data for the email
     body = "Sensors with fill level above " + str(alter_lvl) + "%:\n\n"
