@@ -3,7 +3,7 @@ from enum import Enum
 import re
 import time
 import requests
-from mail_services import EmailSchema, get_email_msg, get_fm
+from mail_services import AlertEmailSchema, EmailSchema, get_email_msg, get_fm
 
 import gspread
 from dotenv import load_dotenv
@@ -459,7 +459,7 @@ def set_rfs_and_ss_cache():
 
 
 #  🤖 Event handler: Populate Tekelek data in tkl_cache with initial data on start up
-#@app.on_event("startup")
+@app.on_event("startup")
 def set_tkl_cache():
     global tkl_cache
     try:
@@ -642,6 +642,31 @@ async def send_email(email: EmailSchema) -> JSONResponse:
         status_code=200, 
         content={"message": "email has been sent"}
         )
+
+
+@app.post("/send_alerts")
+async def send_alerts(email: AlertEmailSchema) -> JSONResponse:
+    alter_lvl = email.dict().get("alter_lvl")
+    sensors_latest_readings = get_latest_readings()['sensors']
+
+    # 1. Filter sensors with fill_level > a threshold
+    high_filled_sensors = [sensor for sensor in sensors_latest_readings if sensor.fill_level > alter_lvl]
+
+    # 2. Format the data for the email
+    body = "Sensors with fill level above " + str(alter_lvl) + "%:\n\n"
+    for sensor in high_filled_sensors:
+        sensor_data = "\n".join([f"{key}: {value}" for key, value in sensor.dict().items()])
+        body += f"{sensor_data}\n\n"
+    
+    # 3. Send the email
+    email_schema = EmailSchema(
+        email=email.dict().get("email"), 
+        body=body
+    )
+    
+    response = await send_email(email_schema)
+    
+    return response
 
 
 # @app.get("/sensors/{sensor_id}")

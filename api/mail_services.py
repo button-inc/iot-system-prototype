@@ -30,6 +30,10 @@ class EmailSchema(BaseModel):
     email: List[EmailStr]
     body: str
 
+class AlertEmailSchema(BaseModel):
+    email: List[EmailStr]
+    alter_lvl: int
+
 def get_fm():
     return FastMail(conf)
 
@@ -41,4 +45,3 @@ def get_email_msg(recipients, body):
         body=body,
         #subtype=MessageType.html
     )
-
