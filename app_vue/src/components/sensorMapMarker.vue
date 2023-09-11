@@ -35,6 +35,7 @@
     // only add to route if not already added
     if (isAlreadyInRoute.value === false) {
       routeStore.addSensorToRoute(sensor);
+      routeStore.optimizeRoute();
     }
   }
 

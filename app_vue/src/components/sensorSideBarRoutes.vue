@@ -4,7 +4,6 @@
   import { useSensorStore } from '@/stores/sensors_store';
   import { storeToRefs } from 'pinia';
   import { v4 as uuidv4 } from 'uuid';
-  import { getOptimizedRoute } from '@/utils/optimizeRouteHelper';
   import { getMinutesString, getKmFromMeterString } from '@/utils/formattingHelper';
   import draggable from 'vuedraggable';
 
@@ -37,31 +36,8 @@
   })
 
   async function findRouteClicked() {
-    routeStore.updateRouteWithSensorList(sensorStore.sensors); // store current displayed sensors into route list
-    await optimizeRoute();
-  }
-
-  async function optimizeRoute() {
-    // make a call to google
-    const googResponse = await getOptimizedRoute(routeStore.getSelectedRouteList, state.startPoint, state.endPoint);
-    if (googResponse && googResponse.routes && googResponse.routes[0]) {
-      const routeOrder = googResponse.routes[0].optimizedIntermediateWaypointIndex; // [0,3,4]
-      routeStore.updateWithOptimizedRoute(routeOrder); // update current route
-      routeStore.setIsRouteOptimized(true); // set flag is optimized to true
-
-      if (googResponse.routes[0].duration) {
-        routeStore.setRouteDuration(googResponse.routes[0]?.duration);
-      }
-
-      if (googResponse.routes[0].distanceMeters) {
-        routeStore.setRouteDistance(googResponse.routes[0]?.distanceMeters);
-      }
-      
-    }
-  }
-
-  function routeDragged() {
-    state.drag = false; // completed drag
+    routeStore.updateRouteListWithSensors(sensorStore.sensors); // store current displayed sensors into route list
+    await routeStore.optimizeRoute();
   }
 
   function exportRouteClicked() {
@@ -135,17 +111,13 @@
       <div class="py-4 px-4 routes-list__route-container">
         <!-- route is present -->
         <div class="w-100 h-100">
-          <div tabindex="0" class="w-100 h-100 d-flex align-center justify-space-between cursor-pointer">
+          <div tabindex="0" class="w-100 h-100 d-flex align-center cursor-pointer">
             <span class="font-body">
               {{ selectedRouteList.length }} Bins    
             </span>
-            <span>&#8226;</span>
-            <div class="d-flex flex-column">
-              <span v-if="routeStore.getRouteDuration"> {{ getMinutesString(routeStore.getRouteDuration) }}</span>
-              <span v-if="routeStore.getRouteDistance"> ({{ getKmFromMeterString(routeStore.getRouteDistance) }}km)</span>
-            </div>
-
-
+            <span class="mx-2">&#8226;</span>
+            <span v-if="routeStore.getRouteDuration"> {{ getMinutesString(routeStore.getRouteDuration) }}</span>
+            <span class="ml-1" v-if="routeStore.getRouteDistance"> ({{ getKmFromMeterString(routeStore.getRouteDistance) }}km)</span>
           </div>
 
           <!-- route list -->
@@ -161,7 +133,7 @@
               tag="div"
               item-key="id"
               @start="state.drag=true"
-              @end="routeDragged">
+              @end="state.drag = false">
               <template #item="{ element: sensor }">
                 <li class="routes-list__items" :class="{'margin-b-0' : selectedRouteList.length === 1}">
                   <vue-feather class="transform-rotate-270" type="git-commit"></vue-feather>

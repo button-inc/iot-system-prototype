@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { getOptimizedRoute } from '@/utils/optimizeRouteHelper';
 
 export const useRouteStore = defineStore('route', {
   state: () => ({
@@ -48,21 +49,17 @@ export const useRouteStore = defineStore('route', {
     setRouteDistance(value) {
       this.routeDistance = value;
     },
-    updateRouteWithSensorList(sensors) {
+    updateRouteListWithSensors(sensors) {
       this.selectedRouteList = [...sensors];
     },
     addSensorToRoute(sensor) {
       this.selectedRouteList.push(sensor);
-      // reset
-      this.isRouteOptimized = false;
     },
     removeSensorFromRoute(sensor) {
       const index = this.selectedRouteList.indexOf(sensor);
       if (index > -1) {
         this.selectedRouteList.splice(index, 1);
       }
-      // reset
-      this.isRouteOptimized = false;
     },
     clearSensorRoute() {
       this.selectedRouteList = [];
@@ -98,6 +95,24 @@ export const useRouteStore = defineStore('route', {
 
       // update saved routelist with new route order
       this.selectedRouteList = [...intermediates];
+    },
+    async optimizeRoute() {
+      // make a call to google
+      const googResponse = await getOptimizedRoute(this.getSelectedRouteList, this.startPoint, this.endPoint);
+      if (googResponse && googResponse.routes && googResponse.routes[0]) {
+        const routeOrder = googResponse.routes[0].optimizedIntermediateWaypointIndex; // [0,3,4]
+        this.updateWithOptimizedRoute(routeOrder); // update current route
+        this.setIsRouteOptimized(true); // set flag is optimized to true
+
+        if (googResponse.routes[0].duration) {
+          this.setRouteDuration(googResponse.routes[0]?.duration);
+        }
+
+        if (googResponse.routes[0].distanceMeters) {
+          this.setRouteDistance(googResponse.routes[0]?.distanceMeters);
+        }
+        
+      }
     }
   },
 })
