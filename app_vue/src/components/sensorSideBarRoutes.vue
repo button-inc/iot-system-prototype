@@ -43,7 +43,8 @@
       <SensorRouteBlock
         :selectedRouteList="routeStore.getSelectedRouteList"
         :startPointAddress="routeStore.getStartPointAddress"
-        :endPointAddress="routeStore.getEndPointAddress"></SensorRouteBlock>
+        :endPointAddress="routeStore.getEndPointAddress">
+      </SensorRouteBlock>
     </section>
 
     <!-- start and end point entry -->
