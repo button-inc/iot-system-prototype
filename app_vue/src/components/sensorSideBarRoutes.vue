@@ -145,9 +145,9 @@
               </template>
             </draggable>
             <!-- ending point -->
-            <div class="d-flex align-center">
-              <vue-feather class="color-red" type="map-pin"></vue-feather>
-              <span class="routes-list__point ml-2 mb-4">{{ state.endPoint }}</span>
+            <div class="d-flex align-center mb-4">
+              <vue-feather class="color-red mr-2" type="map-pin"></vue-feather>
+              <span class="routes-list__point">{{ state.endPoint }}</span>
             </div>
 
             <!-- route call-to-actions -->
