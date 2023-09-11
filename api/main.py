@@ -3,7 +3,7 @@ from enum import Enum
 import re
 import time
 import requests
-from api.utils import filter_nulls
+from utils import filter_nulls
 
 import gspread
 from dotenv import load_dotenv
