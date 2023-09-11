@@ -3,6 +3,7 @@ from enum import Enum
 import re
 import time
 import requests
+from api.utils import filter_nulls
 
 import gspread
 from dotenv import load_dotenv
@@ -615,6 +616,7 @@ def get_latest_readings():
         tkl_readings.append(tkl_cache[sensor])
 
     latest_readings = bb_readings + rfs_cache + ss_cache + tkl_readings
+    latest_readings = filter_nulls(latest_readings)
     return {"sensors": latest_readings}
 
 
