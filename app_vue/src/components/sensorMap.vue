@@ -25,7 +25,7 @@
     startPointLatLng: [],
     endPointLatLng: [],
     zoom: 10,
-    center: [43.7, -79.42] // TODO: update to possibly be user's current location
+    center: [43.7, -79.42]
   });
 
   const startImgUrl = 'src/assets/images/feather-disc.svg';
@@ -34,6 +34,7 @@
   onBeforeMount(async () => {
     state.startPointLatLng = await getLatLng(routeStore.getStartPointAddress);
     state.endPointLatLng = await getLatLng(routeStore.getEndPointAddress);
+    state.center = state.startPointLatLng;
   })
 
   onMounted(() => {

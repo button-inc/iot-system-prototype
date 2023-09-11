@@ -5,8 +5,8 @@ export const useRouteStore = defineStore('route', {
   state: () => ({
     selectedRouteList: [], // list of sensor objects part of the route
     isRouteOptimized: false, // when google api has been run on the route and we want to present it
-    startPointAddress: '6045 Mavis Rd Mississauga ON L5R 4G6',
-    endPointAddress: '3401 Dufferin St Toronto ON M6A 2T9',
+    startPointAddress: '6900 Airport Rd Mississauga ON',
+    endPointAddress: '6900 Airport Rd Mississauga ON',
     routeDuration: '',
     routeDistance: ''
   }),
