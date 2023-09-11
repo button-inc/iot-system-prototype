@@ -3,8 +3,7 @@ import { defineStore } from 'pinia'
 export const useRouteStore = defineStore('route', {
   state: () => ({
     selectedRouteList: [], // list of sensor objects part of the route
-    enableOptimizeRoute: true, // enables optimize route button to be clicked
-    isRouteOptimized: false
+    isRouteOptimized: false // when google api has been run on the route and we want to present it
   }),
   getters: {
     getSelectedRouteList({selectedRouteList}) {
@@ -16,18 +15,17 @@ export const useRouteStore = defineStore('route', {
       }
       return [];
     },
-    getEnableOptimizeRoute({enableOptimizeRoute}) {
-      return enableOptimizeRoute;
-    },
     getIsRouteOptimized({isRouteOptimized}) {
       return isRouteOptimized;
     },
   },
   actions: {
+    updateRouteWithSensorList(sensors) {
+      this.selectedRouteList = [...sensors];
+    },
     addSensorToRoute(sensor) {
       this.selectedRouteList.push(sensor);
       // reset
-      this.enableOptimizeRoute = true;
       this.isRouteOptimized = false;
     },
     removeSensorFromRoute(sensor) {
@@ -36,20 +34,21 @@ export const useRouteStore = defineStore('route', {
         this.selectedRouteList.splice(index, 1);
       }
       // reset
-      this.enableOptimizeRoute = true;
       this.isRouteOptimized = false;
     },
     clearSensorRoute() {
       this.selectedRouteList = [];
       // reset
-      this.enableOptimizeRoute = true;
       this.isRouteOptimized = false;
-    },
-    setEnableOptimizedRoute(value) {
-      this.enableOptimizeRoute = value;
     },
     setIsRouteOptimized(value) {
       this.isRouteOptimized = value;
+    },
+    isAlreadyInRoute(sensor) {
+      if (this.getSelectedRouteList.length > 0) {
+        return !!this.getSelectedRouteList.find(bin => bin.id === sensor.id);
+      }
+      return false
     },
     // reorders intermediate points in our selectedRouteList according to a list of given indexes (routeOrder)
     updateWithOptimizedRoute(routeOrder) {

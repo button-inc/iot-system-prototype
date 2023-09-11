@@ -1,42 +1,51 @@
 <script setup>
-  import { ref, watch } from 'vue'
+  import { watch, reactive } from 'vue'
   import { useRouteStore } from '@/stores/route_store';
+  import { useSensorStore } from '@/stores/sensors_store';
   import { storeToRefs } from 'pinia';
   import { v4 as uuidv4 } from 'uuid';
   import { getOptimizedRoute } from '@/utils/optimizeRouteHelper';
   import draggable from 'vuedraggable';
 
+  // stores
   const routeStore = useRouteStore();
-  const { selectedRouteList, getEnableOptimizeRoute, getIsRouteOptimized } = storeToRefs(routeStore);
-  const isOptimizeRouteEnabled = ref(true);
-  const isRouteOptimized = ref(false);
-  const drag = ref(false);
+  const sensorStore = useSensorStore();
+  const { selectedRouteList, getIsRouteOptimized } = storeToRefs(routeStore);
+  const { getTotalSensors } = storeToRefs(sensorStore);
 
-  // listen for status of optimize route button
-  watch(getEnableOptimizeRoute, () => {
-    isOptimizeRouteEnabled.value = routeStore.getEnableOptimizeRoute;
+  const state = reactive({
+    startPoint: '6045 Mavis Rd, Mississauga, ON L5R 4G6', // hardcoded mock values
+    endPoint: '3401 Dufferin St, Toronto, ON M6A 2T9', // hardcoded mock values
+    totalSensors: 0,
+    isFindRouteButtonEnabled: true,
+    isRouteOptimized: false,
+    drag: false
+  });
+
+  // element variables
+  watch(getTotalSensors, () => {
+    state.totalSensors = sensorStore.getTotalSensors;
   })
 
   watch(getIsRouteOptimized, () => {
-    isRouteOptimized.value = routeStore.getIsRouteOptimized;
+    state.isRouteOptimized = routeStore.getIsRouteOptimized;
   })
 
-  async function optimizeRouteClicked() {
-    // button to be disabled after first click
-    routeStore.setEnableOptimizedRoute(false);
+  async function findRouteClicked() {
+    state.isFindRouteButtonEnabled = false; // button to be disabled after first click
+    routeStore.updateRouteWithSensorList(sensorStore.sensors); // store sensors into route list
 
     // make a call to google
-    const googResponse = await getOptimizedRoute(routeStore.getSelectedRouteList);
+    const googResponse = await getOptimizedRoute(routeStore.getSelectedRouteList, state.startPoint, state.endPoint);
     if (googResponse && googResponse.routes) {
       const routeOrder = googResponse.routes[0]?.optimizedIntermediateWaypointIndex; // [0,3,4]
       routeStore.updateWithOptimizedRoute(routeOrder); // update current route
       routeStore.setIsRouteOptimized(true); // set flag is optimized to true
     }
-
   }
 
   function routeOrganized() {
-    drag.value = false; // completed drag
+    state.drag = false; // completed drag
     routeStore.setIsRouteOptimized(false);
   }
 
@@ -83,64 +92,87 @@
 <template>
   <section class="routes-list">
     <div class="text-h6 padding-b-16">Routes</div>
-    <div v-if="selectedRouteList && selectedRouteList.length !== 0" class="padding-b-16">1 route(s) found</div>
-    <div class="py-4 px-4 routes-list__route-container">
-      <!-- no route present -->
-      <span v-if="selectedRouteList && selectedRouteList.length === 0" 
-        class="font-italic">
-        No route to be displayed yet
-      </span>
-      <!-- route is present -->
-      <div class="w-100 h-100" v-else>
-        <div tabindex="0" class="w-100 h-100 d-flex align-center justify-space-between cursor-pointer">
-          <span class="font-body">{{ selectedRouteList.length }} Bins </span>
-        </div>
 
-        <!-- route list -->
-        <section>
-          <!-- route list items -->
-          <draggable 
-            v-model="selectedRouteList" 
-            tag="div"
-            item-key="id"
-            @start="drag=true"
-            @end="routeOrganized">
-            <template #item="{ element: sensor, index }">
-              <li class="routes-list__items" :class="{'margin-b-0' : selectedRouteList.length === 1}">
-                <vue-feather v-if="index === 0" class="color-green" type="disc"></vue-feather>
-                <vue-feather v-if="index > 0 && index < (selectedRouteList.length - 1)" class="transform-rotate-270" type="git-commit"></vue-feather>
-                <vue-feather v-if="index === (selectedRouteList.length - 1) && index !== 0" class="color-red" type="map-pin"></vue-feather>
-                <div class="d-flex flex-column ml-2">
-                  <span>{{ sensor.address_line1 }}</span>
-                  <span>{{ sensor.address_line2 }}</span>
-                </div>
-              </li>
-            </template>
-          </draggable>
+    <!-- start and end point display -->
+    <section v-if="!state.isRouteOptimized">
+      <v-text-field 
+        v-model="state.startPoint"
+        disabled
+        label="Start point" 
+        variant="underlined">
+      </v-text-field>
+      <v-text-field 
+        v-model="state.endPoint"
+        disabled
+        label="End point"
+        variant="underlined">
+      </v-text-field>
+      <v-btn color="#191A1C" :disabled="state.isRouteOptimized" @click="findRouteClicked">
+        <span class="pr-1">Find Route</span>
+        <vue-feather type="search"></vue-feather>
+      </v-btn>
+    </section>
+    
 
-          <!-- route call-to-actions -->
-          <div class="d-flex align-center" 
-            :class="{
-              'justify-space-between': selectedRouteList && selectedRouteList.length > 1, 
-              'justify-end': selectedRouteList && selectedRouteList.length <= 1
-            }">
-            <div v-if="selectedRouteList && selectedRouteList.length > 1">
-              <v-btn v-if="selectedRouteList.length >= 4" class="pa-0" variant="plain" :disabled="isRouteOptimized" @click="optimizeRouteClicked">
-                {{ isRouteOptimized ? 'Optimized!' : 'Optimize route' }}
-              </v-btn>
-              <v-btn class="pa-0 routes-list__export" variant="plain" @click="exportRouteClicked">
-                Export route
-                <vue-feather type="upload"></vue-feather>
-              </v-btn>
+    <!-- route display -->
+    <section v-else>
+      <div v-if="selectedRouteList && selectedRouteList.length !== 0" class="padding-b-16">1 route(s) found</div>
+        <div class="py-4 px-4 routes-list__route-container">
+          <!-- no route present -->
+          <span v-if="selectedRouteList && selectedRouteList.length === 0" 
+            class="font-italic">
+            No route to be displayed yet
+          </span>
+          <!-- route is present -->
+          <div class="w-100 h-100" v-else>
+            <div tabindex="0" class="w-100 h-100 d-flex align-center justify-space-between cursor-pointer">
+              <span class="font-body">{{ selectedRouteList.length }} Bins </span>
             </div>
-            <v-btn class="routes-list__delete pl-0 align-self-end" variant="plain" @click="routeStore.clearSensorRoute">
-              <vue-feather type="trash-2"></vue-feather>
-            </v-btn>
-          </div>
 
-        </section>
-      </div>
-    </div>
+            <!-- route list -->
+            <section>
+              <!-- route list items -->
+              <draggable 
+                v-model="selectedRouteList" 
+                tag="div"
+                item-key="id"
+                @start="state.drag=true"
+                @end="routeOrganized">
+                <template #item="{ element: sensor, index }">
+                  <li class="routes-list__items" :class="{'margin-b-0' : selectedRouteList.length === 1}">
+                    <vue-feather v-if="index === 0" class="color-green" type="disc"></vue-feather>
+                    <vue-feather v-if="index > 0 && index < (selectedRouteList.length - 1)" class="transform-rotate-270" type="git-commit"></vue-feather>
+                    <vue-feather v-if="index === (selectedRouteList.length - 1) && index !== 0" class="color-red" type="map-pin"></vue-feather>
+                    <div class="d-flex flex-column ml-2">
+                      <span>{{ sensor.address_line1 }}</span>
+                      <span>{{ sensor.address_line2 }}</span>
+                    </div>
+                  </li>
+                </template>
+              </draggable>
+
+              <!-- route call-to-actions -->
+              <div class="d-flex align-center" 
+                :class="{
+                  'justify-space-between': selectedRouteList && selectedRouteList.length > 1, 
+                  'justify-end': selectedRouteList && selectedRouteList.length <= 1
+                }">
+                <div v-if="selectedRouteList && selectedRouteList.length > 1">
+                  <v-btn class="pa-0 routes-list__export" variant="plain" @click="exportRouteClicked">
+                    Export route
+                    <vue-feather type="upload"></vue-feather>
+                  </v-btn>
+                </div>
+                <v-btn class="routes-list__delete pl-0 align-self-end" variant="plain" @click="routeStore.clearSensorRoute">
+                  <vue-feather type="trash-2"></vue-feather>
+                </v-btn>
+              </div>
+
+            </section>
+          </div>
+        </div>
+    </section>
+    
 
   </section>
 </template>

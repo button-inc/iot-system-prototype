@@ -15,19 +15,20 @@
   // set html element variables
   const fillPercent = ref(Math.round(props.sensor.fill_level || 0));
   const { iconUrl, linearProgressColor } = getIconAndProgressColor(props.sensor);
-
+  const isAlreadyInRoute = ref(false);
+  const isRouteCreated = ref(false);
+  
   // route store
   const routeStore = useRouteStore();
-  const isAlreadyInRoute = ref(false);
-  const { getSelectedRouteList } = storeToRefs(routeStore);
+  const { getSelectedRouteList, getIsRouteOptimized } = storeToRefs(routeStore);
   
   // watch for changes in stored sensor route array (ie. when a sensor gets added or removed)
   watch(getSelectedRouteList, () => {
-    if (routeStore.getSelectedRouteList.length > 0) {
-      isAlreadyInRoute.value = !!routeStore.getSelectedRouteList.find(bin => bin.id === props.sensor.id);
-    } else {
-      isAlreadyInRoute.value = false
-    }
+    isAlreadyInRoute.value = routeStore.isAlreadyInRoute(props.sensor);
+  }, { deep: true })
+
+  watch(getIsRouteOptimized, () => {
+    isRouteCreated.value = routeStore.getIsRouteOptimized;
   }, { deep: true })
 
   function addBinToRoute(sensor) {
@@ -38,7 +39,7 @@
   }
 
   function removeBinFromRoute(sensor) {
-    // only add to route if not already added
+    // only remove from route if already added
     if (isAlreadyInRoute.value === true) {
       routeStore.removeSensorFromRoute(sensor);
     }
@@ -72,7 +73,7 @@
         <span class="bin-details__tag-list-text">Tags:</span>
         <span class="bin-details__tag">{{ props.sensor.asset_tag }}</span>
       </div>
-      <div class="bin-details__cta-routes">
+      <div class="bin-details__cta-routes" v-if="isRouteCreated">
         <v-btn variant="flat"
           class="mt-2 mb-2"
           color="#191A1C"

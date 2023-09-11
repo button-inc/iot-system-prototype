@@ -1,5 +1,5 @@
 <script setup>
-  import { reactive, ref, onMounted, watch } from 'vue'
+  import { reactive, onMounted, watch } from 'vue'
   import SensorMapMarker from '@/components/sensorMapMarker.vue';
   import 'leaflet/dist/leaflet.css'
   import { LMap, LTileLayer, LMarker, LControlZoom, LPolyline } from '@vue-leaflet/vue-leaflet'
@@ -8,22 +8,29 @@
   import { useRouteStore } from '@/stores/route_store';
   import { storeToRefs } from 'pinia';
 
-  const center = ref([43.7, -79.42]); // TODO: update to possibly be user's current location
-  const zoom = ref(10);
+  // stores
   const sensorStore = useSensorStore();
   const { sensors } = storeToRefs(sensorStore);
+  const routeStore = useRouteStore();
+  const { getSelectedRouteLatLong, getIsRouteOptimized } = storeToRefs(routeStore);
+
   const state = reactive({
     location: 'bottomright',
-    device: useDevice()
+    device: useDevice(),
+    isRouteOptimized: false,
+    polyLineLatLngs: [],
+    zoom: 10,
+    center: [43.7, -79.42] // TODO: update to possibly be user's current location
   });
-  const polyLineLatLngs = ref([]);
-
-  const routeStore = useRouteStore();
-  const { getSelectedRouteLatLong } = storeToRefs(routeStore);
 
   watch(getSelectedRouteLatLong, () => {
-    polyLineLatLngs.value = routeStore.getSelectedRouteLatLong;
+    state.polyLineLatLngs = routeStore.getSelectedRouteLatLong;
   }, { deep: true })
+
+  watch(getIsRouteOptimized, () => {
+    state.isRouteOptimized = routeStore.getIsRouteOptimized;
+    console.log('state.isRouteOptimized', state.isRouteOptimized)
+  })
 
   onMounted(() => {
     positionZoom();
@@ -42,7 +49,7 @@
 
 <template>
   <div v-if="sensors" class="sensor-map-container">
-    <l-map ref="map" v-model:zoom="zoom" :use-global-leaflet="false" :center="center" :options="{zoomControl: false}">
+    <l-map ref="map" v-model:zoom="state.zoom" :use-global-leaflet="false" :center="state.center" :options="{zoomControl: false}">
       <l-control-zoom :position="state.location"/>
       <!-- alternative maps (for aesthetic): -->
       <!-- favourite: https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png -->
@@ -52,7 +59,7 @@
         layer-type="base"
         name="OpenStreetMap"
       ></l-tile-layer>
-      <l-polyline :lat-lngs="polyLineLatLngs"></l-polyline>
+      <l-polyline v-if="state.isRouteOptimized" :lat-lngs="state.polyLineLatLngs"></l-polyline>
 
       <l-marker
         v-for="sensor in sensors"

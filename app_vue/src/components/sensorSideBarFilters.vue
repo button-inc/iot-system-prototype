@@ -99,6 +99,7 @@
 
   function clearFilters() {
     sensorStore.clearSelected(); // clear store of selected values
+    routeStore.clearSensorRoute(); // clear route
     // clear v-models in form
     state.selectedGroup = null;
     state.selectedAssetTag = [];
