@@ -27,11 +27,11 @@ conf = ConnectionConfig(
 
 
 class EmailSchema(BaseModel):
-    email: List[EmailStr]
+    recipient_list: List[EmailStr]
     body: str
 
 class AlertEmailSchema(BaseModel):
-    email: List[EmailStr]
+    recipient_list: List[EmailStr]
     alter_lvl: int
 
 def get_fm():

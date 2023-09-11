@@ -460,7 +460,7 @@ def set_rfs_and_ss_cache():
 
 
 #  🤖 Event handler: Populate Tekelek data in tkl_cache with initial data on start up
-@app.on_event("startup")
+#@app.on_event("startup")
 def set_tkl_cache():
     global tkl_cache
     try:
@@ -633,7 +633,7 @@ def get_latest_readings():
 async def send_email(email: EmailSchema) -> JSONResponse:
 
     msg = get_email_msg(
-        recipients=email.dict().get("email"), 
+        recipients=email.dict().get("recipient_list"), 
         body=email.dict().get("body")
         )
 
@@ -650,6 +650,7 @@ async def send_email(email: EmailSchema) -> JSONResponse:
 async def send_alerts(email: AlertEmailSchema) -> JSONResponse:
     alter_lvl = email.dict().get("alter_lvl")
     sensors_latest_readings = get_latest_readings()['sensors']
+    recipient_list = email.dict().get("recipient_list")
 
     # 1. Filter sensors with fill_level > a threshold
     high_filled_sensors = [sensor for sensor in sensors_latest_readings if sensor.fill_level > alter_lvl]
@@ -662,7 +663,7 @@ async def send_alerts(email: AlertEmailSchema) -> JSONResponse:
     
     # 3. Send the email
     email_schema = EmailSchema(
-        email=email.dict().get("email"), 
+        recipient_list=recipient_list, 
         body=body
     )
     
