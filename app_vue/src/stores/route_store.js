@@ -4,8 +4,10 @@ export const useRouteStore = defineStore('route', {
   state: () => ({
     selectedRouteList: [], // list of sensor objects part of the route
     isRouteOptimized: false, // when google api has been run on the route and we want to present it
-    startPoint: '6045 Mavis Rd, Mississauga, ON L5R 4G6',
-    endPoint: '3401 Dufferin St, Toronto, ON M6A 2T9'
+    startPoint: '6045 Mavis Rd Mississauga ON L5R 4G6',
+    endPoint: '3401 Dufferin St Toronto ON M6A 2T9',
+    routeDuration: '',
+    routeDistance: ''
   }),
   getters: {
     getSelectedRouteList({selectedRouteList}) {
@@ -25,6 +27,12 @@ export const useRouteStore = defineStore('route', {
     },
     getEndPoint({endPoint}) {
       return endPoint;
+    },
+    getRouteDuration({routeDuration}) {
+      return routeDuration;
+    },
+    getRouteDistance({routeDistance}) {
+      return routeDistance;
     }
   },
   actions: {
@@ -33,6 +41,12 @@ export const useRouteStore = defineStore('route', {
     },
     setEndPoint(value) {
       this.endPoint = value;
+    },
+    setRouteDuration(value) {
+      this.routeDuration = value;
+    },
+    setRouteDistance(value) {
+      this.routeDistance = value;
     },
     updateRouteWithSensorList(sensors) {
       this.selectedRouteList = [...sensors];
@@ -73,13 +87,12 @@ export const useRouteStore = defineStore('route', {
       // refer to google route order and match it to our defined route
       // copy result to temp
       let temp = [];
-      const arrLength = intermediates.length;
-      for (let i = 0; i < arrLength; i++) {
-        temp[routeOrder[i]] = intermediates[i];
+      for (let i = 0; i < routeOrder.length; i++) {
+        temp[i] = intermediates[routeOrder[i]];
       }
 
       // replace intermediate waypoint array with temp
-      for (let j = 0; j < arrLength; j++) {
+      for (let j = 0; j < routeOrder.length; j++) {
         intermediates[j] = temp[j];
       }
 

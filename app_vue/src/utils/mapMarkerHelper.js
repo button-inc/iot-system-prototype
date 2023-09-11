@@ -17,19 +17,20 @@ const getBinIconName = (sensor) => {
 }
 
 export const getMaterialTypeIconURL = (materialType) => {
+  const directory = 'src/assets/images/materialTypeIcons';
   if (!materialType) {
     return 'src/assets/images/generic-material.png';
   }
   const materialMap = {
-    'Cardboard': 'src/assets/images/cardboard.svg', //confirmed
-    'Plastic': 'src/assets/images/plastic.svg', // confirmed
-    'Compost': 'src/assets/images/compost.svg', // confirmed
-    'Diesel': 'src/assets/images/oil-drum.svg',
-    'Dyed Diesel': 'src/assets/images/oil-drum.svg',
-    'Kerosene': 'src/assets/images/oil-drum.svg',
-    'Water': 'src/assets/images/plastic.svg', // TODO: confirm water icon
-    'Gas Oil': 'src/assets/images/oil-drum.svg',
-    'Mixed waste': 'src/assets/images/trash.svg'
+    'Cardboard': `${directory}/cardboard.svg`, //confirmed
+    'Plastic': `${directory}/plastic.svg`, // confirmed
+    'Compost': `${directory}/compost.svg`, // confirmed
+    'Diesel': `${directory}/oil-drum.svg`,
+    'Dyed Diesel': `${directory}/oil-drum.svg`,
+    'Kerosene': `${directory}/oil-drum.svg`,
+    'Water': `${directory}/plastic.svg`, // TODO: confirm water icon
+    'Gas Oil': `${directory}/oil-drum.svg`,
+    'Mixed waste': `${directory}/trash.svg`
   };
   return materialMap[materialType] || 'src/assets/images/generic-material.png';
 }
@@ -44,25 +45,26 @@ export const getIconAndProgressColor = (sensor) => {
   const RED = '#C92828';
   const GREEN = 'green';
   const ORANGE = '#F07F2D';
+  const iconDirectory = 'src/assets/images/binMarkerIcons';
   switch (iconName) {
     case 'error':
-      iconUrl = 'src/assets/images/alert-bin.png';
+      iconUrl = `${iconDirectory}/alert-bin.png`;
       linearProgressColor = RED;
       break;
     case 'full':
-      iconUrl = 'src/assets/images/full-bin.png';
+      iconUrl = `${iconDirectory}/full-bin.png`;
       linearProgressColor = RED;
       break;
     case 'half-full':
-      iconUrl = 'src/assets/images/half-full-bin.png';
+      iconUrl = `${iconDirectory}/half-full-bin.png`;
       linearProgressColor = ORANGE;
       break;
     case 'empty':
-      iconUrl = 'src/assets/images/empty-bin.png';
+      iconUrl = `${iconDirectory}/empty-bin.png`;
       linearProgressColor = GREEN;
       break;
     default: // default is empty bin
-      iconUrl = 'src/assets/images/empty-bin.png';
+      iconUrl = `${iconDirectory}/empty-bin.png`;
       linearProgressColor = GREEN;
   }
   return { iconUrl, linearProgressColor };

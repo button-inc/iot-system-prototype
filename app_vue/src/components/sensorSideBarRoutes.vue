@@ -5,6 +5,7 @@
   import { storeToRefs } from 'pinia';
   import { v4 as uuidv4 } from 'uuid';
   import { getOptimizedRoute } from '@/utils/optimizeRouteHelper';
+  import { getMinutesString, getKmFromMeterString } from '@/utils/formattingHelper';
   import draggable from 'vuedraggable';
 
   // stores
@@ -17,7 +18,6 @@
     startPoint: '',
     endPoint: '',
     totalSensors: 0,
-    isFindRouteButtonEnabled: true,
     isRouteOptimized: false,
     drag: false
   });
@@ -37,21 +37,31 @@
   })
 
   async function findRouteClicked() {
-    state.isFindRouteButtonEnabled = false; // button to be disabled after first click
-    routeStore.updateRouteWithSensorList(sensorStore.sensors); // store sensors into route list
+    routeStore.updateRouteWithSensorList(sensorStore.sensors); // store current displayed sensors into route list
+    await optimizeRoute();
+  }
 
+  async function optimizeRoute() {
     // make a call to google
     const googResponse = await getOptimizedRoute(routeStore.getSelectedRouteList, state.startPoint, state.endPoint);
-    if (googResponse && googResponse.routes) {
-      const routeOrder = googResponse.routes[0]?.optimizedIntermediateWaypointIndex; // [0,3,4]
+    if (googResponse && googResponse.routes && googResponse.routes[0]) {
+      const routeOrder = googResponse.routes[0].optimizedIntermediateWaypointIndex; // [0,3,4]
       routeStore.updateWithOptimizedRoute(routeOrder); // update current route
       routeStore.setIsRouteOptimized(true); // set flag is optimized to true
+
+      if (googResponse.routes[0].duration) {
+        routeStore.setRouteDuration(googResponse.routes[0]?.duration);
+      }
+
+      if (googResponse.routes[0].distanceMeters) {
+        routeStore.setRouteDistance(googResponse.routes[0]?.distanceMeters);
+      }
+      
     }
   }
 
-  function routeOrganized() {
+  function routeDragged() {
     state.drag = false; // completed drag
-    routeStore.setIsRouteOptimized(false);
   }
 
   function exportRouteClicked() {
@@ -122,68 +132,72 @@
     <!-- route display -->
     <section v-else>
       <div v-if="selectedRouteList && selectedRouteList.length !== 0" class="padding-b-16">1 route(s) found</div>
-        <div class="py-4 px-4 routes-list__route-container">
-          <!-- no route present -->
-          <span v-if="selectedRouteList && selectedRouteList.length === 0" 
-            class="font-italic">
-            No route to be displayed yet
-          </span>
-          <!-- route is present -->
-          <div class="w-100 h-100" v-else>
-            <div tabindex="0" class="w-100 h-100 d-flex align-center justify-space-between cursor-pointer">
-              <span class="font-body">{{ selectedRouteList.length }} Bins </span>
+      <div class="py-4 px-4 routes-list__route-container">
+        <!-- route is present -->
+        <div class="w-100 h-100">
+          <div tabindex="0" class="w-100 h-100 d-flex align-center justify-space-between cursor-pointer">
+            <span class="font-body">
+              {{ selectedRouteList.length }} Bins    
+            </span>
+            <span>&#8226;</span>
+            <div class="d-flex flex-column">
+              <span> {{ getMinutesString(routeStore.getRouteDuration) }}</span>
+              <span> ({{ getKmFromMeterString(routeStore.getRouteDistance) }}km)</span>
             </div>
 
-            <!-- route list -->
-            <section>
-              <!-- starting point -->
-              <div class="d-flex align-center">
-                <vue-feather class="color-green" type="disc"></vue-feather>
-                <span class="routes-list__point ml-2 mt-4">{{ state.startPoint }}</span>
-              </div>
-              <!-- destinations -->
-              <draggable 
-                v-model="selectedRouteList" 
-                tag="div"
-                item-key="id"
-                @start="state.drag=true"
-                @end="routeOrganized">
-                <template #item="{ element: sensor }">
-                  <li class="routes-list__items" :class="{'margin-b-0' : selectedRouteList.length === 1}">
-                    <vue-feather class="transform-rotate-270" type="git-commit"></vue-feather>
-                    <div class="d-flex flex-column ml-2">
-                      <span>{{ sensor.address_line1 }}</span>
-                      <span>{{ sensor.address_line2 }}</span>
-                    </div>
-                  </li>
-                </template>
-              </draggable>
-              <!-- ending point -->
-              <div class="d-flex align-center">
-                <vue-feather class="color-red" type="map-pin"></vue-feather>
-                <span class="routes-list__point ml-2 mb-4">{{ state.endPoint }}</span>
-              </div>
 
-              <!-- route call-to-actions -->
-              <div class="d-flex align-center" 
-                :class="{
-                  'justify-space-between': selectedRouteList && selectedRouteList.length > 1, 
-                  'justify-end': selectedRouteList && selectedRouteList.length <= 1
-                }">
-                <div v-if="selectedRouteList && selectedRouteList.length > 1">
-                  <v-btn class="pa-0 routes-list__export" variant="plain" @click="exportRouteClicked">
-                    Export route
-                    <vue-feather type="upload"></vue-feather>
-                  </v-btn>
-                </div>
-                <v-btn class="routes-list__delete pl-0 align-self-end" variant="plain" @click="routeStore.clearSensorRoute">
-                  <vue-feather type="trash-2"></vue-feather>
+          </div>
+
+          <!-- route list -->
+          <section>
+            <!-- starting point -->
+            <div class="d-flex align-center">
+              <vue-feather class="color-green" type="disc"></vue-feather>
+              <span class="routes-list__point ml-2 mt-4">{{ state.startPoint }}</span>
+            </div>
+            <!-- destinations -->
+            <draggable 
+              v-model="selectedRouteList" 
+              tag="div"
+              item-key="id"
+              @start="state.drag=true"
+              @end="routeDragged">
+              <template #item="{ element: sensor }">
+                <li class="routes-list__items" :class="{'margin-b-0' : selectedRouteList.length === 1}">
+                  <vue-feather class="transform-rotate-270" type="git-commit"></vue-feather>
+                  <div class="d-flex flex-column ml-2">
+                    <span>{{ sensor.address_line1 }}</span>
+                    <span>{{ sensor.address_line2 }}</span>
+                  </div>
+                </li>
+              </template>
+            </draggable>
+            <!-- ending point -->
+            <div class="d-flex align-center">
+              <vue-feather class="color-red" type="map-pin"></vue-feather>
+              <span class="routes-list__point ml-2 mb-4">{{ state.endPoint }}</span>
+            </div>
+
+            <!-- route call-to-actions -->
+            <div class="d-flex align-center" 
+              :class="{
+                'justify-space-between': selectedRouteList && selectedRouteList.length > 1, 
+                'justify-end': selectedRouteList && selectedRouteList.length <= 1
+              }">
+              <div v-if="selectedRouteList && selectedRouteList.length > 1">
+                <v-btn class="pa-0 routes-list__export" variant="plain" @click="exportRouteClicked">
+                  Export route
+                  <vue-feather type="upload"></vue-feather>
                 </v-btn>
               </div>
+              <v-btn class="routes-list__delete pl-0 align-self-end" variant="plain" @click="routeStore.clearSensorRoute">
+                <vue-feather type="trash-2"></vue-feather>
+              </v-btn>
+            </div>
 
-            </section>
-          </div>
+          </section>
         </div>
+      </div>
     </section>
     
 
