@@ -3,7 +3,9 @@ import { defineStore } from 'pinia'
 export const useRouteStore = defineStore('route', {
   state: () => ({
     selectedRouteList: [], // list of sensor objects part of the route
-    isRouteOptimized: false // when google api has been run on the route and we want to present it
+    isRouteOptimized: false, // when google api has been run on the route and we want to present it
+    startPoint: '6045 Mavis Rd, Mississauga, ON L5R 4G6',
+    endPoint: '3401 Dufferin St, Toronto, ON M6A 2T9'
   }),
   getters: {
     getSelectedRouteList({selectedRouteList}) {
@@ -18,8 +20,20 @@ export const useRouteStore = defineStore('route', {
     getIsRouteOptimized({isRouteOptimized}) {
       return isRouteOptimized;
     },
+    getStartPoint({startPoint}) {
+      return startPoint;
+    },
+    getEndPoint({endPoint}) {
+      return endPoint;
+    }
   },
   actions: {
+    setStartPoint(value) {
+      this.startPoint = value;
+    },
+    setEndPoint(value) {
+      this.endPoint = value;
+    },
     updateRouteWithSensorList(sensors) {
       this.selectedRouteList = [...sensors];
     },
@@ -55,8 +69,6 @@ export const useRouteStore = defineStore('route', {
       // assuming routeOrder looks like [originLocationSensor, midLocationSensor1...midLocationSensor4, destinationLocaitonSensor]
       // variable to hold our intermediate waypoints for update (no start/end point included)
       const intermediates = [...this.selectedRouteList];
-      intermediates.shift(); // remove start point
-      intermediates.pop(); // remove end point
 
       // refer to google route order and match it to our defined route
       // copy result to temp
@@ -72,7 +84,7 @@ export const useRouteStore = defineStore('route', {
       }
 
       // update saved routelist with new route order
-      this.selectedRouteList.splice(1, intermediates.length, ...intermediates);
+      this.selectedRouteList = [...intermediates];
     }
   },
 })

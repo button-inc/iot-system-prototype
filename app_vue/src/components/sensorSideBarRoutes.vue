@@ -1,5 +1,5 @@
 <script setup>
-  import { watch, reactive } from 'vue'
+  import { watch, reactive, onMounted } from 'vue'
   import { useRouteStore } from '@/stores/route_store';
   import { useSensorStore } from '@/stores/sensors_store';
   import { storeToRefs } from 'pinia';
@@ -14,13 +14,18 @@
   const { getTotalSensors } = storeToRefs(sensorStore);
 
   const state = reactive({
-    startPoint: '6045 Mavis Rd, Mississauga, ON L5R 4G6', // hardcoded mock values
-    endPoint: '3401 Dufferin St, Toronto, ON M6A 2T9', // hardcoded mock values
+    startPoint: '',
+    endPoint: '',
     totalSensors: 0,
     isFindRouteButtonEnabled: true,
     isRouteOptimized: false,
     drag: false
   });
+
+  onMounted(() => {
+    state.startPoint = routeStore.getStartPoint;
+    state.endPoint = routeStore.getEndPoint;
+  })
 
   // element variables
   watch(getTotalSensors, () => {
@@ -131,18 +136,21 @@
 
             <!-- route list -->
             <section>
-              <!-- route list items -->
+              <!-- starting point -->
+              <div class="d-flex align-center">
+                <vue-feather class="color-green" type="disc"></vue-feather>
+                <span class="routes-list__point ml-2 mt-4">{{ state.startPoint }}</span>
+              </div>
+              <!-- destinations -->
               <draggable 
                 v-model="selectedRouteList" 
                 tag="div"
                 item-key="id"
                 @start="state.drag=true"
                 @end="routeOrganized">
-                <template #item="{ element: sensor, index }">
+                <template #item="{ element: sensor }">
                   <li class="routes-list__items" :class="{'margin-b-0' : selectedRouteList.length === 1}">
-                    <vue-feather v-if="index === 0" class="color-green" type="disc"></vue-feather>
-                    <vue-feather v-if="index > 0 && index < (selectedRouteList.length - 1)" class="transform-rotate-270" type="git-commit"></vue-feather>
-                    <vue-feather v-if="index === (selectedRouteList.length - 1) && index !== 0" class="color-red" type="map-pin"></vue-feather>
+                    <vue-feather class="transform-rotate-270" type="git-commit"></vue-feather>
                     <div class="d-flex flex-column ml-2">
                       <span>{{ sensor.address_line1 }}</span>
                       <span>{{ sensor.address_line2 }}</span>
@@ -150,6 +158,11 @@
                   </li>
                 </template>
               </draggable>
+              <!-- ending point -->
+              <div class="d-flex align-center">
+                <vue-feather class="color-red" type="map-pin"></vue-feather>
+                <span class="routes-list__point ml-2 mb-4">{{ state.endPoint }}</span>
+              </div>
 
               <!-- route call-to-actions -->
               <div class="d-flex align-center" 
@@ -214,6 +227,10 @@
 
     &__items {
       cursor: pointer;
+    }
+
+    &__point {
+      max-width: 174px;
     }
 
     :deep .v-btn--size-default {

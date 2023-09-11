@@ -29,7 +29,6 @@
 
   watch(getIsRouteOptimized, () => {
     state.isRouteOptimized = routeStore.getIsRouteOptimized;
-    console.log('state.isRouteOptimized', state.isRouteOptimized)
   })
 
   onMounted(() => {
