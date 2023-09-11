@@ -22,18 +22,18 @@
     device: useDevice(),
     isRouteOptimized: false,
     polyLineLatLngs: [],
-    startPointWaypoint: [],
-    endPointWaypoint: [],
+    startPointLatLng: [],
+    endPointLatLng: [],
     zoom: 10,
     center: [43.7, -79.42] // TODO: update to possibly be user's current location
   });
 
   const startImgUrl = 'src/assets/images/feather-disc.svg';
-  const endImgUrl = 'src/assets/images/feather-mappin.svg';
+  const endImgUrl = 'src/assets/images/feather-map-pin.svg';
 
   onBeforeMount(async () => {
-    state.startPointWaypoint = await getLatLng(routeStore.getStartPoint);
-    state.endPointWaypoint = await getLatLng(routeStore.getEndPoint);
+    state.startPointLatLng = await getLatLng(routeStore.getStartPointAddress);
+    state.endPointLatLng = await getLatLng(routeStore.getEndPointAddress);
   })
 
   onMounted(() => {
@@ -45,9 +45,9 @@
     state.polyLineLatLngs = routeStore.getSelectedRouteLatLong;
 
     // additional lines for start and end points
-    if (state.startPointWaypoint.length && state.endPointWaypoint.length) {
-      state.polyLineLatLngs.unshift(state.startPointWaypoint);
-      state.polyLineLatLngs.push(state.endPointWaypoint);
+    if (state.startPointLatLng.length && state.endPointLatLng.length) {
+      state.polyLineLatLngs.unshift(state.startPointLatLng);
+      state.polyLineLatLngs.push(state.endPointLatLng);
     }
   }, { deep: true })
 
@@ -80,14 +80,14 @@
       <l-polyline v-if="state.isRouteOptimized" :lat-lngs="state.polyLineLatLngs"></l-polyline>
 
       <!-- starting point marker -->
-      <l-marker v-if="state.startPointWaypoint.length"
-        :lat-lng="state.startPointWaypoint">
+      <l-marker v-if="state.startPointLatLng.length"
+        :lat-lng="state.startPointLatLng">
         <l-icon class="color-green" :icon-size="[25, 25]" :icon-anchor="[15, 14]" :icon-url="startImgUrl" />
       </l-marker>
 
       <!-- ending point marker -->
-      <l-marker v-if="state.endPointWaypoint.length"
-        :lat-lng="state.endPointWaypoint">
+      <l-marker v-if="state.endPointLatLng.length"
+        :lat-lng="state.endPointLatLng">
         <l-icon :icon-size="[25, 25]" :icon-anchor="[12, 14]" :icon-url="endImgUrl" />
       </l-marker>
 

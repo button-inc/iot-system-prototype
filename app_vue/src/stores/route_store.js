@@ -5,8 +5,8 @@ export const useRouteStore = defineStore('route', {
   state: () => ({
     selectedRouteList: [], // list of sensor objects part of the route
     isRouteOptimized: false, // when google api has been run on the route and we want to present it
-    startPoint: '6045 Mavis Rd Mississauga ON L5R 4G6',
-    endPoint: '3401 Dufferin St Toronto ON M6A 2T9',
+    startPointAddress: '6045 Mavis Rd Mississauga ON L5R 4G6',
+    endPointAddress: '3401 Dufferin St Toronto ON M6A 2T9',
     routeDuration: '',
     routeDistance: ''
   }),
@@ -23,11 +23,11 @@ export const useRouteStore = defineStore('route', {
     getIsRouteOptimized({isRouteOptimized}) {
       return isRouteOptimized;
     },
-    getStartPoint({startPoint}) {
-      return startPoint;
+    getStartPointAddress({startPointAddress}) {
+      return startPointAddress;
     },
-    getEndPoint({endPoint}) {
-      return endPoint;
+    getEndPointAddress({endPointAddress}) {
+      return endPointAddress;
     },
     getRouteDuration({routeDuration}) {
       return routeDuration;
@@ -38,10 +38,10 @@ export const useRouteStore = defineStore('route', {
   },
   actions: {
     setStartPoint(value) {
-      this.startPoint = value;
+      this.startPointAddress = value;
     },
     setEndPoint(value) {
-      this.endPoint = value;
+      this.endPointAddress = value;
     },
     setRouteDuration(value) {
       this.routeDuration = value;
@@ -98,7 +98,7 @@ export const useRouteStore = defineStore('route', {
     },
     async optimizeRoute() {
       // make a call to google
-      const googResponse = await getOptimizedRoute(this.getSelectedRouteList, this.startPoint, this.endPoint);
+      const googResponse = await getOptimizedRoute(this.getSelectedRouteList, this.startPointAddress, this.endPointAddress);
       if (googResponse && googResponse.routes && googResponse.routes[0]) {
         const routeOrder = googResponse.routes[0].optimizedIntermediateWaypointIndex; // [0,3,4]
         this.updateWithOptimizedRoute(routeOrder); // update current route
