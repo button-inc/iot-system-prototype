@@ -141,8 +141,8 @@
             </span>
             <span>&#8226;</span>
             <div class="d-flex flex-column">
-              <span> {{ getMinutesString(routeStore.getRouteDuration) }}</span>
-              <span> ({{ getKmFromMeterString(routeStore.getRouteDistance) }}km)</span>
+              <span v-if="routeStore.getRouteDuration"> {{ getMinutesString(routeStore.getRouteDuration) }}</span>
+              <span v-if="routeStore.getRouteDistance"> ({{ getKmFromMeterString(routeStore.getRouteDistance) }}km)</span>
             </div>
 
 
