@@ -38,8 +38,16 @@
   <section class="routes-list">
     <div class="text-h6 padding-b-16">Routes</div>
 
-    <!-- start and end point display -->
-    <section v-if="!state.isRouteOptimized">
+    <!-- route info display -->
+    <section v-if="state.isRouteOptimized">
+      <SensorRouteBlock
+        :selectedRouteList="routeStore.getSelectedRouteList"
+        :startPointAddress="routeStore.getStartPointAddress"
+        :endPointAddress="routeStore.getEndPointAddress"></SensorRouteBlock>
+    </section>
+
+    <!-- start and end point entry -->
+    <section v-else>
       <v-text-field 
         v-model="state.startPointAddress"
         disabled
@@ -59,13 +67,7 @@
     </section>
     
 
-    <!-- route info display -->
-    <section v-else>
-      <SensorRouteBlock
-        :selectedRouteList="routeStore.getSelectedRouteList"
-        :startPointAddress="routeStore.getStartPointAddress"
-        :endPointAddress="routeStore.getEndPointAddress"></SensorRouteBlock>
-    </section>
+    
     
 
   </section>
