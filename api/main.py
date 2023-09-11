@@ -679,6 +679,18 @@ async def send_alerts(email: AlertEmailSchema) -> JSONResponse:
     
     return response
 
+# alert every 24 hours
+@app.on_event("startup")
+@repeat_every(seconds=60*60*24)
+async def automatic_alerts():
+    alert_email_data = AlertEmailSchema(recipient_list=["lin.yaokun1@gmail.com", "patrick@button.is", "elliott@button.is", "suha@button.is"], 
+                                        alter_lvl=75)
+    
+    
+    print("sending out alerts on over filled sensors")
+    response = await send_alerts(alert_email_data)
+    return response
+
 
 # @app.get("/sensors/{sensor_id}")
 # def query_sensor_by_id(sensor_id: str) -> Sensor:
