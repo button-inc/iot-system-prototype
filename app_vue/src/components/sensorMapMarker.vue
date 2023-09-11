@@ -52,11 +52,11 @@
   <l-popup class="popup">
     <section class="bin-details">
       <span class="text-h6">{{ props.sensor.bin_name }}</span>
-      <div class="bin-details__address color-cyan-blue">
-        <span>{{ props.sensor.address_line1 }}</span>
-        <span>{{ props.sensor.address_line2 }}</span>
+      <div class="bin-details__address color-cyan-blue" v-if="props.sensor.address_line1 || props.sensor.address_line2">
+        <span v-if="props.sensor.address_line1">{{ props.sensor.address_line1 }}</span>
+        <span v-if="props.sensor.address_line2">{{ props.sensor.address_line2 }}</span>
       </div>
-      <div class="bin-details__group">
+      <div class="bin-details__group" v-if="props.sensor.group">
         <span class="color-gray-grey">Group</span>
         {{ props.sensor.group }}
       </div>

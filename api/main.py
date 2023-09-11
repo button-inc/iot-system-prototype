@@ -3,7 +3,11 @@ from enum import Enum
 import re
 import time
 import requests
+<<<<<<< HEAD
 from mail_services import AlertEmailSchema, EmailSchema, get_email_msg, get_fm
+=======
+from utils import filter_nulls
+>>>>>>> 6ccf49efe4d52b9543dde196d800f8f913149940
 
 import gspread
 from dotenv import load_dotenv
@@ -624,6 +628,7 @@ def get_latest_readings():
         tkl_readings.append(tkl_cache[sensor])
 
     latest_readings = bb_readings + rfs_cache + ss_cache + tkl_readings
+    latest_readings = filter_nulls(latest_readings)
     return {"sensors": latest_readings}
 
 

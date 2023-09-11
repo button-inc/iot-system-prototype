@@ -4,6 +4,7 @@ const getGoogPayload = (sensorRouteList) => {
   const waypointArr = [...sensorRouteList]; // ensures original variable isnt modified
   const origin = waypointArr.shift(); // grab first sensor in route
   const destination = waypointArr.pop(); // grab last sensor in route
+  
   const intermediates = waypointArr.map(waypoint => {
     return {
       "location":{
@@ -14,6 +15,7 @@ const getGoogPayload = (sensorRouteList) => {
       }
     }
   });
+
   const data = {
     "origin": { // specify starting point
       "location":{
