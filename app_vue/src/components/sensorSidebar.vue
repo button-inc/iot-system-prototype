@@ -88,11 +88,6 @@
     }
   }
 
-  .routes-list {
-    margin-top: 40px;
-    width: 100%;
-  }
-
   .map-updated {
     display: none; //TODO: switch to flex when needed
     // display: flex;

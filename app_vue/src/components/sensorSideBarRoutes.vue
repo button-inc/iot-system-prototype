@@ -11,12 +11,10 @@
   const routeStore = useRouteStore();
   const sensorStore = useSensorStore();
   const { selectedRouteList, getIsRouteOptimized } = storeToRefs(routeStore);
-  const { getTotalSensors } = storeToRefs(sensorStore);
 
   const state = reactive({
     startPoint: '',
     endPoint: '',
-    totalSensors: 0,
     isRouteOptimized: false,
     drag: false
   });
@@ -27,10 +25,6 @@
   })
 
   // element variables
-  watch(getTotalSensors, () => {
-    state.totalSensors = sensorStore.getTotalSensors;
-  })
-
   watch(getIsRouteOptimized, () => {
     state.isRouteOptimized = routeStore.getIsRouteOptimized;
   })
@@ -190,7 +184,6 @@
   }
   
   .routes-list {
-    margin-top: 40px;
     width: 100%;
 
     &__route-container {
