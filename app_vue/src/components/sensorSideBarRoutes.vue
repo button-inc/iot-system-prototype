@@ -29,7 +29,7 @@
 
   async function findRouteClicked() {
     routeStore.updateRouteListWithSensors(sensorStore.sensors); // store current displayed sensors into route list
-    await routeStore.optimizeRoute();
+    await routeStore.googOptimizeRoute();
   }
 
 </script>
@@ -61,15 +61,15 @@
         label="End point"
         variant="underlined">
       </v-text-field>
-      <v-btn color="#191A1C" :disabled="state.isRouteOptimized" @click="findRouteClicked">
+      <div class="d-flex align-center py-4 px-2 color-warning-bg mb-5" v-if="routeStore.getSelectedRouteList > 25">
+        <vue-feather class="color-red mx-3" type="alert-triangle"></vue-feather>
+        <span class="routes-list__warning-text">Note: Currently only 25 bins can be added to the route. Please deselect {{ routeStore.getSelectedRouteList - 25 }} bin(s).</span>
+      </div>
+      <v-btn color="#191A1C" :disabled="!routeStore.getHasMappedStartEnd && routeStore.getSelectedRouteList > 25" @click="findRouteClicked">
         <span class="pr-1">Find Route</span>
         <vue-feather type="search"></vue-feather>
       </v-btn>
     </section>
-    
-
-    
-    
 
   </section>
 </template>
@@ -89,5 +89,10 @@
   
   .routes-list {
     width: 100%;
+
+    &__warning-text {
+      max-width: 200px;
+      @include fontBodySmall;
+    }
   }
 </style>

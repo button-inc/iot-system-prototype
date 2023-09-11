@@ -35,6 +35,7 @@
     state.startPointLatLng = await getLatLng(routeStore.getStartPointAddress);
     state.endPointLatLng = await getLatLng(routeStore.getEndPointAddress);
     state.center = state.startPointLatLng;
+    routeStore.setHasMappedStartEnd(true);
   })
 
   onMounted(() => {
@@ -47,8 +48,8 @@
 
     // additional lines for start and end points
     if (state.startPointLatLng.length && state.endPointLatLng.length) {
-      state.polyLineLatLngs.unshift(state.startPointLatLng);
-      state.polyLineLatLngs.push(state.endPointLatLng);
+      state.polyLineLatLngs.unshift(state.startPointLatLng); // append as first element
+      state.polyLineLatLngs.push(state.endPointLatLng); // append as last element
     }
   }, { deep: true })
 

@@ -8,7 +8,8 @@ export const useRouteStore = defineStore('route', {
     startPointAddress: '6900 Airport Rd Mississauga ON',
     endPointAddress: '6900 Airport Rd Mississauga ON',
     routeDuration: '',
-    routeDistance: ''
+    routeDistance: '',
+    hasMappedStartEnd: false
   }),
   getters: {
     getSelectedRouteList({selectedRouteList}) {
@@ -34,11 +35,17 @@ export const useRouteStore = defineStore('route', {
     },
     getRouteDistance({routeDistance}) {
       return routeDistance;
-    }
+    },
+    getHasMappedStartEnd({hasMappedStartEnd}) {
+      return hasMappedStartEnd;
+    },
   },
   actions: {
     setStartPoint(value) {
       this.startPointAddress = value;
+    },
+    setHasMappedStartEnd(value) {
+      this.hasMappedStartEnd = value;
     },
     setEndPoint(value) {
       this.endPointAddress = value;
@@ -48,6 +55,9 @@ export const useRouteStore = defineStore('route', {
     },
     setRouteDistance(value) {
       this.routeDistance = value;
+    },
+    setSelectedRouteList(value) {
+      this.selectedRouteList = value;
     },
     updateRouteListWithSensors(sensors) {
       this.selectedRouteList = [...sensors];
@@ -96,8 +106,7 @@ export const useRouteStore = defineStore('route', {
       // update saved routelist with new route order
       this.selectedRouteList = [...intermediates];
     },
-    async optimizeRoute() {
-      // make a call to google
+    async googOptimizeRoute() {
       const googResponse = await getOptimizedRoute(this.getSelectedRouteList, this.startPointAddress, this.endPointAddress);
       if (googResponse && googResponse.routes && googResponse.routes[0]) {
         const routeOrder = googResponse.routes[0].optimizedIntermediateWaypointIndex; // [0,3,4]

@@ -3,7 +3,7 @@
   import { useRouteStore } from '@/stores/route_store';
   import { v4 as uuidv4 } from 'uuid';
   import { getMinutesString, getKmFromMeterString } from '@/utils/formattingHelper';
-  import draggable from 'vuedraggable';
+  // import draggable from 'vuedraggable'; // TODO: commenting out draggable functionality for now, remove if no longer needed
 
   const props = defineProps({
     selectedRouteList: {
@@ -39,6 +39,11 @@
   watch(() => props.selectedRouteList, (value) => {
     state.selectedRouteList = value;
   });
+
+  // function draggedRoute() {
+  //   state.drag = false;
+  //   routeStore.setSelectedRouteList(state.selectedRouteList);
+  // }
 
   function exportRouteClicked() {
     // columns
@@ -108,13 +113,14 @@
             <span class="route-display__point ml-2 mt-4">{{ state.startPointAddress }}</span>
           </div>
           <!-- destinations -->
-          <draggable 
+          <!-- <draggable 
             v-model="state.selectedRouteList" 
             tag="div"
             item-key="id"
             @start="state.drag=true"
-            @end="state.drag = false">
-            <template #item="{ element: sensor }">
+            @end="draggedRoute"> -->
+            <!-- <template #item="{ element: sensor }"> -->
+            <template v-for="sensor in state.selectedRouteList" :key="sensor.id">
               <li class="route-display__items" :class="{'margin-b-0' : state.selectedRouteList.length === 1}">
                 <vue-feather class="transform-rotate-270" type="git-commit"></vue-feather>
                 <div class="d-flex flex-column ml-2">
@@ -123,7 +129,7 @@
                 </div>
               </li>
             </template>
-          </draggable>
+          <!-- </draggable> -->
           <!-- ending point -->
           <div class="d-flex align-center mb-4">
             <vue-feather class="color-red mr-2" type="map-pin"></vue-feather>
@@ -188,9 +194,9 @@
       align-items: center;
     }
 
-    &__items {
-      cursor: pointer;
-    }
+    // &__items {
+    //   cursor: pointer;
+    // }
 
     &__point {
       max-width: 174px;

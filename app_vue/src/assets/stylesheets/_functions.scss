@@ -61,9 +61,17 @@
   color: #C92828;
 }
 
+.color-warning-bg {
+  background-color: #FFF4E5;
+}
+
 // text 
 .font-body {
   @include fontBody;
+}
+
+.font-body-small {
+  @include fontBodySmall;
 }
 
 // misc
