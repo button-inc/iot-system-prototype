@@ -9,16 +9,14 @@ from utils import filter_nulls
 import gspread
 from dotenv import load_dotenv
 
-from fastapi import FastAPI, HTTPException, Body
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi_utils.session import FastAPISessionMaker
 from fastapi_utils.tasks import repeat_every
-from fastapi_mail import  MessageSchema
 
 from pydantic import BaseModel
 import os
 from datetime import datetime
-from typing import Any, Optional, List, Dict, Union
+from typing import Optional, List, Dict, Union
 
 from starlette.responses import JSONResponse
 
@@ -29,11 +27,6 @@ load_dotenv()
 env = os.environ.get("ENVIRONMENT")
 bb_email = os.environ.get("BB_EMAIL")
 bb_password = os.environ.get("BB_PASSWORD")
-mailgun_username = os.environ.get("MAILGUN_USERNAME")
-mailgun_password = os.environ.get("MAILGUN_PASSWORD")
-mail_form = os.environ.get("MAIL_FROM")
-mail_port = os.environ.get("MAIL_PORT")
-mail_server = os.environ.get("MAIL_SERVER")
 tkl_client = os.environ.get("TEKELEK_CLIENT")
 tkl_password = os.environ.get("TEKELEK_PASSWORD")
 tkl_secret = os.environ.get("TEKELEK_TOKEN")
