@@ -1,8 +1,10 @@
+dnspython==2.3.0
 fastapi>=0.68.0,<0.69.0
 fastapi_utils
+fastapi-mail==1.0.1
+httpcore==0.13.7
 pydantic>=1.8.0,<2.0.0
 uvicorn>=0.15.0,<0.16.0
 requests
 python-dotenv
 gspread>=5.10.0
-fastapi-mail=1.0.1
