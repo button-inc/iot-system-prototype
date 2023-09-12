@@ -15,7 +15,8 @@
     endPointAddress: '',
     isRouteOptimized: false,
     drag: false,
-    isMapInitialized: false
+    isMapInitialized: false,
+    isLoadingGoogApi: false
   });
 
   onMounted(() => {
@@ -33,8 +34,10 @@
   })
 
   async function findRouteClicked() {
+    state.isLoadingGoogApi = true;
     routeStore.updateRouteListWithSensors(sensorStore.sensors); // store current displayed sensors into route list
     await routeStore.googOptimizeRoute();
+    state.isLoadingGoogApi = false;
   }
 
 </script>
@@ -70,9 +73,9 @@
         <vue-feather class="color-red mx-3" type="alert-triangle"></vue-feather>
         <span class="routes-list__warning-text">Note: Currently only 25 bins can be added to the route. Please deselect {{ routeStore.getSelectedRouteList - 25 }} bin(s).</span>
       </div>
-      <v-btn color="#191A1C" :disabled="!state.isMapInitialized || routeStore.getSelectedRouteList > 25" @click="findRouteClicked">
+      <v-btn color="#191A1C" :disabled="!state.isMapInitialized || routeStore.getSelectedRouteList > 25 || sensorStore.getTotalSensors <= 1" @click="findRouteClicked">
         <span class="pr-1">Find Route</span>
-        <v-progress-circular v-if="!state.isMapInitialized"
+        <v-progress-circular v-if="!state.isMapInitialized || state.isLoadingGoogApi"
           indeterminate
           :size="20"
           color="#8D8D8D"
