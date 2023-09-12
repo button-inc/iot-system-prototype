@@ -32,6 +32,7 @@
   const endImgUrl = 'src/assets/images/feather-map-pin.svg';
 
   onBeforeMount(async () => {
+    // processing start/end/center lat lng points
     state.startPointLatLng = await getLatLng(routeStore.getStartPointAddress);
     state.endPointLatLng = await getLatLng(routeStore.getEndPointAddress);
     state.center = state.startPointLatLng;
