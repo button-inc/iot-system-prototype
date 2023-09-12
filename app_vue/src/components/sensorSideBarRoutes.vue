@@ -72,7 +72,12 @@
       </div>
       <v-btn color="#191A1C" :disabled="!state.isMapInitialized || routeStore.getSelectedRouteList > 25" @click="findRouteClicked">
         <span class="pr-1">Find Route</span>
-        <vue-feather type="search"></vue-feather>
+        <v-progress-circular v-if="!state.isMapInitialized"
+          indeterminate
+          :size="20"
+          color="#8D8D8D"
+        ></v-progress-circular>
+        <vue-feather type="search" v-else></vue-feather>
       </v-btn>
     </section>
 
