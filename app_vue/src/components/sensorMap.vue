@@ -1,5 +1,5 @@
 <script setup>
-  import { reactive, onMounted, watch, onBeforeMount } from 'vue'
+  import { reactive, onMounted, watch, onBeforeMount, onDeactivated } from 'vue'
   import SensorMapMarker from '@/components/sensorMapMarker.vue';
   import 'leaflet/dist/leaflet.css'
   import { LMap, LTileLayer, LMarker, LControlZoom, LPolyline, LIcon } from '@vue-leaflet/vue-leaflet'
@@ -35,6 +35,7 @@
     state.startPointLatLng = await getLatLng(routeStore.getStartPointAddress);
     state.endPointLatLng = await getLatLng(routeStore.getEndPointAddress);
     state.center = state.startPointLatLng;
+
     routeStore.setHasMappedStartEnd(true);
   })
 
@@ -42,6 +43,10 @@
     positionZoom();
     window.addEventListener("resize", positionZoom);
   });
+
+  onDeactivated(() => {
+    routeStore.setHasMappedStartEnd(false);
+  })
 
   watch(getSelectedRouteLatLong, () => {
     state.polyLineLatLngs = routeStore.getSelectedRouteLatLong;

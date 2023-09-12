@@ -3,18 +3,19 @@
   import { useRouteStore } from '@/stores/route_store';
   import { useSensorStore } from '@/stores/sensors_store';
   import { storeToRefs } from 'pinia';
-  import SensorRouteBlock from './sensorRouteBlock.vue';
+  import SensorRouteBlock from '@/components/sensorRouteBlock.vue';
 
   // stores
   const routeStore = useRouteStore();
   const sensorStore = useSensorStore();
-  const { getIsRouteOptimized } = storeToRefs(routeStore);
+  const { getIsRouteOptimized, getHasMappedStartEnd } = storeToRefs(routeStore);
 
   const state = reactive({
     startPointAddress: '',
     endPointAddress: '',
     isRouteOptimized: false,
-    drag: false
+    drag: false,
+    isMapInitialized: false
   });
 
   onMounted(() => {
@@ -25,6 +26,10 @@
   // element variables
   watch(getIsRouteOptimized, () => {
     state.isRouteOptimized = routeStore.getIsRouteOptimized;
+  })
+
+  watch(getHasMappedStartEnd, () => {
+    state.isMapInitialized = routeStore.getHasMappedStartEnd;
   })
 
   async function findRouteClicked() {
@@ -65,7 +70,7 @@
         <vue-feather class="color-red mx-3" type="alert-triangle"></vue-feather>
         <span class="routes-list__warning-text">Note: Currently only 25 bins can be added to the route. Please deselect {{ routeStore.getSelectedRouteList - 25 }} bin(s).</span>
       </div>
-      <v-btn color="#191A1C" :disabled="!routeStore.getHasMappedStartEnd && routeStore.getSelectedRouteList > 25" @click="findRouteClicked">
+      <v-btn color="#191A1C" :disabled="!state.isMapInitialized || routeStore.getSelectedRouteList > 25" @click="findRouteClicked">
         <span class="pr-1">Find Route</span>
         <vue-feather type="search"></vue-feather>
       </v-btn>
