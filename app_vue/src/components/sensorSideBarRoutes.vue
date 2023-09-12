@@ -1,81 +1,43 @@
 <script setup>
-  import { ref, watch } from 'vue'
+  import { watch, reactive, onMounted } from 'vue'
   import { useRouteStore } from '@/stores/route_store';
+  import { useSensorStore } from '@/stores/sensors_store';
   import { storeToRefs } from 'pinia';
-  import { v4 as uuidv4 } from 'uuid';
-  import { getOptimizedRoute } from '@/utils/optimizeRouteHelper';
-  import draggable from 'vuedraggable';
+  import SensorRouteBlock from '@/components/sensorRouteBlock.vue';
 
+  // stores
   const routeStore = useRouteStore();
-  const { sensorRouteList, getEnableOptimizeRoute, getIsRouteOptimized } = storeToRefs(routeStore);
-  const isOptimizeRouteEnabled = ref(true);
-  const isRouteOptimized = ref(false);
-  const drag = ref(false);
+  const sensorStore = useSensorStore();
+  const { getIsRouteOptimized, getHasMappedStartEnd } = storeToRefs(routeStore);
 
-  // listen for status of optimize route button
-  watch(getEnableOptimizeRoute, () => {
-    isOptimizeRouteEnabled.value = routeStore.getEnableOptimizeRoute;
+  const state = reactive({
+    startPointAddress: '',
+    endPointAddress: '',
+    isRouteOptimized: false,
+    drag: false,
+    isMapInitialized: false,
+    isLoadingGoogApi: false
+  });
+
+  onMounted(() => {
+    state.startPointAddress = routeStore.getStartPointAddress;
+    state.endPointAddress = routeStore.getEndPointAddress;
   })
 
+  // element variables
   watch(getIsRouteOptimized, () => {
-    isRouteOptimized.value = routeStore.getIsRouteOptimized;
+    state.isRouteOptimized = routeStore.getIsRouteOptimized;
   })
 
-  async function optimizeRouteClicked() {
-    // button to be disabled after first click
-    routeStore.setEnableOptimizedRoute(false);
+  watch(getHasMappedStartEnd, () => {
+    state.isMapInitialized = routeStore.getHasMappedStartEnd;
+  })
 
-    // make a call to google
-    const googResponse = await getOptimizedRoute(routeStore.getSensorRouteList);
-    if (googResponse && googResponse.routes) {
-      const routeOrder = googResponse.routes[0]?.optimizedIntermediateWaypointIndex; // [0,3,4]
-      routeStore.updateWithOptimizedRoute(routeOrder); // update current route
-      routeStore.setIsRouteOptimized(true); // set flag is optimized to true
-    }
-
-  }
-
-  function routeOrganized() {
-    drag.value = false; // completed drag
-    routeStore.setIsRouteOptimized(false);
-  }
-
-  function exportRouteClicked() {
-    // columns
-    let csv = 'Order,Sensor Type,Fill Level,Latitude,Longitude,Manufacturer,Bin Name,Address Line 1,Address Line 2,Group,Bin Type,Material Type,Asset Tag,Bin Volume\n';
-
-    // grab required data to be exported
-    const csvObjectArray = routeStore.sensorRouteList.map((sensor, index) => {
-      return {
-        order: index + 1,
-        sensor_type: sensor.sensor_type,
-        fill_level: sensor.fill_level,
-        lat: sensor.lat,
-        long: sensor.long,
-        manufacturer: sensor.manufacturer,
-        bin_name: sensor.bin_name,
-        address_line1: sensor.address_line1 || '',
-        address_line2: sensor.address_line2 ? sensor.address_line2.replace(',','') : '', // typically has a comma which will interfere with csv
-        group: sensor || '',
-        bin_type: sensor.bin_type,
-        material_type: sensor.material_type,
-        asset_tag: sensor.asset_tag,
-        bin_volume: sensor.bin_volume
-      };
-    })
-
-    // convert JSON to csv rows
-    csvObjectArray.forEach((sensor) => {
-      const csvRow = Object.values(sensor).toString(); // outputs json to a value string separated by commas
-      csv += csvRow + "\n";
-    });
- 
-    // export
-    const anchor = document.createElement('a');
-    anchor.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-    anchor.target = '_blank';
-    anchor.download = `Route-${uuidv4()}.csv`;
-    anchor.click();
+  async function findRouteClicked() {
+    state.isLoadingGoogApi = true;
+    routeStore.updateRouteListWithSensors(sensorStore.sensors); // store current displayed sensors into route list
+    await routeStore.googOptimizeRoute();
+    state.isLoadingGoogApi = false;
   }
 
 </script>
@@ -83,64 +45,44 @@
 <template>
   <section class="routes-list">
     <div class="text-h6 padding-b-16">Routes</div>
-    <div v-if="sensorRouteList && sensorRouteList.length !== 0" class="padding-b-16">1 route(s) found</div>
-    <div class="py-4 px-4 routes-list__route-container">
-      <!-- no route present -->
-      <span v-if="sensorRouteList && sensorRouteList.length === 0" 
-        class="font-italic">
-        No route to be displayed yet
-      </span>
-      <!-- route is present -->
-      <div class="w-100 h-100" v-else>
-        <div tabindex="0" class="w-100 h-100 d-flex align-center justify-space-between cursor-pointer">
-          <span class="font-body">{{ sensorRouteList.length }} Bins </span>
-        </div>
 
-        <!-- route list -->
-        <section>
-          <!-- route list items -->
-          <draggable 
-            v-model="sensorRouteList" 
-            tag="div"
-            item-key="id"
-            @start="drag=true"
-            @end="routeOrganized">
-            <template #item="{ element: sensor, index }">
-              <li class="routes-list__items" :class="{'margin-b-0' : sensorRouteList.length === 1}">
-                <vue-feather v-if="index === 0" class="color-green" type="disc"></vue-feather>
-                <vue-feather v-if="index > 0 && index < (sensorRouteList.length - 1)" class="transform-rotate-270" type="git-commit"></vue-feather>
-                <vue-feather v-if="index === (sensorRouteList.length - 1) && index !== 0" class="color-red" type="map-pin"></vue-feather>
-                <div class="d-flex flex-column ml-2">
-                  <span>{{ sensor.address_line1 }}</span>
-                  <span>{{ sensor.address_line2 }}</span>
-                </div>
-              </li>
-            </template>
-          </draggable>
+    <!-- route info display -->
+    <section v-if="state.isRouteOptimized">
+      <SensorRouteBlock
+        :selectedRouteList="routeStore.getSelectedRouteList"
+        :startPointAddress="routeStore.getStartPointAddress"
+        :endPointAddress="routeStore.getEndPointAddress">
+      </SensorRouteBlock>
+    </section>
 
-          <!-- route call-to-actions -->
-          <div class="d-flex align-center" 
-            :class="{
-              'justify-space-between': sensorRouteList && sensorRouteList.length > 1, 
-              'justify-end': sensorRouteList && sensorRouteList.length <= 1
-            }">
-            <div v-if="sensorRouteList && sensorRouteList.length > 1">
-              <v-btn v-if="sensorRouteList.length >= 4" class="pa-0" variant="plain" :disabled="isRouteOptimized" @click="optimizeRouteClicked">
-                {{ isRouteOptimized ? 'Optimized!' : 'Optimize route' }}
-              </v-btn>
-              <v-btn class="pa-0 routes-list__export" variant="plain" @click="exportRouteClicked">
-                Export route
-                <vue-feather type="upload"></vue-feather>
-              </v-btn>
-            </div>
-            <v-btn class="routes-list__delete pl-0 align-self-end" variant="plain" @click="routeStore.clearSensorRoute">
-              <vue-feather type="trash-2"></vue-feather>
-            </v-btn>
-          </div>
-
-        </section>
+    <!-- start and end point entry -->
+    <section v-else>
+      <v-text-field 
+        v-model="state.startPointAddress"
+        disabled
+        label="Start point" 
+        variant="underlined">
+      </v-text-field>
+      <v-text-field 
+        v-model="state.endPointAddress"
+        disabled
+        label="End point"
+        variant="underlined">
+      </v-text-field>
+      <div class="d-flex align-center py-4 px-2 color-warning-bg mb-5" v-if="routeStore.getSelectedRouteList > 25">
+        <vue-feather class="color-red mx-3" type="alert-triangle"></vue-feather>
+        <span class="routes-list__warning-text">Note: Currently only 25 bins can be added to the route. Please deselect {{ routeStore.getSelectedRouteList - 25 }} bin(s).</span>
       </div>
-    </div>
+      <v-btn color="#191A1C" :disabled="!state.isMapInitialized || routeStore.getSelectedRouteList > 25 || sensorStore.getTotalSensors <= 1" @click="findRouteClicked">
+        <span class="pr-1">Find Route</span>
+        <v-progress-circular v-if="!state.isMapInitialized || state.isLoadingGoogApi"
+          indeterminate
+          :size="20"
+          color="#8D8D8D"
+        ></v-progress-circular>
+        <vue-feather type="search" v-else></vue-feather>
+      </v-btn>
+    </section>
 
   </section>
 </template>
@@ -159,33 +101,11 @@
   }
   
   .routes-list {
-    margin-top: 40px;
     width: 100%;
 
-    &__route-container {
-      border: 1px solid $lightergrey;
-      border-radius: 20px;
-      @include fontBodySmall;;
-    }
-
-    &__route {
-      margin-bottom: 12px;
-      &:last-child {
-        margin-bottom: 0;
-      }
-    }
-
-    &__export {
-      display: flex;
-      align-items: center;
-    }
-
-    &__items {
-      cursor: pointer;
-    }
-
-    :deep .v-btn--size-default {
-      min-width: 24px;
+    &__warning-text {
+      max-width: 200px;
+      @include fontBodySmall;
     }
   }
 </style>

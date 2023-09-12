@@ -1,14 +1,17 @@
 import axios from 'axios';
 
-const getGoogPayload = (sensorRouteList) => {
-  const waypointArr = [...sensorRouteList]; // ensures original variable isnt modified
-  const origin = waypointArr.shift(); // grab first sensor in route
-  const destination = waypointArr.pop(); // grab last sensor in route
-  
+const getGoogPayload = (selectedRouteList, originAddress, destinationAddress) => {
+  const origin = {
+    "address": originAddress
+  };
+  const destination = {
+    "address": destinationAddress
+  };
+  const waypointArr = [...selectedRouteList]; // ensures original variable isnt modified
   const intermediates = waypointArr.map(waypoint => {
     return {
-      "location":{
-        "latLng":{
+      "location": {
+        "latLng": {
           "latitude": waypoint.lat,
           "longitude": waypoint.long
         }
@@ -16,24 +19,10 @@ const getGoogPayload = (sensorRouteList) => {
     }
   });
 
-  const data = {
-    "origin": { // specify starting point
-      "location":{
-        "latLng":{
-          "latitude": origin.lat,
-          "longitude": origin.long
-        }
-      }
-    },
+  return {
+    origin,
     intermediates,
-    "destination":{ // specify ending point
-      "location":{
-        "latLng":{
-          "latitude": destination.lat,
-          "longitude": destination.long
-        }
-      }
-    },
+    destination,
     "travelMode": "DRIVE",
     "routingPreference": "TRAFFIC_UNAWARE",
     "computeAlternativeRoutes": false,
@@ -44,24 +33,22 @@ const getGoogPayload = (sensorRouteList) => {
     },
     "languageCode": "en-US",
     "units": "IMPERIAL",
-    "optimizeWaypointOrder": "true", // note this special feature being true charges us advanced:route pricing
+    "optimizeWaypointOrder": "true"
   };
-  return data;
 };
 
 // google api call to optimize route
 // https://developers.google.com/maps/documentation/routes/opt-way
-export const getOptimizedRoute = async (sensorRouteList) => {
+export const getOptimizedRoute = async (selectedRouteList, originAddress, destinationAddress) => {
 
-  if (sensorRouteList && sensorRouteList.length === 0) {
+  if (selectedRouteList && selectedRouteList.length === 0) {
     return;
   }
   // google headers
-  const googApiKey = 'AIzaSyAgixnED4py56GFy-b2hlfYgofEyISUjSo'; //TODO: move to .env
+  const googApiKey = 'AIzaSyAgixnED4py56GFy-b2hlfYgofEyISUjSo';
   const googFieldMask = 'routes.duration,routes.distanceMeters,routes.optimizedIntermediateWaypointIndex';
   const URL = 'https://routes.googleapis.com/directions/v2:computeRoutes';
-  const data = getGoogPayload(sensorRouteList);
-
+  const data = getGoogPayload(selectedRouteList, originAddress, destinationAddress);
   const config = {
     headers: {
       'Content-Type': 'application/json',
@@ -71,6 +58,7 @@ export const getOptimizedRoute = async (sensorRouteList) => {
   };
 
   try {
+    // if there is an empty object returned, then there is an incorrect lat/long passed
     const response = await axios.post(URL, data, config);
     if (response) {
       return response.data;

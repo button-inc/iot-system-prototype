@@ -49,6 +49,9 @@ bin/vueLocalDeploy.sh
 ### Vue3 Leaflet - Map Library
 - this library allows us to generate a map and place relevant markers
 
+### Google Maps Routes API
+- this is used to calculate the optimal order of bins to visit
+- note that if it returns empty object {} it is likely that your request is passing incorrect lat/long or location data
 
 ## Folder structure
 
