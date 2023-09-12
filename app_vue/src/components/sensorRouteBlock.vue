@@ -3,7 +3,7 @@
   import { useRouteStore } from '@/stores/route_store';
   import { v4 as uuidv4 } from 'uuid';
   import { getMinutesString, getKmFromMeterString } from '@/utils/formattingHelper';
-  // import draggable from 'vuedraggable'; // TODO: commenting out draggable functionality for now, remove if no longer needed
+  import draggable from 'vuedraggable'; // TODO: commenting out draggable functionality for now, remove if no longer needed
 
   const props = defineProps({
     selectedRouteList: {
@@ -40,10 +40,11 @@
     state.selectedRouteList = value;
   });
 
-  // function draggedRoute() {
-  //   state.drag = false;
-  //   routeStore.setSelectedRouteList(state.selectedRouteList);
-  // }
+  function draggedRoute() {
+    state.drag = false;
+    routeStore.setSelectedRouteList(state.selectedRouteList);
+    routeStore.googUpdateRouteStats();
+  }
 
   function exportRouteClicked() {
     // columns
@@ -113,15 +114,14 @@
             <span class="route-display__point ml-2 mt-4">{{ state.startPointAddress }}</span>
           </div>
           <!-- destinations -->
-          <!-- <draggable 
+          <draggable 
             v-model="state.selectedRouteList" 
             tag="div"
             item-key="id"
             @start="state.drag=true"
-            @end="draggedRoute"> -->
-            <!-- <template #item="{ element: sensor }"> -->
-            <template v-for="sensor in state.selectedRouteList" :key="sensor.id">
-              <li class="route-display__items" :class="{'margin-b-0' : state.selectedRouteList.length === 1}">
+            @end="draggedRoute">
+            <template #item="{ element: sensor }">
+              <li class="route-display__items cursor-pointer hover-item" :class="{'margin-b-0' : state.selectedRouteList.length === 1}">
                 <vue-feather class="transform-rotate-270" type="git-commit"></vue-feather>
                 <div class="d-flex flex-column ml-2">
                   <span>{{ sensor.address_line1 }}</span>
@@ -129,7 +129,7 @@
                 </div>
               </li>
             </template>
-          <!-- </draggable> -->
+          </draggable>
           <!-- ending point -->
           <div class="route-display__items mb-4">
             <vue-feather class="color-red mr-2" type="map-pin"></vue-feather>
@@ -226,6 +226,12 @@
 
     :deep .v-btn--size-default {
       min-width: 24px;
+    }
+  }
+
+  .hover-item {
+    &:hover {
+      opacity: .8;
     }
   }
 </style>

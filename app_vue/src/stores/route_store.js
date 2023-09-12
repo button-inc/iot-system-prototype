@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getOptimizedRoute } from '@/utils/optimizeRouteHelper';
+import { getOptimizedRouteData, getNewOptimizedRoute } from '@/utils/optimizeRouteHelper';
 
 export const useRouteStore = defineStore('route', {
   state: () => ({
@@ -85,32 +85,24 @@ export const useRouteStore = defineStore('route', {
       }
       return false
     },
-    // reorders intermediate points in our selectedRouteList according to a list of given indexes (routeOrder)
-    updateWithOptimizedRoute(routeOrder) {
-      // assuming routeOrder looks like [originLocationSensor, midLocationSensor1...midLocationSensor4, destinationLocaitonSensor]
-      // variable to hold our intermediate waypoints for update (no start/end point included)
-      const intermediates = [...this.selectedRouteList];
-
-      // refer to google route order and match it to our defined route
-      // copy result to temp
-      let temp = [];
-      for (let i = 0; i < routeOrder.length; i++) {
-        temp[i] = intermediates[routeOrder[i]];
-      }
-
-      // replace intermediate waypoint array with temp
-      for (let j = 0; j < routeOrder.length; j++) {
-        intermediates[j] = temp[j];
-      }
-
-      // update saved routelist with new route order
-      this.selectedRouteList = [...intermediates];
-    },
-    async googOptimizeRoute() {
-      const googResponse = await getOptimizedRoute(this.getSelectedRouteList, this.startPointAddress, this.endPointAddress);
+    async googUpdateRouteStats() {
+      const googResponse = await getOptimizedRouteData(this.getSelectedRouteList, this.startPointAddress, this.endPointAddress, false);
       if (googResponse && googResponse.routes && googResponse.routes[0]) {
-        const routeOrder = googResponse.routes[0].optimizedIntermediateWaypointIndex; // [0,3,4]
-        this.updateWithOptimizedRoute(routeOrder); // update current route
+        if (googResponse.routes[0].duration) {
+          this.setRouteDuration(googResponse.routes[0]?.duration);
+        }
+
+        if (googResponse.routes[0].distanceMeters) {
+          this.setRouteDistance(googResponse.routes[0]?.distanceMeters);
+        }
+      }
+    },
+    async googOptimizeRoute() { // updates our stored selected route state with new optimized route
+      const googResponse = await getOptimizedRouteData(this.getSelectedRouteList, this.startPointAddress, this.endPointAddress);
+      if (googResponse && googResponse.routes && googResponse.routes[0]) {
+        const newRouteIndexOrder = googResponse.routes[0].optimizedIntermediateWaypointIndex; // [0,3,4]
+        const optimizedRoute = getNewOptimizedRoute(this.selectedRouteList, newRouteIndexOrder);
+        this.setSelectedRouteList(optimizedRoute); // update our route
         this.setIsRouteOptimized(true); // set flag is optimized to true
 
         if (googResponse.routes[0].duration) {

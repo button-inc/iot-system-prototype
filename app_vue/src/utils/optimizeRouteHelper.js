@@ -1,6 +1,28 @@
 import axios from 'axios';
 
-const getGoogPayload = (selectedRouteList, originAddress, destinationAddress) => {
+// reorders intermediate points in our selectedRouteList according to a list of given indexes (newRouteIndexOrder)
+export const getNewOptimizedRoute = (selectedRouteList, newRouteIndexOrder) => {
+  // assuming newRouteIndexOrder looks like [originLocationSensor, midLocationSensor1...midLocationSensor4, destinationLocaitonSensor]
+  // variable to hold our intermediate waypoints for update (no start/end point included)
+  const intermediates = [...selectedRouteList];
+
+  // refer to google route order and match it to our defined route
+  // copy result to temp
+  let temp = [];
+  for (let i = 0; i < newRouteIndexOrder.length; i++) {
+    temp[i] = intermediates[newRouteIndexOrder[i]];
+  }
+
+  // replace intermediate waypoint array with temp
+  for (let j = 0; j < newRouteIndexOrder.length; j++) {
+    intermediates[j] = temp[j];
+  }
+
+  // return new route order
+  return [...intermediates];
+};
+
+const getGoogPayload = (selectedRouteList, originAddress, destinationAddress, optimize = true) => {
   const origin = {
     "address": originAddress
   };
@@ -33,13 +55,13 @@ const getGoogPayload = (selectedRouteList, originAddress, destinationAddress) =>
     },
     "languageCode": "en-US",
     "units": "IMPERIAL",
-    "optimizeWaypointOrder": "true"
+    "optimizeWaypointOrder": optimize ? "true" : "false"
   };
 };
 
 // google api call to optimize route
 // https://developers.google.com/maps/documentation/routes/opt-way
-export const getOptimizedRoute = async (selectedRouteList, originAddress, destinationAddress) => {
+export const getOptimizedRouteData = async (selectedRouteList, originAddress, destinationAddress, optimize = true) => {
 
   if (selectedRouteList && selectedRouteList.length === 0) {
     return;
@@ -48,7 +70,7 @@ export const getOptimizedRoute = async (selectedRouteList, originAddress, destin
   const googApiKey = 'AIzaSyAgixnED4py56GFy-b2hlfYgofEyISUjSo';
   const googFieldMask = 'routes.duration,routes.distanceMeters,routes.optimizedIntermediateWaypointIndex';
   const URL = 'https://routes.googleapis.com/directions/v2:computeRoutes';
-  const data = getGoogPayload(selectedRouteList, originAddress, destinationAddress);
+  const data = getGoogPayload(selectedRouteList, originAddress, destinationAddress, optimize);
   const config = {
     headers: {
       'Content-Type': 'application/json',
@@ -69,4 +91,4 @@ export const getOptimizedRoute = async (selectedRouteList, originAddress, destin
 
 };
 
-export default getOptimizedRoute
+export default getOptimizedRouteData
