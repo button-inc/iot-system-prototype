@@ -43,6 +43,7 @@
     // only remove from route if already added
     if (isAlreadyInRoute.value === true) {
       routeStore.removeSensorFromRoute(sensor);
+      routeStore.googOptimizeRoute();
     }
   }
 
