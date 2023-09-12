@@ -34,7 +34,15 @@
     materialType: [],
     totalSensors: 0,
     showFillLabel: false,
-    isCollapsed: false
+    isCollapsed: false,
+    filterEnabledMap: {
+      fillRange: false,
+      group: false,
+      assetTag: false,
+      binType: false,
+      binVolume: false,
+      matType: false
+    }
   });
 
   // watching for store state updates and updating component variables
@@ -71,31 +79,60 @@
   function updateGroupFilter() {
     sensorStore.setSelectedGroup(state.selectedGroup);
     updateSensorsShown();
+
+    state.filterEnabledMap['group'] = true;
   }
 
   function updateAssetTagFilter() {
     sensorStore.setSelectedAssetTag(state.selectedAssetTag);
     updateSensorsShown();
+
+    if (state.selectedAssetTag.length > 0) {
+      state.filterEnabledMap['assetTag'] = true;
+    } else {
+      state.filterEnabledMap['assetTag'] = false;
+    }
   }
 
   function updateBinTypeFilter() {
     sensorStore.setSelectedBinType(state.selectedBinType);
     updateSensorsShown();
+
+    if (state.selectedBinType.length > 0) {
+      state.filterEnabledMap['binType'] = true;
+    } else {
+      state.filterEnabledMap['binType'] = false;
+    }
   }
 
   function updateBinVolumeFilter() {
     sensorStore.setSelectedBinVolume(state.selectedBinVolume);
     updateSensorsShown();
+
+    state.filterEnabledMap['binVolume'] = true;
   }
 
   function updateFillRangeFilter() {
     sensorStore.setSelectedFillRange(state.selectedFillRange);
     updateSensorsShown();
+
+    const isInitial = state.selectedFillRange[0] === 0 && state.selectedFillRange[1] === 100;
+    if (isInitial) {
+      state.filterEnabledMap['fillRange'] = false;
+    } else {
+      state.filterEnabledMap['fillRange'] = true;
+    }
   }
 
   function updateMaterialTypeFilter() {
     sensorStore.setSelectedMaterialType(state.selectedMaterialType);
     updateSensorsShown();
+
+    if (state.selectedMaterialType.length > 0) {
+      state.filterEnabledMap['materialType'] = true;
+    } else {
+      state.filterEnabledMap['materialType'] = false;
+    }
   }
 
   function clearFilters() {
@@ -108,6 +145,15 @@
     state.selectedBinVolume = null;
     state.selectedFillRange = [0, 100];
     state.selectedMaterialType = [];
+
+    Object.keys(state.filterEnabledMap).forEach(key => {
+      state.filterEnabledMap[key] = false;
+    })
+  }
+
+  function getFilterCount() { // returns number of filters in use
+    const truthArr = Object.values(state.filterEnabledMap).filter(isEnabled => isEnabled);
+    return truthArr.length;
   }
 
 </script>
@@ -116,7 +162,7 @@
   <section class="filter-list">
     <div class="text-h6 padding-b-30 d-flex align-center justify-space-between">
       <div class="d-flex align-center">
-        <span class="filter-list__title">Filter Sensors ({{ state.totalSensors }})</span> 
+        <span class="filter-list__title">Filter Sensors ({{ getFilterCount() }})</span> 
         <span class="mx-3">|</span>
         <v-btn variant="plain" color="#2196F3" class="pa-0 pt-1 text-capitalize" @click="clearFilters">Clear</v-btn>
       </div>
@@ -193,6 +239,10 @@
     </section>
 
 
+    <div class="my-6">
+      <span class="font-weight-bold">Result: {{ state.totalSensors }} </span>
+      displayed on map
+    </div>
   </section>
 </template>
 
@@ -225,10 +275,6 @@
 
     .v-btn {
       min-width: 0;
-    }
-
-    &__fields {
-      margin-bottom: 40px;
     }
   }
 
