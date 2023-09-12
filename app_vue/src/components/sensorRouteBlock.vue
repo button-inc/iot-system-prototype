@@ -96,7 +96,7 @@
     <div class="py-4 px-4 route-display__route-container">
       <!-- route is present -->
       <div class="w-100 h-100">
-        <div tabindex="0" class="w-100 h-100 d-flex align-center cursor-pointer">
+        <div tabindex="0" class="route-display__header">
           <span class="font-body">
             {{ state.selectedRouteList.length }} Bins    
           </span>
@@ -108,7 +108,7 @@
         <!-- route list -->
         <section>
           <!-- starting point -->
-          <div class="d-flex align-center">
+          <div class="route-display__items">
             <vue-feather class="color-green" type="disc"></vue-feather>
             <span class="route-display__point ml-2 mt-4">{{ state.startPointAddress }}</span>
           </div>
@@ -131,7 +131,7 @@
             </template>
           <!-- </draggable> -->
           <!-- ending point -->
-          <div class="d-flex align-center mb-4">
+          <div class="route-display__items mb-4">
             <vue-feather class="color-red mr-2" type="map-pin"></vue-feather>
             <span class="route-display__point">{{ state.endPointAddress }}</span>
           </div>
@@ -182,6 +182,18 @@
       @include fontBodySmall;;
     }
 
+    &__header {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      margin-bottom: 20px;
+
+      @include mediumScreens {
+        flex-direction: row;
+        margin-bottom: 0;
+      }
+    }
+
     &__route {
       margin-bottom: 12px;
       &:last-child {
@@ -194,9 +206,19 @@
       align-items: center;
     }
 
-    // &__items {
-    //   cursor: pointer;
-    // }
+    &__items {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+
+      @include mediumScreens {
+        text-align: left;
+        justify-content: flex-start;
+        flex-direction: row;
+      }
+    }
 
     &__point {
       max-width: 174px;

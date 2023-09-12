@@ -160,7 +160,7 @@
 
 <template>
   <section class="filter-list">
-    <div class="text-h6 padding-b-30 d-flex align-center justify-space-between">
+    <div class="filter-list__heading">
       <div class="d-flex align-center">
         <span class="filter-list__title">Filter Sensors ({{ getFilterCount() }})</span> 
         <span class="mx-3">|</span>
@@ -264,6 +264,23 @@
   
   .filter-list {
     width: 100%;
+
+    &__heading {
+      display: flex;
+      align-items: center;
+      padding-bottom: 30px;
+      justify-content: space-between;
+      flex-direction: column;
+      @include fontHeading6;
+
+      @include smallScreens {
+        flex-direction: column;
+      }
+      
+      @include mediumScreens {
+        flex-direction: row;
+      }
+    }
 
     &__label {
       @include fontBody;
