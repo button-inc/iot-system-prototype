@@ -460,7 +460,7 @@ def set_rfs_and_ss_cache():
 
 
 #  🤖 Event handler: Populate Tekelek data in tkl_cache with initial data on start up
-#@app.on_event("startup")
+@app.on_event("startup")
 def set_tkl_cache():
     global tkl_cache
     try:
