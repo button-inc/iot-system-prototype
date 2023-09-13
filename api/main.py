@@ -3,20 +3,22 @@ from enum import Enum
 import re
 import time
 import requests
+from mail_services import AlertEmailSchema, EmailSchema, get_email_msg, get_fm
 from utils import filter_nulls
 
 import gspread
 from dotenv import load_dotenv
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi_utils.session import FastAPISessionMaker
 from fastapi_utils.tasks import repeat_every
 
 from pydantic import BaseModel
 import os
 from datetime import datetime
 from typing import Optional, List, Dict, Union
+
+from starlette.responses import JSONResponse
 
 # 🌐 Load environment variables from .env file
 load_dotenv()
@@ -618,6 +620,69 @@ def get_latest_readings():
     latest_readings = bb_readings + rfs_cache + ss_cache + tkl_readings
     latest_readings = filter_nulls(latest_readings)
     return {"sensors": latest_readings}
+
+
+@app.post("/email")
+async def send_email(email: EmailSchema) -> JSONResponse:
+
+    msg = get_email_msg(
+        recipients=email.dict().get("recipient_list"), 
+        body=email.dict().get("body")
+        )
+
+    fm = get_fm()
+
+    await fm.send_message(msg)
+    return JSONResponse(
+        status_code=200, 
+        content={"message": "email has been sent"}
+        )
+
+
+@app.post("/send_alerts")
+async def send_alerts(email: AlertEmailSchema) -> JSONResponse:
+    alert_level = email.dict().get("alert_level")
+    sensors_latest_readings = get_latest_readings()['sensors']
+    recipient_list = email.dict().get("recipient_list")
+
+    # 1. Filter sensors with fill_level > a threshold
+    high_filled_sensors = [sensor for sensor in sensors_latest_readings if sensor.fill_level > alert_level]
+    if not high_filled_sensors:
+        email_schema = EmailSchema(
+            recipient_list=recipient_list, 
+            body="no sensors with fill level above " + str(alert_level)
+            )
+
+        response = await send_email(email_schema)
+        return response 
+
+    # 2. Format the data for the email
+    body = "Sensors with fill level above " + str(alert_level) + "%:\n\n"
+    for sensor in high_filled_sensors:
+        sensor_data = "\n".join([f"{key}: {value}" for key, value in sensor.dict().items()])
+        body += f"{sensor_data}\n\n"
+    
+    # 3. Send the email
+    email_schema = EmailSchema(
+        recipient_list=recipient_list, 
+        body=body
+    )
+    
+    response = await send_email(email_schema)
+    
+    return response
+
+# alert every 24 hours
+@app.on_event("startup")
+@repeat_every(seconds=60*60*24)
+async def automatic_alerts():
+    alert_email_data = AlertEmailSchema(recipient_list=["lin.yaokun1@gmail.com", "patrick@button.is", "elliott@button.is", "suha@button.is", "mike@button.is"], 
+                                        alert_level=75)
+    
+    
+    print("sending out alerts on over filled sensors")
+    response = await send_alerts(alert_email_data)
+    return response
 
 
 # @app.get("/sensors/{sensor_id}")
