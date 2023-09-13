@@ -9,7 +9,7 @@ from utils import filter_nulls
 import gspread
 from dotenv import load_dotenv
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.tasks import repeat_every
 
@@ -684,6 +684,68 @@ async def automatic_alerts():
     response = await send_alerts(alert_email_data)
     return response
 
+
+goog_routes_api_key = os.environ.get("GOOGLE_ROUTES_API_KEY")
+GOOG_FIELD_MASK = 'routes.duration,routes.distanceMeters,routes.optimizedIntermediateWaypointIndex'
+goog_routes_url = os.environ.get("GOOGLE_ROUTES_URL")
+
+def get_goog_payload(selectedRouteList, originAddress, destinationAddress):
+    origin = {
+        "address": originAddress
+    }
+    destination = {
+        "address": destinationAddress
+    }
+    intermediates = [
+        {
+            "location": {
+                "latLng": {
+                    "latitude": waypoint['lat'],
+                    "longitude": waypoint['long']
+                }
+            }
+        } for waypoint in selectedRouteList
+    ]
+    return {
+        "origin": origin,
+        "intermediates": intermediates,
+        "destination": destination,
+        "travelMode": "DRIVE",
+        "routingPreference": "TRAFFIC_UNAWARE",
+        "computeAlternativeRoutes": False,
+        "routeModifiers": {
+            "avoidTolls": False,
+            "avoidHighways": False,
+            "avoidFerries": False
+        },
+        "languageCode": "en-US",
+        "units": "IMPERIAL",
+        "optimizeWaypointOrder": True
+    }
+
+class RouteRequest(BaseModel):
+    selectedRouteList: List[Dict[str, float]]
+    originAddress: str
+    destinationAddress: str
+
+# TODO: make GOOG_FIELD_MASK and optimizeWaypointOrder an input
+@app.post("/getOptimizedRoute")
+def get_optimized_route(request: RouteRequest):
+    if not request.selectedRouteList:
+        raise HTTPException(status_code=400, detail="selectedRouteList cannot be empty")
+
+    data = get_goog_payload(request.selectedRouteList, request.originAddress, request.destinationAddress)
+    headers = {
+        'Content-Type': 'application/json',
+        'X-Goog-FieldMask': GOOG_FIELD_MASK,
+        'X-Goog-Api-Key': goog_routes_api_key
+    }
+    response = requests.post(goog_routes_url, json=data, headers=headers)
+
+    if response.status_code != 200:
+        raise HTTPException(status_code=response.status_code, detail=response.text)
+
+    return response.json()
 
 # @app.get("/sensors/{sensor_id}")
 # def query_sensor_by_id(sensor_id: str) -> Sensor:
