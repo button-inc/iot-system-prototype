@@ -32,7 +32,7 @@ class EmailSchema(BaseModel):
 
 class AlertEmailSchema(BaseModel):
     recipient_list: List[EmailStr]
-    alter_lvl: int
+    alert_level: int
 
 def get_fm():
     return FastMail(conf)

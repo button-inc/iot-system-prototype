@@ -641,23 +641,23 @@ async def send_email(email: EmailSchema) -> JSONResponse:
 
 @app.post("/send_alerts")
 async def send_alerts(email: AlertEmailSchema) -> JSONResponse:
-    alter_lvl = email.dict().get("alter_lvl")
+    alert_level = email.dict().get("alert_level")
     sensors_latest_readings = get_latest_readings()['sensors']
     recipient_list = email.dict().get("recipient_list")
 
     # 1. Filter sensors with fill_level > a threshold
-    high_filled_sensors = [sensor for sensor in sensors_latest_readings if sensor.fill_level > alter_lvl]
+    high_filled_sensors = [sensor for sensor in sensors_latest_readings if sensor.fill_level > alert_level]
     if not high_filled_sensors:
         email_schema = EmailSchema(
             recipient_list=recipient_list, 
-            body="no sensors with fill level above " + str(alter_lvl)
+            body="no sensors with fill level above " + str(alert_level)
             )
 
         response = await send_email(email_schema)
         return response 
 
     # 2. Format the data for the email
-    body = "Sensors with fill level above " + str(alter_lvl) + "%:\n\n"
+    body = "Sensors with fill level above " + str(alert_level) + "%:\n\n"
     for sensor in high_filled_sensors:
         sensor_data = "\n".join([f"{key}: {value}" for key, value in sensor.dict().items()])
         body += f"{sensor_data}\n\n"
@@ -676,8 +676,8 @@ async def send_alerts(email: AlertEmailSchema) -> JSONResponse:
 @app.on_event("startup")
 @repeat_every(seconds=60*60*24)
 async def automatic_alerts():
-    alert_email_data = AlertEmailSchema(recipient_list=["lin.yaokun1@gmail.com", "patrick@button.is", "elliott@button.is", "suha@button.is"], 
-                                        alter_lvl=75)
+    alert_email_data = AlertEmailSchema(recipient_list=["lin.yaokun1@gmail.com", "patrick@button.is", "elliott@button.is", "suha@button.is", "mike@button.is"], 
+                                        alert_level=75)
     
     
     print("sending out alerts on over filled sensors")
