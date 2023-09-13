@@ -103,7 +103,6 @@ export const useRouteStore = defineStore('route', {
         const newRouteIndexOrder = googResponse.routes[0].optimizedIntermediateWaypointIndex; // [0,3,4]
         const optimizedRoute = getNewOptimizedRoute(this.selectedRouteList, newRouteIndexOrder);
         this.setSelectedRouteList(optimizedRoute); // update our route
-        this.setIsRouteGenerated(true); // set flag is optimized to true
 
         if (googResponse.routes[0].duration) {
           this.setRouteDuration(googResponse.routes[0]?.duration);
@@ -112,7 +111,7 @@ export const useRouteStore = defineStore('route', {
         if (googResponse.routes[0].distanceMeters) {
           this.setRouteDistance(googResponse.routes[0]?.distanceMeters);
         }
-        
+        this.setIsRouteGenerated(true);
       }
     }
   },
