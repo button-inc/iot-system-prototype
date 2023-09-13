@@ -33,7 +33,16 @@
     binVolume: [],
     materialType: [],
     totalSensors: 0,
-    showFillLabel: false
+    showFillLabel: false,
+    isCollapsed: false,
+    filterEnabledMap: {
+      fillRange: false,
+      group: false,
+      assetTag: false,
+      binType: false,
+      binVolume: false,
+      matType: false
+    }
   });
 
   // watching for store state updates and updating component variables
@@ -70,35 +79,65 @@
   function updateGroupFilter() {
     sensorStore.setSelectedGroup(state.selectedGroup);
     updateSensorsShown();
+
+    state.filterEnabledMap['group'] = true;
   }
 
   function updateAssetTagFilter() {
     sensorStore.setSelectedAssetTag(state.selectedAssetTag);
     updateSensorsShown();
+
+    if (state.selectedAssetTag.length > 0) {
+      state.filterEnabledMap['assetTag'] = true;
+    } else {
+      state.filterEnabledMap['assetTag'] = false;
+    }
   }
 
   function updateBinTypeFilter() {
     sensorStore.setSelectedBinType(state.selectedBinType);
     updateSensorsShown();
+
+    if (state.selectedBinType.length > 0) {
+      state.filterEnabledMap['binType'] = true;
+    } else {
+      state.filterEnabledMap['binType'] = false;
+    }
   }
 
   function updateBinVolumeFilter() {
     sensorStore.setSelectedBinVolume(state.selectedBinVolume);
     updateSensorsShown();
+
+    state.filterEnabledMap['binVolume'] = true;
   }
 
   function updateFillRangeFilter() {
     sensorStore.setSelectedFillRange(state.selectedFillRange);
     updateSensorsShown();
+
+    const isInitial = state.selectedFillRange[0] === 0 && state.selectedFillRange[1] === 100;
+    if (isInitial) {
+      state.filterEnabledMap['fillRange'] = false;
+    } else {
+      state.filterEnabledMap['fillRange'] = true;
+    }
   }
 
   function updateMaterialTypeFilter() {
     sensorStore.setSelectedMaterialType(state.selectedMaterialType);
     updateSensorsShown();
+
+    if (state.selectedMaterialType.length > 0) {
+      state.filterEnabledMap['materialType'] = true;
+    } else {
+      state.filterEnabledMap['materialType'] = false;
+    }
   }
 
   function clearFilters() {
     sensorStore.clearSelected(); // clear store of selected values
+    routeStore.clearSensorRoute(); // clear route
     // clear v-models in form
     state.selectedGroup = null;
     state.selectedAssetTag = [];
@@ -106,82 +145,104 @@
     state.selectedBinVolume = null;
     state.selectedFillRange = [0, 100];
     state.selectedMaterialType = [];
+
+    Object.keys(state.filterEnabledMap).forEach(key => {
+      state.filterEnabledMap[key] = false;
+    })
+  }
+
+  function getFilterCount() { // returns number of filters in use
+    const truthArr = Object.values(state.filterEnabledMap).filter(isEnabled => isEnabled);
+    return truthArr.length;
   }
 
 </script>
 
 <template>
   <section class="filter-list">
-    <div class="text-h6 padding-b-30 d-flex align-center">
-      <span>Filter Sensors ({{ state.totalSensors }})</span> 
-      <span class="mx-3">|</span>
-      <v-btn variant="plain" color="#2196F3" class="pa-0 pt-1 text-capitalize" @click="clearFilters">Clear</v-btn>
+    <div class="filter-list__heading">
+      <div class="d-flex align-center">
+        <span class="filter-list__title">Filter Sensors ({{ getFilterCount() }})</span> 
+        <span class="mx-3">|</span>
+        <v-btn variant="plain" color="#2196F3" class="pa-0 pt-1 text-capitalize" @click="clearFilters">Clear</v-btn>
+      </div>
+
+      <v-btn variant="plain" color="#191A1C" class="pa-0" @click="state.isCollapsed = !state.isCollapsed">
+        <vue-feather :type="state.isCollapsed ? 'chevron-up' : 'chevron-down'"></vue-feather>
+      </v-btn>
     </div>
     
-    <div class="filter-list__fill-level">
-      <div class="filter-list__label color-gray-grey">Fill Level Threshold</div>
-      <v-range-slider class="filter-list__slider" 
-        v-model="state.selectedFillRange"
-        strict
-        color="#2196F3"
-        track-color="#2196F3"
-        :ticks="[0,50,100]"
-        show-ticks="always"
-        tick-size="4"
-        :step="1"
-        :max="thresholdRange[1]"
-        :min="thresholdRange[0]"
-        :thumb-label="state.showFillLabel"
-        @mouseup="state.showFillLabel = false"
-        @mousedown="state.showFillLabel = true"
-        @update:modelValue="updateFillRangeFilter">
-        <template v-slot:thumb-label="{ modelValue }">
-          {{modelValue}}%
-        </template>
-      </v-range-slider>
+    <section v-if="!state.isCollapsed" class="filter-list__fields">
+      <div class="filter-list__fill-level">
+        <div class="filter-list__label color-gray-grey">Fill Level Threshold</div>
+        <v-range-slider class="filter-list__slider" 
+          v-model="state.selectedFillRange"
+          strict
+          color="#2196F3"
+          track-color="#2196F3"
+          :ticks="[0,50,100]"
+          show-ticks="always"
+          tick-size="4"
+          :step="1"
+          :max="thresholdRange[1]"
+          :min="thresholdRange[0]"
+          :thumb-label="state.showFillLabel"
+          @mouseup="state.showFillLabel = false"
+          @mousedown="state.showFillLabel = true"
+          @update:modelValue="updateFillRangeFilter">
+          <template v-slot:thumb-label="{ modelValue }">
+            {{modelValue}}%
+          </template>
+        </v-range-slider>
+      </div>
+
+      <v-autocomplete class="filter-list__dropdown"
+        v-model="state.selectedGroup"
+        label="Group"
+        :items="state.group"
+        @update:modelValue="updateGroupFilter"
+      ></v-autocomplete>
+
+      <v-autocomplete class="filter-list__dropdown"
+        v-model="state.selectedAssetTag"
+        label="Asset Tag"
+        chips
+        multiple
+        :items="state.assetTag"
+        @update:modelValue="updateAssetTagFilter"
+      ></v-autocomplete>
+
+      <v-autocomplete class="filter-list__dropdown"
+        v-model="state.selectedBinType"
+        label="Bin Type"
+        chips
+        multiple
+        :items="state.binType"
+        @update:modelValue="updateBinTypeFilter"
+      ></v-autocomplete>
+
+      <v-autocomplete class="filter-list__dropdown"
+        v-model="state.selectedBinVolume"
+        label="Bin Volume"
+        :items="state.binVolume"
+        @update:modelValue="updateBinVolumeFilter"
+      ></v-autocomplete>
+
+      <v-autocomplete class="filter-list__dropdown"
+        v-model="state.selectedMaterialType"
+        label="Material Type"
+        chips
+        multiple
+        :items="state.materialType"
+        @update:modelValue="updateMaterialTypeFilter"
+      ></v-autocomplete>
+    </section>
+
+
+    <div class="my-6">
+      <span class="font-weight-bold">Result: {{ state.totalSensors }} </span>
+      displayed on map
     </div>
-
-    <v-autocomplete class="filter-list__dropdown"
-      v-model="state.selectedGroup"
-      label="Group"
-      :items="state.group"
-      @update:modelValue="updateGroupFilter"
-    ></v-autocomplete>
-
-    <v-autocomplete class="filter-list__dropdown"
-      v-model="state.selectedAssetTag"
-      label="Asset Tag"
-      chips
-      multiple
-      :items="state.assetTag"
-      @update:modelValue="updateAssetTagFilter"
-    ></v-autocomplete>
-
-    <v-autocomplete class="filter-list__dropdown"
-      v-model="state.selectedBinType"
-      label="Bin Type"
-      chips
-      multiple
-      :items="state.binType"
-      @update:modelValue="updateBinTypeFilter"
-    ></v-autocomplete>
-
-    <v-autocomplete class="filter-list__dropdown"
-      v-model="state.selectedBinVolume"
-      label="Bin Volume"
-      :items="state.binVolume"
-      @update:modelValue="updateBinVolumeFilter"
-    ></v-autocomplete>
-
-    <v-autocomplete class="filter-list__dropdown"
-      v-model="state.selectedMaterialType"
-      label="Material Type"
-      chips
-      multiple
-      :items="state.materialType"
-      @update:modelValue="updateMaterialTypeFilter"
-    ></v-autocomplete>
-
   </section>
 </template>
 
@@ -204,8 +265,33 @@
   .filter-list {
     width: 100%;
 
+    &__heading {
+      display: flex;
+      align-items: center;
+      padding-bottom: 30px;
+      justify-content: space-between;
+      flex-direction: column;
+      @include fontHeading6;
+
+      @include smallScreens {
+        flex-direction: column;
+      }
+      
+      @include mediumScreens {
+        flex-direction: row;
+      }
+    }
+
     &__label {
       @include fontBody;
+    }
+
+    &__title {
+      min-width: 164px;
+    }
+
+    .v-btn {
+      min-width: 0;
     }
   }
 

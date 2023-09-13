@@ -1,34 +1,67 @@
 <script setup>
-  import { reactive, ref, onMounted, watch } from 'vue'
+  import { reactive, onMounted, watch, onBeforeMount, onDeactivated } from 'vue'
   import SensorMapMarker from '@/components/sensorMapMarker.vue';
   import 'leaflet/dist/leaflet.css'
-  import { LMap, LTileLayer, LMarker, LControlZoom, LPolyline } from '@vue-leaflet/vue-leaflet'
+  import { LMap, LTileLayer, LMarker, LControlZoom, LPolyline, LIcon } from '@vue-leaflet/vue-leaflet'
   import { useDevice, DEVICE_SIZE } from '@/utils/screenSizeHelper';
+  import { getLatLng } from '@/utils/getLatLngFromAddressHelper';
   import { useSensorStore } from '@/stores/sensors_store';
   import { useRouteStore } from '@/stores/route_store';
   import { storeToRefs } from 'pinia';
 
-  const center = ref([43.7, -79.42]); // TODO: update to possibly be user's current location
-  const zoom = ref(10);
+  // stores
   const sensorStore = useSensorStore();
   const { sensors } = storeToRefs(sensorStore);
+  const routeStore = useRouteStore();
+  const { 
+    getSelectedRouteLatLong, 
+    getIsRouteOptimized } = storeToRefs(routeStore);
+
   const state = reactive({
     location: 'bottomright',
-    device: useDevice()
+    device: useDevice(),
+    isRouteOptimized: false,
+    polyLineLatLngs: [],
+    startPointLatLng: [],
+    endPointLatLng: [],
+    zoom: 10,
+    center: [43.7, -79.42]
   });
-  const polyLineLatLngs = ref([]);
 
-  const routeStore = useRouteStore();
-  const { getSensorRouteLatLong } = storeToRefs(routeStore);
+  const startImgUrl = 'src/assets/images/feather-disc.svg';
+  const endImgUrl = 'src/assets/images/feather-map-pin.svg';
 
-  watch(getSensorRouteLatLong, () => {
-    polyLineLatLngs.value = routeStore.getSensorRouteLatLong;
-  }, { deep: true })
+  onBeforeMount(async () => {
+    // processing start/end/center lat lng points
+    state.startPointLatLng = await getLatLng(routeStore.getStartPointAddress);
+    state.endPointLatLng = await getLatLng(routeStore.getEndPointAddress);
+    state.center = state.startPointLatLng;
+
+    routeStore.setHasMappedStartEnd(true);
+  })
 
   onMounted(() => {
     positionZoom();
     window.addEventListener("resize", positionZoom);
   });
+
+  onDeactivated(() => {
+    routeStore.setHasMappedStartEnd(false);
+  })
+
+  watch(getSelectedRouteLatLong, () => {
+    state.polyLineLatLngs = routeStore.getSelectedRouteLatLong;
+
+    // additional lines for start and end points
+    if (state.startPointLatLng.length && state.endPointLatLng.length) {
+      state.polyLineLatLngs.unshift(state.startPointLatLng); // append as first element
+      state.polyLineLatLngs.push(state.endPointLatLng); // append as last element
+    }
+  }, { deep: true })
+
+  watch(getIsRouteOptimized, () => {
+    state.isRouteOptimized = routeStore.getIsRouteOptimized;
+  })
 
   function positionZoom() {
     state.device = useDevice();
@@ -42,17 +75,30 @@
 
 <template>
   <div v-if="sensors" class="sensor-map-container">
-    <l-map ref="map" v-model:zoom="zoom" :use-global-leaflet="false" :center="center" :options="{zoomControl: false}">
+    <l-map ref="map" v-model:zoom="state.zoom" :use-global-leaflet="false" :center="state.center" :options="{zoomControl: false}">
       <l-control-zoom :position="state.location"/>
-      <!-- alternative maps (for aesthetic): -->
-      <!-- favourite: https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png -->
-      <!-- another one: https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png -->
+      <!-- alternative maps URLS (for aesthetic): -->
+      <!-- https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png -->
+      <!-- https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png -->
       <l-tile-layer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         layer-type="base"
         name="OpenStreetMap"
       ></l-tile-layer>
-      <l-polyline :lat-lngs="polyLineLatLngs"></l-polyline>
+      <l-polyline v-if="state.isRouteOptimized" :lat-lngs="state.polyLineLatLngs"></l-polyline>
+
+      <!-- starting point marker -->
+      <l-marker v-if="state.startPointLatLng.length"
+        :lat-lng="state.startPointLatLng">
+        <l-icon class="color-green" :icon-size="[25, 25]" :icon-anchor="[15, 14]" :icon-url="startImgUrl" />
+      </l-marker>
+
+      <!-- ending point marker -->
+      <l-marker v-if="state.endPointLatLng.length"
+        :lat-lng="state.endPointLatLng">
+        <l-icon :icon-size="[25, 25]" :icon-anchor="[12, 14]" :icon-url="endImgUrl" />
+      </l-marker>
+
 
       <l-marker
         v-for="sensor in sensors"
