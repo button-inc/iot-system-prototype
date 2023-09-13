@@ -8,12 +8,12 @@
   // stores
   const routeStore = useRouteStore();
   const sensorStore = useSensorStore();
-  const { getIsRouteOptimized, getHasMappedStartEnd } = storeToRefs(routeStore);
+  const { getIsRouteGenerated, getHasMappedStartEnd } = storeToRefs(routeStore);
 
   const state = reactive({
     startPointAddress: '',
     endPointAddress: '',
-    isRouteOptimized: false,
+    isRouteGenerated: false,
     drag: false,
     isMapInitialized: false,
     isLoadingGoogApi: false
@@ -25,8 +25,8 @@
   })
 
   // element variables
-  watch(getIsRouteOptimized, () => {
-    state.isRouteOptimized = routeStore.getIsRouteOptimized;
+  watch(getIsRouteGenerated, () => {
+    state.isRouteGenerated = routeStore.getIsRouteGenerated;
   })
 
   watch(getHasMappedStartEnd, () => {
@@ -36,7 +36,12 @@
   async function findRouteClicked() {
     state.isLoadingGoogApi = true;
     routeStore.updateRouteListWithSensors(sensorStore.sensors); // store current displayed sensors into route list
-    await routeStore.googOptimizeRoute();
+
+    if (sensorStore.getTotalSensors === 1) {
+      await routeStore.googUpdateRouteStats();
+    } else {
+      await routeStore.googOptimizeRoute();
+    }
     state.isLoadingGoogApi = false;
   }
 
@@ -47,7 +52,7 @@
     <div class="text-h6 padding-b-16">Routes</div>
 
     <!-- route info display -->
-    <section v-if="state.isRouteOptimized">
+    <section v-if="state.isRouteGenerated">
       <SensorRouteBlock
         :selectedRouteList="routeStore.getSelectedRouteList"
         :startPointAddress="routeStore.getStartPointAddress"
@@ -73,7 +78,9 @@
         <vue-feather class="color-red mx-3" type="alert-triangle"></vue-feather>
         <span class="routes-list__warning-text">Note: Currently only 25 bins can be added to the route. Please deselect {{ routeStore.getSelectedRouteList - 25 }} bin(s).</span>
       </div>
-      <v-btn color="#191A1C" :disabled="!state.isMapInitialized || routeStore.getSelectedRouteList > 25 || sensorStore.getTotalSensors <= 1" @click="findRouteClicked">
+      <v-btn color="#191A1C" 
+        :disabled="!state.isMapInitialized || routeStore.getSelectedRouteList > 25 || sensorStore.getTotalSensors < 1" 
+        @click="findRouteClicked">
         <span class="pr-1">Find Route</span>
         <v-progress-circular v-if="!state.isMapInitialized || state.isLoadingGoogApi"
           indeterminate

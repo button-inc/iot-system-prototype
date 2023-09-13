@@ -15,12 +15,12 @@
   const routeStore = useRouteStore();
   const { 
     getSelectedRouteLatLong, 
-    getIsRouteOptimized } = storeToRefs(routeStore);
+    getIsRouteGenerated } = storeToRefs(routeStore);
 
   const state = reactive({
     location: 'bottomright',
     device: useDevice(),
-    isRouteOptimized: false,
+    isRouteGenerated: false,
     polyLineLatLngs: [],
     startPointLatLng: [],
     endPointLatLng: [],
@@ -59,8 +59,8 @@
     }
   }, { deep: true })
 
-  watch(getIsRouteOptimized, () => {
-    state.isRouteOptimized = routeStore.getIsRouteOptimized;
+  watch(getIsRouteGenerated, () => {
+    state.isRouteGenerated = routeStore.getIsRouteGenerated;
   })
 
   function positionZoom() {
@@ -85,7 +85,7 @@
         layer-type="base"
         name="OpenStreetMap"
       ></l-tile-layer>
-      <l-polyline v-if="state.isRouteOptimized" :lat-lngs="state.polyLineLatLngs"></l-polyline>
+      <l-polyline v-if="state.isRouteGenerated" :lat-lngs="state.polyLineLatLngs"></l-polyline>
 
       <!-- starting point marker -->
       <l-marker v-if="state.startPointLatLng.length"
