@@ -42,7 +42,7 @@
 
   function draggedRoute() {
     state.drag = false;
-    routeStore.setSelectedRouteList(state.selectedRouteList);
+    routeStore.setSelectedRouteList(state.selectedRouteList); // update state with new route order
     routeStore.googUpdateRouteStats();
   }
 
@@ -121,7 +121,7 @@
             @start="state.drag=true"
             @end="draggedRoute">
             <template #item="{ element: sensor }">
-              <li class="route-display__items cursor-pointer hover-item" :class="{'margin-b-0' : state.selectedRouteList.length === 1}">
+              <li class="route-display__items cursor-pointer hover-item">
                 <vue-feather class="transform-rotate-270" type="git-commit"></vue-feather>
                 <div class="d-flex flex-column ml-2">
                   <span>{{ sensor.address_line1 }}</span>
@@ -143,12 +143,15 @@
               'justify-end': state.selectedRouteList && state.selectedRouteList.length <= 1
             }">
             <div v-if="state.selectedRouteList && state.selectedRouteList.length > 1">
-              <v-btn class="pa-0 route-display__export" variant="plain" @click="exportRouteClicked">
+              <v-btn class="pa-0 route-display__export" 
+                variant="plain" 
+                @click="exportRouteClicked">
                 Export route
                 <vue-feather type="upload"></vue-feather>
               </v-btn>
             </div>
-            <v-btn class="route-display__delete pl-0 align-self-end" variant="plain" @click="routeStore.clearSensorRoute">
+            <v-btn class="route-display__delete pl-0 align-self-end" variant="plain" 
+              @click="routeStore.clearSensorRoute">
               <vue-feather type="trash-2"></vue-feather>
             </v-btn>
           </div>

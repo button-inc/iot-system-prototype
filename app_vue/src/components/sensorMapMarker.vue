@@ -20,15 +20,15 @@
   
   // route store
   const routeStore = useRouteStore();
-  const { getSelectedRouteList, getIsRouteOptimized } = storeToRefs(routeStore);
+  const { getSelectedRouteList, getIsRouteGenerated } = storeToRefs(routeStore);
   
   // watch for changes in stored sensor route array (ie. when a sensor gets added or removed)
   watch(getSelectedRouteList, () => {
     isAlreadyInRoute.value = routeStore.isAlreadyInRoute(props.sensor);
   }, { deep: true })
 
-  watch(getIsRouteOptimized, () => {
-    isRouteCreated.value = routeStore.getIsRouteOptimized;
+  watch(getIsRouteGenerated, () => {
+    isRouteCreated.value = routeStore.getIsRouteGenerated;
   }, { deep: true })
 
   function addBinToRoute(sensor) {

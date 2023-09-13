@@ -4,7 +4,7 @@ import { getOptimizedRouteData, getNewOptimizedRoute } from '@/utils/optimizeRou
 export const useRouteStore = defineStore('route', {
   state: () => ({
     selectedRouteList: [], // list of sensor objects part of the route
-    isRouteOptimized: false, // when google api has been run on the route and we want to present it
+    isRouteGenerated: false, // when google api has been run on the route and we want to present it
     startPointAddress: '6900 Airport Rd Mississauga ON',
     endPointAddress: '6135 Airport Rd Mississauga ON',
     routeDuration: '',
@@ -21,8 +21,8 @@ export const useRouteStore = defineStore('route', {
       }
       return [];
     },
-    getIsRouteOptimized({isRouteOptimized}) {
-      return isRouteOptimized;
+    getIsRouteGenerated({isRouteGenerated}) {
+      return isRouteGenerated;
     },
     getStartPointAddress({startPointAddress}) {
       return startPointAddress;
@@ -73,11 +73,10 @@ export const useRouteStore = defineStore('route', {
     },
     clearSensorRoute() {
       this.selectedRouteList = [];
-      // reset
-      this.isRouteOptimized = false;
+      this.isRouteGenerated = false;
     },
-    setIsRouteOptimized(value) {
-      this.isRouteOptimized = value;
+    setIsRouteGenerated(value) {
+      this.isRouteGenerated = value;
     },
     isAlreadyInRoute(sensor) {
       if (this.getSelectedRouteList.length > 0) {
@@ -95,6 +94,7 @@ export const useRouteStore = defineStore('route', {
         if (googResponse.routes[0].distanceMeters) {
           this.setRouteDistance(googResponse.routes[0]?.distanceMeters);
         }
+        this.setIsRouteGenerated(true);
       }
     },
     async googOptimizeRoute() { // updates our stored selected route state with new optimized route
@@ -103,7 +103,7 @@ export const useRouteStore = defineStore('route', {
         const newRouteIndexOrder = googResponse.routes[0].optimizedIntermediateWaypointIndex; // [0,3,4]
         const optimizedRoute = getNewOptimizedRoute(this.selectedRouteList, newRouteIndexOrder);
         this.setSelectedRouteList(optimizedRoute); // update our route
-        this.setIsRouteOptimized(true); // set flag is optimized to true
+        this.setIsRouteGenerated(true); // set flag is optimized to true
 
         if (googResponse.routes[0].duration) {
           this.setRouteDuration(googResponse.routes[0]?.duration);
