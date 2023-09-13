@@ -63,15 +63,15 @@
         <span class="color-gray-grey">Group</span>
         {{ props.sensor.group }}
       </div>
-      <div class="bin-details__bin-type">
+      <div class="bin-details__bin-type" v-if="props.sensor.bin_type && props.sensor.bin_type.length">
         <span class="color-gray-grey">Bin type</span>
         {{ props.sensor.bin_type }}
       </div>
-      <div class="bin-details__bin-volume">
+      <div class="bin-details__bin-volume" v-if="props.sensor.bin_volume">
         <span class="color-gray-grey">Bin Volume: </span>
         {{ props.sensor.bin_volume }}
       </div>
-      <div class="bin-details__tag-list">
+      <div class="bin-details__tag-list" v-if="props.sensor.asset_tag && props.sensor.asset_tag.length">
         <span class="bin-details__tag-list-text">Tags:</span>
         <span class="bin-details__tag">{{ props.sensor.asset_tag }}</span>
       </div>
