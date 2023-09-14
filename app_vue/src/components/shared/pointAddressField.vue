@@ -1,7 +1,8 @@
 <script setup>
-  import { reactive, onMounted, ref } from 'vue'
+  import { reactive, ref } from 'vue'
+  import { getLatLng } from '@/utils/getLatLngFromAddressHelper';
 
-  defineEmits(['update:modelValue']); // for v-model
+  const emit = defineEmits(['update:modelValue']); // for v-model
 
   const props = defineProps({
     label: {
@@ -18,16 +19,78 @@
     }
   });
 
+  const addressForm = ref(null);
+
+  const initialFormState = {
+    valid: false,
+    provinceList: ['AB', 'BC', 'MB', 'NB', 'NL', 'NT', 'NS', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT'],
+    name: '',
+    streetAddress: '',
+    unit: '',
+    city: '',
+    province: '',
+    postalCode: '',
+    isCheckingAddress: false,
+    isAddressAdded: false,
+    isErrorAddingAddress: false
+  };
+
   const state = reactive({
     dialog: false,
-    valid: false
+    rulesTextField: [
+      value => {
+        if (value) return true
+        return 'You must enter a value.'
+      },
+      value => /[!-/:-@[-`{-~]/.test(value) ? 'Must not contain special characters.' : true
+    ],
+    rulesSelect: [
+      value => {
+        if (value) return true
+
+        return 'You must select a value.'
+      },
+    ],
+    ...initialFormState
   });
 
-  const provinceList = ['AB', 'BC', 'MB', 'NB', 'NL', 'NT', 'NS', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT'];
-
-
   function openModal() {
+    resetModal();
     state.dialog = true;
+  }
+
+  function closeModal() {
+    state.dialog = false;
+  }
+
+  function resetModal() {
+    Object.assign(state, initialFormState);
+  }
+
+  async function addAddress() {
+    const { valid } = await addressForm.value.validate()
+    if (!valid) {
+      return;
+    }
+
+    let addressString = '';
+
+    addressString = `${state.unit}` + `${state.unit ? ' ' : ''}` + `${state.streetAddress} ${state.city} ${state.province}`;
+    addressString.replace(',', '');
+
+    state.isCheckingAddress = true;
+    state.isErrorAddingAddress = false;
+    state.isAddressAdded = false;
+    const latLng = await getLatLng(addressString);
+    if (latLng && latLng.length) {
+      state.isAddressAdded = true;
+      emit('update:modelValue', addressString);
+      closeModal();
+    } else {
+      state.isErrorAddingAddress = true;
+    }
+
+    state.isCheckingAddress = false;
   }
 
 
@@ -60,27 +123,69 @@
           <span class="dialog-content__title">Add new address</span>
 
           <section class="dialog-content__form">
-            <v-form v-model="valid">
-              <v-text-field label="Name of address" required variant="underlined"></v-text-field>
-              <v-text-field label="Street address" required variant="underlined"></v-text-field>
-              <v-text-field label="Apt, suite, or unit" variant="underlined"></v-text-field>
-              <v-text-field label="City" required variant="underlined"></v-text-field>
-              <div class="dialog-content__flex">
-                <v-select class="dialog-content__province"
+            <v-form v-model="state.valid" ref="addressForm">
+              <!-- TODO: add name of address field when we save address data to BE -->
+              <!-- <v-text-field v-model="state.name"
+                label="Name of address" 
+                :rules="state.rulesTextField" 
+                required 
+                variant="underlined">
+              </v-text-field> -->
+
+              <v-text-field v-model="state.streetAddress"
+                label="Street address" 
+                :rules="state.rulesTextField" 
+                required 
+                variant="underlined">
+              </v-text-field>
+
+              <v-text-field v-model="state.unit"
+                label="Apt, suite, or unit" 
+                variant="underlined">
+              </v-text-field>
+
+              <v-text-field v-model="state.city"
+                label="City" 
+                :rules="state.rulesTextField" 
+                required 
+                variant="underlined">
+              </v-text-field>
+              
+              <div class="dialog-content__two-fields">
+                <v-select v-model="state.province"
+                  class="dialog-content__province"
                   label="Province"
                   required
+                  :rules="state.rulesSelect"
                   variant="underlined"
-                  :items="provinceList"
-                ></v-select>
-                <v-text-field class="dialog-content__postal-code" label="Postal code" variant="underlined"></v-text-field>
+                  :items="state.provinceList">
+                </v-select>
+
+                <!-- TODO: note this is not currently used until we use a different validation api -->
+                <v-text-field v-model="state.postalCode"
+                  class="dialog-content__postal-code" 
+                  label="Postal code"
+                  variant="underlined">
+                </v-text-field>
               </div>
             </v-form>
 
           </section>
 
           <div class="dialog-content__actions">
-            <v-btn class="mr-4" color="#2196F3" @click="state.dialog = false">Add</v-btn>
-            <v-btn variant="outlined" @click="state.dialog = false">Cancel</v-btn>
+            <v-btn class="mr-4" 
+              color="#2196F3" 
+              :disabled="state.isCheckingAddress || state.isAddressAdded" 
+              @click="addAddress()"
+            >
+              {{ state.isAddressAdded ? 'Added!' : 'Add' }}
+              <v-progress-circular v-if="state.isCheckingAddress"
+                indeterminate
+                :size="20"
+                color="#8D8D8D"
+              ></v-progress-circular>
+            </v-btn>
+            <v-btn variant="outlined" @click="closeModal">Cancel</v-btn>
           </div>
         </v-card-text>
       </v-card>
@@ -96,10 +201,11 @@
 
   .dialog-content {
 
-    &__flex {
+    &__two-fields {
       display: flex;
       align-items: center;
       flex-direction: column;
+      margin-top: 10px;
 
       @include smallScreens {
         flex-direction: row;

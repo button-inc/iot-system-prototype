@@ -46,6 +46,10 @@
     state.isLoadingGoogApi = false;
   }
 
+  function updateAddress(value) {
+    console.log('value', value);
+  }
+
 </script>
 
 <template>
@@ -65,7 +69,8 @@
     <section v-else>
       <PointAddressField
         :addressOptions="[state.startPointAddress]"
-        label="Start point">
+        label="Start point"
+        @update:modelValue="updateAddress">
       </PointAddressField>
       <v-text-field 
         v-model="state.startPointAddress"
