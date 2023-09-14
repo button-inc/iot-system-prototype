@@ -688,7 +688,7 @@ async def automatic_alerts():
 goog_routes_api_key = os.environ.get("GOOGLE_ROUTES_API_KEY")
 goog_routes_url = os.environ.get("GOOGLE_ROUTES_URL")
 
-def get_goog_payload(selectedRouteList, originAddress, destinationAddress, is_to_get_optimized_indices):
+def get_optimized_routes_payload(selectedRouteList, originAddress, destinationAddress, to_optimize):
     origin = {
         "address": originAddress
     }
@@ -706,7 +706,7 @@ def get_goog_payload(selectedRouteList, originAddress, destinationAddress, is_to
         } for waypoint in selectedRouteList
     ]
     
-    if is_to_get_optimized_indices:
+    if to_optimize:
         GOOG_FIELD_MASK = 'routes.duration,routes.distanceMeters,routes.optimizedIntermediateWaypointIndex'
         optimizeWaypointOrder = True
     else:
@@ -734,16 +734,14 @@ class RouteRequest(BaseModel):
     selectedRouteList: List[Dict[str, float]]
     originAddress: str
     destinationAddress: str
-    is_to_get_optimized_indices: bool
-
-app = FastAPI()
+    to_optimize: bool
 
 @app.post("/getOptimizedRoute")
 def get_optimized_route(request: RouteRequest):
     if not request.selectedRouteList:
         raise HTTPException(status_code=400, detail="selectedRouteList cannot be empty")
 
-    data, goog_field_mask = get_goog_payload(request.selectedRouteList, request.originAddress, request.destinationAddress, request.is_to_get_optimized_indices)
+    data, goog_field_mask = get_optimized_routes_payload(request.selectedRouteList, request.originAddress, request.destinationAddress, request.to_optimize)
     
     headers = {
         'Content-Type': 'application/json',
