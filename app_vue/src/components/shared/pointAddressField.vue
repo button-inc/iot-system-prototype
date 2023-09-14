@@ -122,6 +122,10 @@
       @include fontHeading5;
     }
 
+    &__form {
+      margin-top: 16px;
+    }
+
     &__actions {
       margin: 20px 0;
     }
