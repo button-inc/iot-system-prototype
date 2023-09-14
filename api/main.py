@@ -740,6 +740,9 @@ class RouteRequest(BaseModel):
 def get_optimized_route(request: RouteRequest):
     if not request.selectedRouteList:
         raise HTTPException(status_code=400, detail="selectedRouteList cannot be empty")
+    
+    if len(request.selectedRouteList) > 25:
+        raise HTTPException(status_code=400, detail="selectedRouteList cannot be more than 25 in size")
 
     data, goog_field_mask = get_optimized_routes_payload(request.selectedRouteList, request.originAddress, request.destinationAddress, request.to_optimize)
     
