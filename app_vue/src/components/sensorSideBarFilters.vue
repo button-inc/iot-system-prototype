@@ -199,6 +199,7 @@
       <v-autocomplete class="filter-list__dropdown"
         v-model="state.selectedGroup"
         label="Group"
+        clearable
         :items="state.group"
         @update:modelValue="updateGroupFilter"
       ></v-autocomplete>
@@ -224,6 +225,7 @@
       <v-autocomplete class="filter-list__dropdown"
         v-model="state.selectedBinVolume"
         label="Bin Volume"
+        clearable
         :items="state.binVolume"
         @update:modelValue="updateBinVolumeFilter"
       ></v-autocomplete>

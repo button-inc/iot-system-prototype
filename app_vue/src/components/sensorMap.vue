@@ -55,6 +55,7 @@
     state.sensors = sensorStore.getSensors;
   })
 
+  // when route updates, update the map polylines
   watch(getSelectedRouteLatLong, () => {
     state.polyLineLatLngs = routeStore.getSelectedRouteLatLong;
 

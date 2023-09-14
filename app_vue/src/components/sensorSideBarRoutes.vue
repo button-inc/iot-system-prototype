@@ -4,6 +4,7 @@
   import { useSensorStore } from '@/stores/sensors_store';
   import { storeToRefs } from 'pinia';
   import SensorRouteBlock from '@/components/sensorRouteBlock.vue';
+  import PointAddressField from '@/components/shared/pointAddressField.vue';
 
   // stores
   const routeStore = useRouteStore();
@@ -62,6 +63,10 @@
 
     <!-- start and end point entry -->
     <section v-else>
+      <PointAddressField
+        :addressOptions="[state.startPointAddress]"
+        label="Start point">
+      </PointAddressField>
       <v-text-field 
         v-model="state.startPointAddress"
         disabled
@@ -79,7 +84,7 @@
         <span class="routes-list__warning-text">Note: Currently only 25 bins can be added to the route. Please deselect {{ routeStore.getSelectedRouteList - 25 }} bin(s).</span>
       </div>
       <v-btn color="#191A1C" 
-        :disabled="!state.isMapInitialized || routeStore.getSelectedRouteList > 25 || sensorStore.getTotalSensors < 1" 
+        :disabled="!state.isMapInitialized || routeStore.getSelectedRouteList > 25 || sensorStore.getTotalSensors === 0" 
         @click="findRouteClicked">
         <span class="pr-1">Find Route</span>
         <v-progress-circular v-if="!state.isMapInitialized || state.isLoadingGoogApi"
