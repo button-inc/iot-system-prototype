@@ -11,7 +11,7 @@
 
   // stores
   const sensorStore = useSensorStore();
-  const { sensors } = storeToRefs(sensorStore);
+  const { getSensors } = storeToRefs(sensorStore);
   const routeStore = useRouteStore();
   const { 
     getSelectedRouteLatLong, 
@@ -25,7 +25,8 @@
     startPointLatLng: [],
     endPointLatLng: [],
     zoom: 10,
-    center: [43.7, -79.42]
+    center: [43.7, -79.42],
+    sensors: []
   });
 
   const startImgUrl = 'src/assets/images/feather-disc.svg';
@@ -43,10 +44,15 @@
   onMounted(() => {
     positionZoom();
     window.addEventListener("resize", positionZoom);
+    state.sensors = sensorStore.getSensors;
   });
 
   onDeactivated(() => {
     routeStore.setHasMappedStartEnd(false);
+  })
+
+  watch(getSensors, () => {
+    state.sensors = sensorStore.getSensors;
   })
 
   watch(getSelectedRouteLatLong, () => {
@@ -74,9 +80,9 @@
 </script>
 
 <template>
-  <div v-if="sensors" class="sensor-map-container">
+  <div class="sensor-map-container">
     <l-map ref="map" v-model:zoom="state.zoom" :use-global-leaflet="false" :center="state.center" :options="{zoomControl: false}">
-      <l-control-zoom :position="state.location"/>
+      <l-control-zoom v-if="state.location" :position="state.location"/>
       <!-- alternative maps URLS (for aesthetic): -->
       <!-- https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png -->
       <!-- https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png -->
@@ -100,14 +106,18 @@
       </l-marker>
 
 
-      <l-marker
-        v-for="sensor in sensors"
-        :key="sensor.id"
-        :lat-lng="[sensor.lat, sensor.long]"
-      >
-        <SensorMapMarker :sensor="sensor">
-        </SensorMapMarker>
-      </l-marker>
+      <template v-if="state.sensors && state.sensors.length">
+        <template v-for="sensor in state.sensors"
+          :key="sensor.id">
+          <l-marker v-if="sensor"
+            :lat-lng="[sensor.lat, sensor.long]"
+          >
+            <SensorMapMarker :sensor="sensor"></SensorMapMarker>
+          </l-marker>
+        </template>
+      </template>
+
+      
     </l-map>
   </div>
 </template>
