@@ -12,6 +12,9 @@ export const useSensorStore = defineStore('sensors', {
     selectedMaterialType: []
   }),
   getters: {
+    getSensors({ sensors }) {
+      return sensors;
+    },
     getTotalSensors({ sensors }) {
       return Object.keys(sensors).length;
     },
