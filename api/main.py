@@ -686,10 +686,9 @@ async def automatic_alerts():
 
 
 goog_routes_api_key = os.environ.get("GOOGLE_ROUTES_API_KEY")
-GOOG_FIELD_MASK = 'routes.duration,routes.distanceMeters,routes.optimizedIntermediateWaypointIndex'
 goog_routes_url = os.environ.get("GOOGLE_ROUTES_URL")
 
-def get_goog_payload(selectedRouteList, originAddress, destinationAddress):
+def get_goog_payload(selectedRouteList, originAddress, destinationAddress, is_to_get_optimized_indices):
     origin = {
         "address": originAddress
     }
@@ -706,6 +705,14 @@ def get_goog_payload(selectedRouteList, originAddress, destinationAddress):
             }
         } for waypoint in selectedRouteList
     ]
+    
+    if is_to_get_optimized_indices:
+        GOOG_FIELD_MASK = 'routes.duration,routes.distanceMeters,routes.optimizedIntermediateWaypointIndex'
+        optimizeWaypointOrder = True
+    else:
+        GOOG_FIELD_MASK = 'routes.duration,routes.distanceMeters'
+        optimizeWaypointOrder = False
+
     return {
         "origin": origin,
         "intermediates": intermediates,
@@ -720,24 +727,27 @@ def get_goog_payload(selectedRouteList, originAddress, destinationAddress):
         },
         "languageCode": "en-US",
         "units": "IMPERIAL",
-        "optimizeWaypointOrder": True
-    }
+        "optimizeWaypointOrder": optimizeWaypointOrder
+    }, GOOG_FIELD_MASK
 
 class RouteRequest(BaseModel):
     selectedRouteList: List[Dict[str, float]]
     originAddress: str
     destinationAddress: str
+    is_to_get_optimized_indices: bool
 
-# TODO: make GOOG_FIELD_MASK and optimizeWaypointOrder an input
+app = FastAPI()
+
 @app.post("/getOptimizedRoute")
 def get_optimized_route(request: RouteRequest):
     if not request.selectedRouteList:
         raise HTTPException(status_code=400, detail="selectedRouteList cannot be empty")
 
-    data = get_goog_payload(request.selectedRouteList, request.originAddress, request.destinationAddress)
+    data, goog_field_mask = get_goog_payload(request.selectedRouteList, request.originAddress, request.destinationAddress, request.is_to_get_optimized_indices)
+    
     headers = {
         'Content-Type': 'application/json',
-        'X-Goog-FieldMask': GOOG_FIELD_MASK,
+        'X-Goog-FieldMask': goog_field_mask,
         'X-Goog-Api-Key': goog_routes_api_key
     }
     response = requests.post(goog_routes_url, json=data, headers=headers)
