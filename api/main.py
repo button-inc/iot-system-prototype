@@ -19,6 +19,7 @@ from datetime import datetime
 from typing import Optional, List, Dict, Union
 
 from starlette.responses import JSONResponse
+import httpx
 
 # 🌐 Load environment variables from .env file
 load_dotenv()
@@ -737,7 +738,7 @@ class RouteRequest(BaseModel):
     to_optimize: bool
 
 @app.post("/getOptimizedRoute")
-def get_optimized_route(request: RouteRequest):
+async def get_optimized_route(request: RouteRequest):  # <-- Make this function async
     if not request.selectedRouteList:
         raise HTTPException(status_code=400, detail="selectedRouteList cannot be empty")
     
@@ -751,7 +752,9 @@ def get_optimized_route(request: RouteRequest):
         'X-Goog-FieldMask': goog_field_mask,
         'X-Goog-Api-Key': goog_routes_api_key
     }
-    response = requests.post(goog_routes_url, json=data, headers=headers)
+
+    async with httpx.AsyncClient() as client:  
+        response = await client.post(goog_routes_url, json=data, headers=headers)  
 
     if response.status_code != 200:
         raise HTTPException(status_code=response.status_code, detail=response.text)
