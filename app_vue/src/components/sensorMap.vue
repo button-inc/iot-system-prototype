@@ -106,14 +106,17 @@
       </l-marker>
 
 
-      <template v-for="sensor in state.sensors"
-        :key="sensor.id">
-        <l-marker v-if="sensor"
-          :lat-lng="[sensor.lat, sensor.long]"
-        >
-          <SensorMapMarker :sensor="sensor"></SensorMapMarker>
-        </l-marker>
+      <template v-if="state.sensors && state.sensors.length">
+        <template v-for="sensor in state.sensors"
+          :key="sensor.id">
+          <l-marker v-if="sensor"
+            :lat-lng="[sensor.lat, sensor.long]"
+          >
+            <SensorMapMarker :sensor="sensor"></SensorMapMarker>
+          </l-marker>
+        </template>
       </template>
+
       
     </l-map>
   </div>
