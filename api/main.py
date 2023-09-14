@@ -685,7 +685,8 @@ async def automatic_alerts():
     response = await send_alerts(alert_email_data)
     return response
 
-
+# TODO: move this over to google_routes_services.py
+# TODO: Update 1PW for the .env
 goog_routes_api_key = os.environ.get("GOOGLE_ROUTES_API_KEY")
 goog_routes_url = os.environ.get("GOOGLE_ROUTES_URL")
 
@@ -737,8 +738,9 @@ class RouteRequest(BaseModel):
     destinationAddress: str
     to_optimize: bool
 
+
 @app.post("/getOptimizedRoute")
-async def get_optimized_route(request: RouteRequest):  # <-- Make this function async
+async def get_optimized_route(request: RouteRequest):  
     if not request.selectedRouteList:
         raise HTTPException(status_code=400, detail="selectedRouteList cannot be empty")
     
