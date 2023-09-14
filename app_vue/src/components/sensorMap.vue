@@ -80,14 +80,7 @@
 </script>
 
 <template>
-  <div v-if="state.sensors && state.sensors.length === 0" class="sensor-map-container d-flex align-center justify-center">
-    <v-progress-circular
-      indeterminate
-      :size="50"
-      color="#8D8D8D"
-    ></v-progress-circular>
-  </div>
-  <div v-else class="sensor-map-container">
+  <div class="sensor-map-container">
     <l-map ref="map" v-model:zoom="state.zoom" :use-global-leaflet="false" :center="state.center" :options="{zoomControl: false}">
       <l-control-zoom v-if="state.location" :position="state.location"/>
       <!-- alternative maps URLS (for aesthetic): -->
