@@ -2,7 +2,7 @@
   import { reactive, ref } from 'vue'
   import { getLatLng } from '@/utils/getLatLngFromAddressHelper';
 
-  const emit = defineEmits(['update:modelValue']); // for v-model
+  const emit = defineEmits(['update:modelValue', 'update:addressOptions']); // for v-model
 
   const props = defineProps({
     label: {
@@ -84,6 +84,7 @@
     const latLng = await getLatLng(addressString);
     if (latLng && latLng.length) {
       state.isAddressAdded = true;
+      emit('update:addressOptions', addressString);
       emit('update:modelValue', addressString);
       closeModal();
     } else {
@@ -99,6 +100,7 @@
 <template>
   <div class="point-address-field">
     <v-select
+      :modelValue="props.modelValue"
       :label="label"
       variant="underlined"
       :items="props.addressOptions"

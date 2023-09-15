@@ -15,7 +15,9 @@
   const routeStore = useRouteStore();
   const { 
     getSelectedRouteLatLong, 
-    getIsRouteGenerated } = storeToRefs(routeStore);
+    getIsRouteGenerated,
+    getStartPointAddress,
+    getEndPointAddress } = storeToRefs(routeStore);
 
   const state = reactive({
     location: 'bottomright',
@@ -70,6 +72,34 @@
     state.isRouteGenerated = routeStore.getIsRouteGenerated;
   })
 
+  // when start point gets updated
+  watch(getStartPointAddress, async() => {
+    routeStore.setHasMappedStartEnd(false);
+    state.startPointLatLng = await getLatLng(routeStore.getStartPointAddress); // get start point
+    state.polyLineLatLngs = routeStore.getSelectedRouteLatLong; // get route polyline
+
+    appendStartEndPolylines();
+    state.center = state.startPointLatLng; // update map center
+    routeStore.setHasMappedStartEnd(true);
+  })
+
+  // when end point gets updated
+  watch(getEndPointAddress, async() => {
+    routeStore.setHasMappedStartEnd(false);
+    state.endPointLatLng = await getLatLng(routeStore.getEndPointAddress); // get end point
+    state.polyLineLatLngs = routeStore.getSelectedRouteLatLong; // get route polyline
+
+    appendStartEndPolylines()
+    routeStore.setHasMappedStartEnd(true);
+  })
+
+  function appendStartEndPolylines() {
+    if (state.startPointLatLng.length && state.endPointLatLng.length) {
+      state.polyLineLatLngs.unshift(state.startPointLatLng); // append as first element
+      state.polyLineLatLngs.push(state.endPointLatLng); // append as last element
+    }
+  }
+
   function positionZoom() {
     state.device = useDevice();
     if (state.device.size === DEVICE_SIZE.s || state.device.size === DEVICE_SIZE.xs) {
@@ -92,6 +122,8 @@
         layer-type="base"
         name="OpenStreetMap"
       ></l-tile-layer>
+
+      <!-- route polyline -->
       <l-polyline v-if="state.isRouteGenerated" :lat-lngs="state.polyLineLatLngs"></l-polyline>
 
       <!-- starting point marker -->

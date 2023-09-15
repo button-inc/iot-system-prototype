@@ -14,6 +14,8 @@
   const state = reactive({
     startPointAddress: '',
     endPointAddress: '',
+    startAddressOptions: [],
+    endAddressOptions: [],
     isRouteGenerated: false,
     drag: false,
     isMapInitialized: false,
@@ -21,8 +23,12 @@
   });
 
   onMounted(() => {
+    // setup initial start and end point
     state.startPointAddress = routeStore.getStartPointAddress;
+    state.startAddressOptions.push(state.startPointAddress);
+
     state.endPointAddress = routeStore.getEndPointAddress;
+    state.endAddressOptions.push(state.endPointAddress);
   })
 
   // element variables
@@ -46,8 +52,22 @@
     state.isLoadingGoogApi = false;
   }
 
-  function updateAddress(value) {
-    console.log('value', value);
+  function updateStartAddress(value) {
+    state.startAddressOptions.push(value);
+    
+  }
+
+  function updateStartPoint(value) {
+    routeStore.setStartPoint(value);
+  }
+
+  function updateEndAddress(value) {
+    state.endAddressOptions.push(value);
+    routeStore.setEndPoint(value);
+  }
+
+  function updateEndPoint(value) {
+    routeStore.setEndPoint(value);
   }
 
 </script>
@@ -68,22 +88,21 @@
     <!-- start and end point entry -->
     <section v-else>
       <PointAddressField
-        :addressOptions="[state.startPointAddress]"
-        label="Start point"
-        @update:modelValue="updateAddress">
-      </PointAddressField>
-      <v-text-field 
         v-model="state.startPointAddress"
-        disabled
-        label="Start point" 
-        variant="underlined">
-      </v-text-field>
-      <v-text-field 
+        :addressOptions="state.startAddressOptions"
+        label="Start point"
+        @update:modelValue="updateStartPoint"
+        @update:addressOptions="updateStartAddress">
+      </PointAddressField>
+
+      <PointAddressField
         v-model="state.endPointAddress"
-        disabled
+        :addressOptions="state.endAddressOptions"
         label="End point"
-        variant="underlined">
-      </v-text-field>
+        @update:modelValue="updateEndPoint"
+        @update:addressOptions="updateEndAddress">
+      </PointAddressField>
+
       <div class="d-flex align-center py-4 px-2 color-warning-bg mb-5" v-if="routeStore.getSelectedRouteList > 25">
         <vue-feather class="color-red mx-3" type="alert-triangle"></vue-feather>
         <span class="routes-list__warning-text">Note: Currently only 25 bins can be added to the route. Please deselect {{ routeStore.getSelectedRouteList - 25 }} bin(s).</span>
