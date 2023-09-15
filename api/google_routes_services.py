@@ -48,4 +48,4 @@ class RouteRequest(BaseModel):
     selectedRouteList: List[Dict[str, float]]
     originAddress: str
     destinationAddress: str
-    to_optimize: bool
+    to_optimize: bool = True
