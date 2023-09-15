@@ -8,7 +8,6 @@ load_dotenv()
 
 goog_routes_api_key = os.environ.get("GOOGLE_ROUTES_API_KEY")
 goog_routes_url = os.environ.get("GOOGLE_ROUTES_URL")
-print(8, goog_routes_url)
 
 def get_optimized_routes_payload(selectedRouteList, originAddress, destinationAddress, to_optimize):
     origin = {
