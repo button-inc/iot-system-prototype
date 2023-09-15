@@ -68,6 +68,7 @@
   }
 
   async function addAddress() {
+    state.isErrorAddingAddress = false;
     const { valid } = await addressForm.value.validate()
     if (!valid) {
       return;
@@ -79,7 +80,6 @@
     addressString.replace(',', '');
 
     state.isCheckingAddress = true;
-    state.isErrorAddingAddress = false;
     state.isAddressAdded = false;
     const latLng = await getLatLng(addressString);
     if (latLng && latLng.length) {
@@ -188,6 +188,9 @@
               ></v-progress-circular>
             </v-btn>
             <v-btn variant="outlined" @click="closeModal">Cancel</v-btn>
+            <div class="dialog-content__error" v-if="state.isErrorAddingAddress"> 
+              There was an error adding the address, please double check the address and try again. 
+            </div>
           </div>
         </v-card-text>
       </v-card>
@@ -235,7 +238,14 @@
     }
 
     &__actions {
+      display: flex;
+      align-items: center;
       margin: 20px 0;
+    }
+
+    &__error {
+      margin-left: 16px;
+      color: $red;
     }
   }
 </style>
