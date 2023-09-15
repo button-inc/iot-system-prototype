@@ -3,7 +3,7 @@ from enum import Enum
 import re
 import time
 import requests
-from google_routes_services import RouteRequest, get_optimized_routes_payload
+from google_routes_services import RouteRequest, get_optimized_routes_response
 from mail_services import AlertEmailSchema, EmailSchema, get_email_msg, get_fm
 from utils import filter_nulls
 
@@ -20,7 +20,6 @@ from datetime import datetime
 from typing import Optional, List, Dict, Union
 
 from starlette.responses import JSONResponse
-import httpx
 
 # 🌐 Load environment variables from .env file
 load_dotenv()
@@ -29,8 +28,7 @@ load_dotenv()
 env = os.environ.get("ENVIRONMENT")
 bb_email = os.environ.get("BB_EMAIL")
 bb_password = os.environ.get("BB_PASSWORD")
-goog_routes_api_key = os.environ.get("GOOGLE_ROUTES_API_KEY")
-goog_routes_url = os.environ.get("GOOGLE_ROUTES_URL")
+
 tkl_client = os.environ.get("TEKELEK_CLIENT")
 tkl_password = os.environ.get("TEKELEK_PASSWORD")
 tkl_secret = os.environ.get("TEKELEK_TOKEN")
@@ -457,7 +455,7 @@ def set_rfs_and_ss_cache():
 
 
 #  🤖 Event handler: Populate Tekelek data in tkl_cache with initial data on start up
-#@app.on_event("startup")
+@app.on_event("startup")
 def set_tkl_cache():
     global tkl_cache
     try:
@@ -676,7 +674,7 @@ async def send_alerts(email: AlertEmailSchema) -> JSONResponse:
     
     return response
 
-# alert every 24 hours
+# alert every 24 hours disable this for now to avoide excess notifcation during development
 #@app.on_event("startup")
 @repeat_every(seconds=60*60*24)
 async def automatic_alerts():
@@ -697,16 +695,7 @@ async def get_optimized_route(request: RouteRequest):
     if len(request.selectedRouteList) > 25:
         raise HTTPException(status_code=400, detail="selectedRouteList cannot be more than 25 in size")
 
-    data, goog_field_mask = get_optimized_routes_payload(request.selectedRouteList, request.originAddress, request.destinationAddress, request.to_optimize)
-    
-    headers = {
-        'Content-Type': 'application/json',
-        'X-Goog-FieldMask': goog_field_mask,
-        'X-Goog-Api-Key': goog_routes_api_key
-    }
-
-    async with httpx.AsyncClient() as client:  
-        response = await client.post(goog_routes_url, json=data, headers=headers)  
+    response = await get_optimized_routes_response(request)
 
     if response.status_code != 200:
         raise HTTPException(status_code=response.status_code, detail=response.text)
