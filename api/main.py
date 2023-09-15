@@ -57,7 +57,7 @@ origins = [
     "http://0.0.0.0:8082",
     "http://wav.button.build",
     "http://34.123.69.225/",
-    "http://34.123.69.225:80"
+    "http://34.123.69.225:80",
 ]
 
 # 🔑 Add CORS middleware to the application
@@ -85,8 +85,10 @@ class BasicSensor(BaseModel):
     long: float | None
     manufacturer: str
     bin_name: str | None
-    address_line1: str
-    address_line2: str | None
+    address_line1: str | None
+    city: str | None
+    province: str | None
+    postal_code: str | None
     group: str | None
     bin_type: str
     material_type: str
@@ -143,9 +145,15 @@ class BrighterBinsSensor(BaseModel):
     readings: list[BrighterBinsSensorReading] | None
     is_extended_uplink: int
     manufacturer: str
-    address: str
-    lat: float
-    long: float
+    address_line1: str | None
+    city: str | None
+    province: str | None
+    postal_code: str | None
+    group: str | None
+    bin_type: str
+    material_type: str
+    asset_tag: str
+    bin_volume: str
 
 
 # 📝 Model to represent a TeklekSensor
@@ -544,12 +552,13 @@ def update_bb_cache() -> None:
         readingsStartTime = 1690592310000
         last_run_timestamp = readingsEndTime + 1
         # get all the sensors data from the google sheet
-        sheet = sa.open("BrighterBins_mock_data")
-        worksheet = sheet.worksheet("bins_data")
+        sheet = sa.open("Mississauga_mock_data")
+        worksheet = sheet.worksheet("Asset-Bin Information-BBTA")
         records = worksheet.get_all_records()
 
         for index, record in enumerate(records):
-            id = record["id"]
+            print(record)
+            id = record["Sensor ID"]
             response = requests.request(
                 "POST",
                 url,
@@ -568,12 +577,14 @@ def update_bb_cache() -> None:
             sensor = {
                 "id": id,
                 "row_id": index + 2,
-                "bin_name": record["name"],
-                "address": record["address"],
-                "lat": record["lat"],
-                "long": record["long"],
-                "bin_volume": record["bin_volume"],
-                "asset_tag": record["tags"],
+                "bin_name": record["Asset - Name"],
+                "address": record["Address"],
+                "lat": record["Latitude"],
+                "long": record["Longitude"],
+                "bin_volume": record["Bin Volume"],
+                "bin_type": record["Bin Type"],
+                "material_type": record["Waste Type"],
+                "asset_tag": record["Addiontal Asset Tags"],
                 "readings": readings,
             }
             bb_cache[id] = sensor
@@ -625,77 +636,82 @@ def get_latest_readings():
 
 @app.post("/email")
 async def send_email(email: EmailSchema) -> JSONResponse:
-
     msg = get_email_msg(
-        recipients=email.dict().get("recipient_list"), 
-        body=email.dict().get("body")
-        )
+        recipients=email.dict().get("recipient_list"), body=email.dict().get("body")
+    )
 
     fm = get_fm()
 
     await fm.send_message(msg)
-    return JSONResponse(
-        status_code=200, 
-        content={"message": "email has been sent"}
-        )
+    return JSONResponse(status_code=200, content={"message": "email has been sent"})
 
 
 @app.post("/send_alerts")
 async def send_alerts(email: AlertEmailSchema) -> JSONResponse:
     alert_level = email.dict().get("alert_level")
-    sensors_latest_readings = get_latest_readings()['sensors']
+    sensors_latest_readings = get_latest_readings()["sensors"]
     recipient_list = email.dict().get("recipient_list")
 
     # 1. Filter sensors with fill_level > a threshold
-    high_filled_sensors = [sensor for sensor in sensors_latest_readings if sensor.fill_level > alert_level]
+    high_filled_sensors = [
+        sensor for sensor in sensors_latest_readings if sensor.fill_level > alert_level
+    ]
     if not high_filled_sensors:
         email_schema = EmailSchema(
-            recipient_list=recipient_list, 
-            body="no sensors with fill level above " + str(alert_level)
-            )
+            recipient_list=recipient_list,
+            body="no sensors with fill level above " + str(alert_level),
+        )
 
         response = await send_email(email_schema)
-        return response 
+        return response
 
     # 2. Format the data for the email
     body = "Sensors with fill level above " + str(alert_level) + "%:\n\n"
     for sensor in high_filled_sensors:
-        sensor_data = "\n".join([f"{key}: {value}" for key, value in sensor.dict().items()])
+        sensor_data = "\n".join(
+            [f"{key}: {value}" for key, value in sensor.dict().items()]
+        )
         body += f"{sensor_data}\n\n"
-    
+
     # 3. Send the email
-    email_schema = EmailSchema(
-        recipient_list=recipient_list, 
-        body=body
-    )
-    
+    email_schema = EmailSchema(recipient_list=recipient_list, body=body)
+
     response = await send_email(email_schema)
-    
+
     return response
+
 
 # alert every 24 hours
 @app.on_event("startup")
-@repeat_every(seconds=60*60*24)
+@repeat_every(seconds=60 * 60 * 24)
 async def automatic_alerts():
     if env != "prod":
         print("Not in 'prod' environment. Skipping alerts.")
         return
 
-    alert_email_data = AlertEmailSchema(recipient_list=["lin.yaokun1@gmail.com", "patrick@button.is", "elliott@button.is", "mike@button.is"], 
-                                        alert_level=75)
-    
+    alert_email_data = AlertEmailSchema(
+        recipient_list=[
+            "lin.yaokun1@gmail.com",
+            "patrick@button.is",
+            "elliott@button.is",
+        ],
+        alert_level=75,
+    )
+
     print("sending out alerts on over filled sensors")
     response = await send_alerts(alert_email_data)
     return response
 
 
 @app.post("/getOptimizedRoute")
-async def get_optimized_route(request: RouteRequest):  
+async def get_optimized_route(request: RouteRequest):
     if not request.selectedRouteList:
         raise HTTPException(status_code=400, detail="selectedRouteList cannot be empty")
-    
+
     if len(request.selectedRouteList) > 25:
-        raise HTTPException(status_code=400, detail="selectedRouteList cannot be more than 25 in size")
+        raise HTTPException(
+            status_code=400, detail="selectedRouteList cannot be more than 25 in size"
+        )
 
     response = await get_optimized_routes_response(request)
 
@@ -703,6 +719,7 @@ async def get_optimized_route(request: RouteRequest):
         raise HTTPException(status_code=response.status_code, detail=response.text)
 
     return response.json()
+
 
 # @app.get("/sensors/{sensor_id}")
 # def query_sensor_by_id(sensor_id: str) -> Sensor:
