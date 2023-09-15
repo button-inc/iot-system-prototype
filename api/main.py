@@ -28,7 +28,6 @@ load_dotenv()
 env = os.environ.get("ENVIRONMENT")
 bb_email = os.environ.get("BB_EMAIL")
 bb_password = os.environ.get("BB_PASSWORD")
-
 tkl_client = os.environ.get("TEKELEK_CLIENT")
 tkl_password = os.environ.get("TEKELEK_PASSWORD")
 tkl_secret = os.environ.get("TEKELEK_TOKEN")

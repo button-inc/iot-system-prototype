@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+const ENV_API_BASE_URL = process.env.VUE_APP_API_HOST || "http://localhost:8080";
+
 // reorders intermediate points in our selectedRouteList according to a list of given indexes (newRouteIndexOrder)
 export const getNewOptimizedRoute = (selectedRouteList, newRouteIndexOrder) => {
   // assuming newRouteIndexOrder looks like [originLocationSensor, midLocationSensor1...midLocationSensor4, destinationLocaitonSensor]
@@ -25,11 +27,12 @@ export const getNewOptimizedRoute = (selectedRouteList, newRouteIndexOrder) => {
 // google api call to optimize route
 // https://developers.google.com/maps/documentation/routes/opt-way
 export const getOptimizedRouteData = async (selectedRouteList, originAddress, destinationAddress, optimize = true) => {
+  
   if (selectedRouteList && selectedRouteList.length === 0) {
     return;
   }
 
-  const URL = 'http://localhost:8080/getOptimizedRoute';  // Updated URL
+  const URL = ENV_API_BASE_URL + "/getOptimizedRoute";  // Updated URL
   const data = {
     selectedRouteList: selectedRouteList.map(waypoint => ({ lat: waypoint.lat, long: waypoint.long })),
     originAddress: originAddress,
