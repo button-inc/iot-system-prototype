@@ -673,13 +673,16 @@ async def send_alerts(email: AlertEmailSchema) -> JSONResponse:
     
     return response
 
-# alert every 24 hours disable this for now to avoide excess notifcation during development
-#@app.on_event("startup")
+# alert every 24 hours
+@app.on_event("startup")
 @repeat_every(seconds=60*60*24)
 async def automatic_alerts():
+    if env != "prod":
+        print("Not in 'prod' environment. Skipping alerts.")
+        return
+
     alert_email_data = AlertEmailSchema(recipient_list=["lin.yaokun1@gmail.com", "patrick@button.is", "elliott@button.is", "suha@button.is", "mike@button.is"], 
                                         alert_level=75)
-    
     
     print("sending out alerts on over filled sensors")
     response = await send_alerts(alert_email_data)
