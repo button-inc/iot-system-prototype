@@ -80,7 +80,11 @@
     sensorStore.setSelectedGroup(state.selectedGroup);
     updateSensorsShown();
 
-    state.filterEnabledMap['group'] = true;
+    if (state.selectedGroup) {
+      state.filterEnabledMap['group'] = true;
+    } else {
+      state.filterEnabledMap['group'] = false;
+    }
   }
 
   function updateAssetTagFilter() {
@@ -109,7 +113,11 @@
     sensorStore.setSelectedBinVolume(state.selectedBinVolume);
     updateSensorsShown();
 
-    state.filterEnabledMap['binVolume'] = true;
+    if (state.selectedBinVolume) {
+      state.filterEnabledMap['binVolume'] = true;
+    } else {
+      state.filterEnabledMap['binVolume'] = false;
+    }
   }
 
   function updateFillRangeFilter() {
