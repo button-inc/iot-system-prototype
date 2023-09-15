@@ -63,7 +63,6 @@
 
   function updateEndAddress(value) {
     state.endAddressOptions.push(value);
-    routeStore.setEndPoint(value);
   }
 
   function updateEndPoint(value) {
