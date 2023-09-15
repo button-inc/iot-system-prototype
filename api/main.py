@@ -3,6 +3,7 @@ from enum import Enum
 import re
 import time
 import requests
+from google_routes_services import RouteRequest, get_optimized_routes_payload
 from mail_services import AlertEmailSchema, EmailSchema, get_email_msg, get_fm
 from utils import filter_nulls
 
@@ -28,6 +29,8 @@ load_dotenv()
 env = os.environ.get("ENVIRONMENT")
 bb_email = os.environ.get("BB_EMAIL")
 bb_password = os.environ.get("BB_PASSWORD")
+goog_routes_api_key = os.environ.get("GOOGLE_ROUTES_API_KEY")
+goog_routes_url = os.environ.get("GOOGLE_ROUTES_URL")
 tkl_client = os.environ.get("TEKELEK_CLIENT")
 tkl_password = os.environ.get("TEKELEK_PASSWORD")
 tkl_secret = os.environ.get("TEKELEK_TOKEN")
@@ -454,7 +457,7 @@ def set_rfs_and_ss_cache():
 
 
 #  🤖 Event handler: Populate Tekelek data in tkl_cache with initial data on start up
-@app.on_event("startup")
+#@app.on_event("startup")
 def set_tkl_cache():
     global tkl_cache
     try:
@@ -674,7 +677,7 @@ async def send_alerts(email: AlertEmailSchema) -> JSONResponse:
     return response
 
 # alert every 24 hours
-@app.on_event("startup")
+#@app.on_event("startup")
 @repeat_every(seconds=60*60*24)
 async def automatic_alerts():
     alert_email_data = AlertEmailSchema(recipient_list=["lin.yaokun1@gmail.com", "patrick@button.is", "elliott@button.is", "suha@button.is", "mike@button.is"], 
@@ -684,59 +687,6 @@ async def automatic_alerts():
     print("sending out alerts on over filled sensors")
     response = await send_alerts(alert_email_data)
     return response
-
-# TODO: move this over to google_routes_services.py
-# TODO: Update 1PW for the .env
-goog_routes_api_key = os.environ.get("GOOGLE_ROUTES_API_KEY")
-goog_routes_url = os.environ.get("GOOGLE_ROUTES_URL")
-
-def get_optimized_routes_payload(selectedRouteList, originAddress, destinationAddress, to_optimize):
-    origin = {
-        "address": originAddress
-    }
-    destination = {
-        "address": destinationAddress
-    }
-    intermediates = [
-        {
-            "location": {
-                "latLng": {
-                    "latitude": waypoint['lat'],
-                    "longitude": waypoint['long']
-                }
-            }
-        } for waypoint in selectedRouteList
-    ]
-    
-    if to_optimize:
-        GOOG_FIELD_MASK = 'routes.duration,routes.distanceMeters,routes.optimizedIntermediateWaypointIndex'
-        optimizeWaypointOrder = True
-    else:
-        GOOG_FIELD_MASK = 'routes.duration,routes.distanceMeters'
-        optimizeWaypointOrder = False
-
-    return {
-        "origin": origin,
-        "intermediates": intermediates,
-        "destination": destination,
-        "travelMode": "DRIVE",
-        "routingPreference": "TRAFFIC_UNAWARE",
-        "computeAlternativeRoutes": False,
-        "routeModifiers": {
-            "avoidTolls": False,
-            "avoidHighways": False,
-            "avoidFerries": False
-        },
-        "languageCode": "en-US",
-        "units": "IMPERIAL",
-        "optimizeWaypointOrder": optimizeWaypointOrder
-    }, GOOG_FIELD_MASK
-
-class RouteRequest(BaseModel):
-    selectedRouteList: List[Dict[str, float]]
-    originAddress: str
-    destinationAddress: str
-    to_optimize: bool
 
 
 @app.post("/getOptimizedRoute")
