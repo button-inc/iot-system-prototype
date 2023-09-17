@@ -330,9 +330,12 @@ def brighterbins_sensor_to_basic_sensor_with_reading(
         bin_name=sensor["bin_name"],
         address_line1=sensor["address"],
         address_line2=None,
-        group=None,
-        bin_type="Standard park bin",
-        material_type="Mixed waste",
+        city=sensor["city"],
+        province=sensor["province"],
+        postal_code=sensor["postal_code"],
+        group=sensor["group"],
+        bin_type=sensor["bin_type"],
+        material_type=sensor["material_type"],
         bin_volume=sensor["bin_volume"],
         asset_tag=sensor["asset_tag"],
     )
@@ -557,7 +560,6 @@ def update_bb_cache() -> None:
         records = worksheet.get_all_records()
 
         for index, record in enumerate(records):
-            print(record)
             id = record["Sensor ID"]
             response = requests.request(
                 "POST",
@@ -579,12 +581,16 @@ def update_bb_cache() -> None:
                 "row_id": index + 2,
                 "bin_name": record["Asset - Name"],
                 "address": record["Address"],
+                "city": record["City"],
+                "province": record["Province"],
+                "postal_code": record["Postal code"],
                 "lat": record["Latitude"],
                 "long": record["Longitude"],
                 "bin_volume": record["Bin Volume"],
                 "bin_type": record["Bin Type"],
-                "material_type": record["Waste Type"],
+                "material_type": record["Material/Waste Type"],
                 "asset_tag": record["Addiontal Asset Tags"],
+                "group": record["Group"],
                 "readings": readings,
             }
             bb_cache[id] = sensor
