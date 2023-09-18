@@ -1,6 +1,18 @@
 # iot-system-prototype
 
-This template should help get you started developing with Vue 3 in Vite.
+### Running vue alongside Docker
+
+Terminal 1: (wait for this to complete)
+```
+// in repo root directory
+docker-compose up --build
+```
+
+Terminal 2: (custom script)
+```
+// in repo root directory
+bin/vueLocalDeploy.sh
+```
 
 ## Project Setup
 
@@ -24,20 +36,6 @@ npm run build
 
 ```sh
 npm run lint
-```
-
-### Running vue alongside Docker
-
-Terminal 1: (wait for this to complete)
-```
-// in repo root directory
-docker-compose up --build
-```
-
-Terminal 2: (custom script)
-```
-// in repo root directory
-bin/vueLocalDeploy.sh
 ```
 
 ## Libraries Used
