@@ -1,10 +1,40 @@
 <script setup>
-  import { ref } from 'vue';
+  import { reactive } from 'vue';
 
-  const expand = ref(false);
   const expandNavBar = () => {
-    expand.value = !expand.value;
+    state.expand = !state.expand;
   };
+
+  const state = reactive({
+    expand: false,
+    links: [
+      {
+        text: 'Map',
+        href: '/',
+        featherIcon: 'map'
+      },
+      {
+        text: 'Route History',
+        href: '/',
+        featherIcon: 'truck'
+      },
+      {
+        text: 'Asset Management',
+        href: '/',
+        featherIcon: 'database'
+      },
+      {
+        text: 'Reports',
+        href: '/',
+        featherIcon: 'pie-chart'
+      },
+      {
+        text: 'Settings',
+        href: '/',
+        featherIcon: 'settings'
+      }
+    ]
+  });
 </script>
 
 <template>
@@ -12,29 +42,51 @@
     <v-navigation-drawer
       id="navigation"
       :expand-on-hover="false"
-      :rail="!expand"
-      :key="expand"
+      :rail="!state.expand"
+      :key="state.expand"
       color="#191A1C"
       rail-width="41"
       width="400"
       permanent
     >
-      <v-list class="navbar-icon" :class="{'navbar-icon__x': expand}" @click="expandNavBar">
-        <vue-feather v-show="!expand" type="align-justify"></vue-feather>
-        <vue-feather v-show="expand" type="x"></vue-feather>
+      <v-list class="navbar-icon" :class="{'navbar-icon__x': state.expand}" @click="expandNavBar">
+        <vue-feather v-show="!state.expand" type="align-justify"></vue-feather>
+        <vue-feather v-show="state.expand" type="x"></vue-feather>
       </v-list>
 
-      <v-list v-show="expand" class="navbar-links" density="compact" nav>
-        <v-list-item class="navbar-links__link" link href="/" rounded value="Map">
-          <vue-feather v-show="expand" type="map"></vue-feather>
-          Map
-        </v-list-item>
+      <v-list v-show="state.expand" class="navbar-links" density="compact" nav>
+
+        <template v-for="link in state.links" :key="link.text">
+          <v-list-item class="navbar-links__item" link :href="link.href" rounded>
+            <vue-feather :type="link.featherIcon"></vue-feather>
+            {{  link.text }}
+          </v-list-item>
+        </template>
+
         <v-divider class="mt-3 mb-3"></v-divider>
+
+        <div>
+          <v-list-item class="navbar-links__item user">
+            <span>John Doe</span>
+            <span>jdoe@acme.com</span>
+          </v-list-item>
+          <v-list-item class="navbar-links__item" link href="/" rounded>
+            <vue-feather type="user"></vue-feather>
+            Profile
+          </v-list-item>
+        </div>
+
+        <v-divider class="mt-3 mb-3"></v-divider>
+
+        <v-list-item class="navbar-links__item" link href="/" rounded>
+          <vue-feather type="log-out"></vue-feather>
+          Sign out
+        </v-list-item>
       </v-list>
 
     </v-navigation-drawer>
 
-    <div v-if="expand" class="navigation-overlay" @click="expand = false"></div>
+    <div v-if="state.expand" class="navigation-overlay" @click="state.expand = false"></div>
 
 
   </div>
@@ -55,8 +107,17 @@
     padding: 0 40px 40px 40px;
   }
 
-  :deep .v-list-item.navbar-links__link {
+  :deep .v-list-item.navbar-links__item {
     padding: 6px 16px;
+  }
+
+  :deep .v-list-item.navbar-links__item.user {
+    .v-list-item__content {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 16px;
+    }
   }
 
   // custom css
