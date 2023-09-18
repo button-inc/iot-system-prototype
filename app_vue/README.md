@@ -65,15 +65,22 @@ Note that all of these folders are under app_vue/:
 - router -> holds index.js which contains our configured routes (default is '/')
 - stores -> holds Vuex aka Pinia stores for state management
 - layout -> holds layout based components (ie. navbar/header/footer)
+- utils -> holds shared javascript functions, and services
 
 ## Recommended Coding Strategy
 
 ### CSS
-- we are using the BEM approach where possible
-- if a single vuetify class fulfills your need, go ahead and use that (for ex. https://vuetifyjs.com/en/styles/spacing/ )
+- we are using the [BEM](https://getbem.com/) approach where possible
+- if a single [vuetify class](https://vuetifyjs.com/en/styles/spacing/) fulfills your need, go ahead and use that
 - if you can help it, opt for not combining a vuetify class with a custom class (ie. `class="text-subtitle-2 my-custom-class"`) , instead, nest the vuetify css attributes in your custom class (ie. `my-custom-class"`)
 - we have also added some of the vuetify typography in our own mixins located in /assets/stylesheets/mixins
   - you can feel free to use `@include <mixinName>` in your custom class to avoid rewriting repetitive code
+
+### stores
+- we are using the concept of vue [stores](https://vuex.vuejs.org/guide/) in our app
+- we are also using a library called [pinia](https://pinia.vuejs.org/) to make the syntax for this a lot simpler, it is recommended by Vue itself!
+- think of it as a simple way to manage holding app state. You know its a good tool to use when you find that too many variables are being passed back and forth to components through events (hot potato style). That is where the store can come in and hold that variable globally for you.
+
 
 ## Recommended IDE Setup
 
