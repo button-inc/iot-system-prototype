@@ -1,19 +1,5 @@
 # iot-system-prototype
 
-### Running vue alongside Docker
-
-Terminal 1: (wait for this to complete)
-```
-// in repo root directory
-docker-compose up --build
-```
-
-Terminal 2: (custom script)
-```
-// in repo root directory
-bin/vueLocalDeploy.sh
-```
-
 ## Project Setup
 
 ```sh
@@ -36,6 +22,20 @@ npm run build
 
 ```sh
 npm run lint
+```
+
+### Local: Running vue alongside Docker
+
+Terminal 1: (wait for this to complete)
+```
+// in repo root directory
+docker-compose up --build
+```
+
+Terminal 2: (custom script)
+```
+// in repo root directory
+bin/vueLocalDeploy.sh
 ```
 
 ## Libraries Used
