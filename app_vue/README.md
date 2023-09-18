@@ -38,6 +38,8 @@ Terminal 2: (custom script)
 bin/vueLocalDeploy.sh
 ```
 
+Ensure you have followed the README file located here: api/README.md
+
 ## Libraries Used
 ### Vuetify - Material UI Library
 - it is recommended to use inline styles with vuetify components instead of v-deep where necessary
