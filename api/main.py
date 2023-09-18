@@ -86,6 +86,7 @@ class BasicSensor(BaseModel):
     manufacturer: str
     bin_name: str | None
     address_line1: str | None
+    address_line2: str | None
     city: str | None
     province: str | None
     postal_code: str | None
@@ -477,58 +478,48 @@ def set_tkl_cache():
         base_url = "https://phoenixapiprod.azurewebsites.net/api/"
 
         # Make a request to get all sensor data from tank records
-        tanks_url = base_url + "tanks"
-        tanks_response = make_http_request(
-            tanks_url,
-            method="GET",
-            headers={"Authorization": "Bearer " + tekelek_api_token},
-        )
+        # tanks_url = base_url + "tanks"
+        # tanks_response = make_http_request(
+        #     tanks_url,
+        #     method="GET",
+        #     headers={"Authorization": "Bearer " + tekelek_api_token},
+        # )
+        sheet = sa.open("Mississauga_mock_data")
+        worksheet = sheet.worksheet("Asset-Bin Information-TekelekTA")
+        records = worksheet.get_all_records()
 
-        if tanks_response:
-            records = tanks_response
-
-            # Iterate tank records to get additional information from related API endpoints
+        if records:
+            # Iterate asset records to get additional information from related API endpoints
             for index, record in enumerate(records):
-                serialNo = record["ModemSerialNo"]
-
-                # get the sensor address, etc. details
-                details_url = base_url + "modems/details/" + serialNo
-                details_response = make_http_request(
-                    details_url,
-                    method="GET",
-                    headers={"Authorization": "Bearer " + tekelek_api_token},
-                )
-
-                record["Group"] = (
-                    details_response["Group"] if details_response is not None else ""
-                )
-                record["AddressLine1"] = (
-                    details_response["AddressLine1"]
-                    if details_response is not None
-                    else ""
-                )
-                record["AddressLine2"] = (
-                    details_response["AddressLine2"]
-                    if details_response is not None
-                    else ""
-                )
-
+                id = record["Sensor ID"]
                 # get the latest sensor fill reading
-                latest_reading_url = base_url + "latestReading/" + serialNo
+                latest_reading_url = base_url + "latestReading/" + str(id)
                 reading_response = make_http_request(
                     latest_reading_url,
                     method="GET",
                     headers={"Authorization": "Bearer " + tekelek_api_token},
                 )
 
-                record["PercentFull"] = (
-                    reading_response["PercentFull"]
+                sensor = {
+                    "id": id,
+                    "row_id": index + 2,
+                    "bin_name": record["Asset - Name"],
+                    "address": record["Address"],
+                    "city": record["City"],
+                    "province": record["Province"],
+                    "postal_code": record["Postal code"],
+                    "lat": record["Latitude"],
+                    "long": record["Longitude"],
+                    "bin_volume": record["Bin Volume"],
+                    "bin_type": record["Bin Type"],
+                    "material_type": record["Material/Waste Type"],
+                    "asset_tag": record["Addiontal Asset Tags"],
+                    "group": record["Group"],
+                    "fill_level": reading_response["PercentFull"]
                     if reading_response is not None
-                    else None
-                )
-
-            # Convert TekelekSensor list to BasicSensor objects dictionary
-            tkl_cache = tkl_dict_to_bs_dict(records)
+                    else None,
+                }
+                tkl_cache[id] = sensor
             print("Tekelek sensor data cache: fetch complete")
 
     except Exception as e:
@@ -635,8 +626,8 @@ def get_latest_readings():
     for index, sensor in enumerate(tkl_cache):
         tkl_readings.append(tkl_cache[sensor])
 
-    latest_readings = bb_readings + rfs_cache + ss_cache + tkl_readings
-    latest_readings = filter_nulls(latest_readings)
+    latest_readings = bb_readings + tkl_readings + rfs_cache + ss_cache
+    # latest_readings = filter_nulls(latest_readings)
     return {"sensors": latest_readings}
 
 
