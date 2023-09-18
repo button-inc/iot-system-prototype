@@ -48,12 +48,14 @@
 
   function exportRouteClicked() {
     // columns
-    let csv = 'Order,Sensor Type,Fill Level,Latitude,Longitude,Manufacturer,Bin Name,Address Line 1,Address Line 2,Group,Bin Type,Material Type,Asset Tag,Bin Volume\n';
+    let csv = 'Order,Duration,Distance,Sensor Type,Fill Level,Latitude,Longitude,Manufacturer,Bin Name,Address Line 1,Address Line 2,Group,Bin Type,Material Type,Asset Tag,Bin Volume\n';
 
     // grab required data to be exported
     const csvObjectArray = state.selectedRouteList.map((sensor, index) => {
       return {
         order: index + 1,
+        duration: routeStore.getRouteDuration || '',
+        distance: routeStore.getRouteDistance || '',
         sensor_type: sensor.sensor_type,
         fill_level: sensor.fill_level,
         lat: sensor.lat,
