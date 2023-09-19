@@ -10,7 +10,7 @@ read -p "Do you want to update the api/.env file? (y/n): " UPDATE_ENV
 if [ "$UPDATE_ENV" == "y" ]; then
     echo "copying api/.env..."
     # Copy the .env file to the GCP Compute Engine instance
-    gcloud compute scp ./api/.env mike@instance-3:~ --zone="$ZONE" --project="$PROJECT_ID"
+    gcloud compute scp ../api/.env mike@instance-3:~ --zone="$ZONE" --project="$PROJECT_ID"
 fi
 
 # SSH into the GCP Compute Engine instance
@@ -18,6 +18,7 @@ gcloud compute ssh --zone "$ZONE" "$INSTANCE_NAME" --project "$PROJECT_ID" << EO
 
 # If we are updating the .env file, move it to the correct location
 if [ "$UPDATE_ENV" == "y" ]; then
+    echo "moving the .env to the correct dir"
     sudo mv /home/mike/.env /home/mike/iot-system-prototype/api/.env
 fi
 
