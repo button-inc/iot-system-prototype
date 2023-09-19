@@ -41,7 +41,11 @@ then
     sleep .5
 fi
 
-echo "starting up vue app..."
+
 # commands to run vue app
 cd app_vue
+echo "installing node packages..."
+npm install
+
+echo "starting up vue app..."
 npm run start
