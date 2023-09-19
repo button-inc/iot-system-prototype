@@ -48,21 +48,27 @@
 
   function exportRouteClicked() {
     let csv = ''
-    const duration = routeStore.getRouteDuration;
-    const distance = routeStore.getRouteDistance;
+    const duration = routeStore.getRouteDuration || '';
+    const distance = routeStore.getRouteDistance || 0;
 
-    if (duration && distance) {
-      csv += 'Duration,Distance\n';
-      csv += `${getMinutesString(duration)},${getKmFromMeterString(distance)}km\n`;
-      csv += '\n';
+    csv += 'Duration,Distance\n';
+    
+    if (duration || distance) {
+      const formattedDuration = getMinutesString(duration);
+      const formattedDistance = getKmFromMeterString(distance);
+      csv += `${formattedDuration ? formattedDuration : ''},${formattedDistance ? formattedDistance + 'km' : ''}\n`;
+    } else {
+      csv += '\n'
     }
 
-    // columns -- order is important
+    csv += '\n';
+
+    // columns -- NOTE: order is important
     csv += 'Route Order,Sensor Type,Fill Level,Latitude,Longitude,Manufacturer,Bin Name,Address Line 1,Address Line 2,Group,Bin Type,Material Type,Asset Tag,Bin Volume\n';
 
     // grab required data to be exported
     const csvObjectArray = state.selectedRouteList.map((sensor, index) => {
-      // order of keys listed here is important -> needs to match order of columns
+      // NOTE: order of keys listed here is important -> needs to match order of columns
       return {
         order: index + 1,
         sensor_type: sensor.sensor_type,
@@ -73,7 +79,7 @@
         bin_name: sensor.bin_name,
         address_line1: sensor.address_line1 || '',
         address_line2: sensor.address_line2 ? sensor.address_line2.replace(',','') : '', // typically has a comma which will interfere with csv
-        group: sensor || '',
+        group: sensor.group || '',
         bin_type: sensor.bin_type,
         material_type: sensor.material_type,
         asset_tag: sensor.asset_tag,
