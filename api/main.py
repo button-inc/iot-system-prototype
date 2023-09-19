@@ -57,7 +57,7 @@ origins = [
     "http://0.0.0.0:8082",
     "http://wav.button.build",
     "http://34.123.69.225/",
-    "http://34.123.69.225:80"
+    "http://34.123.69.225:80",
 ]
 
 # 🔑 Add CORS middleware to the application
@@ -85,8 +85,11 @@ class BasicSensor(BaseModel):
     long: float | None
     manufacturer: str
     bin_name: str | None
-    address_line1: str
+    address_line1: str | None
     address_line2: str | None
+    city: str | None
+    province: str | None
+    postal_code: str | None
     group: str | None
     bin_type: str
     material_type: str
@@ -143,9 +146,15 @@ class BrighterBinsSensor(BaseModel):
     readings: list[BrighterBinsSensorReading] | None
     is_extended_uplink: int
     manufacturer: str
-    address: str
-    lat: float
-    long: float
+    address_line1: str | None
+    city: str | None
+    province: str | None
+    postal_code: str | None
+    group: str | None
+    bin_type: str
+    material_type: str
+    asset_tag: str
+    bin_volume: str
 
 
 # 📝 Model to represent a TeklekSensor
@@ -322,9 +331,12 @@ def brighterbins_sensor_to_basic_sensor_with_reading(
         bin_name=sensor["bin_name"],
         address_line1=sensor["address"],
         address_line2=None,
-        group=None,
-        bin_type="Standard park bin",
-        material_type="Mixed waste",
+        city=sensor["city"],
+        province=sensor["province"],
+        postal_code=sensor["postal_code"],
+        group=sensor["group"],
+        bin_type=sensor["bin_type"],
+        material_type=sensor["material_type"],
         bin_volume=sensor["bin_volume"],
         asset_tag=sensor["asset_tag"],
     )
@@ -466,58 +478,48 @@ def set_tkl_cache():
         base_url = "https://phoenixapiprod.azurewebsites.net/api/"
 
         # Make a request to get all sensor data from tank records
-        tanks_url = base_url + "tanks"
-        tanks_response = make_http_request(
-            tanks_url,
-            method="GET",
-            headers={"Authorization": "Bearer " + tekelek_api_token},
-        )
+        # tanks_url = base_url + "tanks"
+        # tanks_response = make_http_request(
+        #     tanks_url,
+        #     method="GET",
+        #     headers={"Authorization": "Bearer " + tekelek_api_token},
+        # )
+        sheet = sa.open("Mississauga_mock_data")
+        worksheet = sheet.worksheet("Asset-Bin Information-TekelekTA")
+        records = worksheet.get_all_records()
 
-        if tanks_response:
-            records = tanks_response
-
-            # Iterate tank records to get additional information from related API endpoints
+        if records:
+            # Iterate asset records to get additional information from related API endpoints
             for index, record in enumerate(records):
-                serialNo = record["ModemSerialNo"]
-
-                # get the sensor address, etc. details
-                details_url = base_url + "modems/details/" + serialNo
-                details_response = make_http_request(
-                    details_url,
-                    method="GET",
-                    headers={"Authorization": "Bearer " + tekelek_api_token},
-                )
-
-                record["Group"] = (
-                    details_response["Group"] if details_response is not None else ""
-                )
-                record["AddressLine1"] = (
-                    details_response["AddressLine1"]
-                    if details_response is not None
-                    else ""
-                )
-                record["AddressLine2"] = (
-                    details_response["AddressLine2"]
-                    if details_response is not None
-                    else ""
-                )
-
+                id = record["Sensor ID"]
                 # get the latest sensor fill reading
-                latest_reading_url = base_url + "latestReading/" + serialNo
+                latest_reading_url = base_url + "latestReading/" + str(id)
                 reading_response = make_http_request(
                     latest_reading_url,
                     method="GET",
                     headers={"Authorization": "Bearer " + tekelek_api_token},
                 )
 
-                record["PercentFull"] = (
-                    reading_response["PercentFull"]
+                sensor = {
+                    "id": id,
+                    "row_id": index + 2,
+                    "bin_name": record["Asset - Name"],
+                    "address": record["Address"],
+                    "city": record["City"],
+                    "province": record["Province"],
+                    "postal_code": record["Postal code"],
+                    "lat": record["Latitude"],
+                    "long": record["Longitude"],
+                    "bin_volume": record["Bin Volume"],
+                    "bin_type": record["Bin Type"],
+                    "material_type": record["Material/Waste Type"],
+                    "asset_tag": record["Addiontal Asset Tags"],
+                    "group": record["Group"],
+                    "fill_level": reading_response["PercentFull"]
                     if reading_response is not None
-                    else None
-                )
-
-            # Convert TekelekSensor list to BasicSensor objects dictionary
-            tkl_cache = tkl_dict_to_bs_dict(records)
+                    else None,
+                }
+                tkl_cache[id] = sensor
             print("Tekelek sensor data cache: fetch complete")
 
     except Exception as e:
@@ -544,12 +546,12 @@ def update_bb_cache() -> None:
         readingsStartTime = 1690592310000
         last_run_timestamp = readingsEndTime + 1
         # get all the sensors data from the google sheet
-        sheet = sa.open("BrighterBins_mock_data")
-        worksheet = sheet.worksheet("bins_data")
+        sheet = sa.open("Mississauga_mock_data")
+        worksheet = sheet.worksheet("Asset-Bin Information-BBTA")
         records = worksheet.get_all_records()
 
         for index, record in enumerate(records):
-            id = record["id"]
+            id = record["Sensor ID"]
             response = requests.request(
                 "POST",
                 url,
@@ -568,12 +570,18 @@ def update_bb_cache() -> None:
             sensor = {
                 "id": id,
                 "row_id": index + 2,
-                "bin_name": record["name"],
-                "address": record["address"],
-                "lat": record["lat"],
-                "long": record["long"],
-                "bin_volume": record["bin_volume"],
-                "asset_tag": record["tags"],
+                "bin_name": record["Asset - Name"],
+                "address": record["Address"],
+                "city": record["City"],
+                "province": record["Province"],
+                "postal_code": record["Postal code"],
+                "lat": record["Latitude"],
+                "long": record["Longitude"],
+                "bin_volume": record["Bin Volume"],
+                "bin_type": record["Bin Type"],
+                "material_type": record["Material/Waste Type"],
+                "asset_tag": record["Addiontal Asset Tags"],
+                "group": record["Group"],
                 "readings": readings,
             }
             bb_cache[id] = sensor
@@ -618,84 +626,89 @@ def get_latest_readings():
     for index, sensor in enumerate(tkl_cache):
         tkl_readings.append(tkl_cache[sensor])
 
-    latest_readings = bb_readings + rfs_cache + ss_cache + tkl_readings
-    latest_readings = filter_nulls(latest_readings)
+    latest_readings = bb_readings + tkl_readings + rfs_cache + ss_cache
+    # latest_readings = filter_nulls(latest_readings)
     return {"sensors": latest_readings}
 
 
 @app.post("/email")
 async def send_email(email: EmailSchema) -> JSONResponse:
-
     msg = get_email_msg(
-        recipients=email.dict().get("recipient_list"), 
-        body=email.dict().get("body")
-        )
+        recipients=email.dict().get("recipient_list"), body=email.dict().get("body")
+    )
 
     fm = get_fm()
 
     await fm.send_message(msg)
-    return JSONResponse(
-        status_code=200, 
-        content={"message": "email has been sent"}
-        )
+    return JSONResponse(status_code=200, content={"message": "email has been sent"})
 
 
 @app.post("/send_alerts")
 async def send_alerts(email: AlertEmailSchema) -> JSONResponse:
     alert_level = email.dict().get("alert_level")
-    sensors_latest_readings = get_latest_readings()['sensors']
+    sensors_latest_readings = get_latest_readings()["sensors"]
     recipient_list = email.dict().get("recipient_list")
 
     # 1. Filter sensors with fill_level > a threshold
-    high_filled_sensors = [sensor for sensor in sensors_latest_readings if sensor.fill_level > alert_level]
+    high_filled_sensors = [
+        sensor for sensor in sensors_latest_readings if sensor.fill_level > alert_level
+    ]
     if not high_filled_sensors:
         email_schema = EmailSchema(
-            recipient_list=recipient_list, 
-            body="no sensors with fill level above " + str(alert_level)
-            )
+            recipient_list=recipient_list,
+            body="no sensors with fill level above " + str(alert_level),
+        )
 
         response = await send_email(email_schema)
-        return response 
+        return response
 
     # 2. Format the data for the email
     body = "Sensors with fill level above " + str(alert_level) + "%:\n\n"
     for sensor in high_filled_sensors:
-        sensor_data = "\n".join([f"{key}: {value}" for key, value in sensor.dict().items()])
+        sensor_data = "\n".join(
+            [f"{key}: {value}" for key, value in sensor.dict().items()]
+        )
         body += f"{sensor_data}\n\n"
-    
+
     # 3. Send the email
-    email_schema = EmailSchema(
-        recipient_list=recipient_list, 
-        body=body
-    )
-    
+    email_schema = EmailSchema(recipient_list=recipient_list, body=body)
+
     response = await send_email(email_schema)
-    
+
     return response
+
 
 # alert every 24 hours
 @app.on_event("startup")
-@repeat_every(seconds=60*60*24)
+@repeat_every(seconds=60 * 60 * 24)
 async def automatic_alerts():
     if env != "prod":
         print("Not in 'prod' environment. Skipping alerts.")
         return
 
-    alert_email_data = AlertEmailSchema(recipient_list=["lin.yaokun1@gmail.com", "patrick@button.is", "elliott@button.is", "mike@button.is"], 
-                                        alert_level=75)
-    
+    alert_email_data = AlertEmailSchema(
+        recipient_list=[
+            "lin.yaokun1@gmail.com",
+            "patrick@button.is",
+            "elliott@button.is",
+        ],
+        alert_level=75,
+    )
+
     print("sending out alerts on over filled sensors")
     response = await send_alerts(alert_email_data)
     return response
 
 
 @app.post("/getOptimizedRoute")
-async def get_optimized_route(request: RouteRequest):  
+async def get_optimized_route(request: RouteRequest):
     if not request.selectedRouteList:
         raise HTTPException(status_code=400, detail="selectedRouteList cannot be empty")
-    
+
     if len(request.selectedRouteList) > 25:
-        raise HTTPException(status_code=400, detail="selectedRouteList cannot be more than 25 in size")
+        raise HTTPException(
+            status_code=400, detail="selectedRouteList cannot be more than 25 in size"
+        )
 
     response = await get_optimized_routes_response(request)
 
@@ -703,6 +716,7 @@ async def get_optimized_route(request: RouteRequest):
         raise HTTPException(status_code=response.status_code, detail=response.text)
 
     return response.json()
+
 
 # @app.get("/sensors/{sensor_id}")
 # def query_sensor_by_id(sensor_id: str) -> Sensor:
