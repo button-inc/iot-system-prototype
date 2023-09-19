@@ -47,16 +47,24 @@
   }
 
   function exportRouteClicked() {
+    let csv = ''
+    const duration = routeStore.getRouteDuration;
+    const distance = routeStore.getRouteDistance;
+
+    if (duration && distance) {
+      csv += 'Duration,Distance\n';
+      csv += `${getMinutesString(duration)},${getKmFromMeterString(distance)}km\n`;
+      csv += '\n';
+    }
+
     // columns -- order is important
-    let csv = 'Order,Duration,Distance,Sensor Type,Fill Level,Latitude,Longitude,Manufacturer,Bin Name,Address Line 1,Address Line 2,Group,Bin Type,Material Type,Asset Tag,Bin Volume\n';
+    csv += 'Route Order,Sensor Type,Fill Level,Latitude,Longitude,Manufacturer,Bin Name,Address Line 1,Address Line 2,Group,Bin Type,Material Type,Asset Tag,Bin Volume\n';
 
     // grab required data to be exported
     const csvObjectArray = state.selectedRouteList.map((sensor, index) => {
       // order of keys listed here is important -> needs to match order of columns
       return {
         order: index + 1,
-        duration: routeStore.getRouteDuration || '',
-        distance: routeStore.getRouteDistance || '',
         sensor_type: sensor.sensor_type,
         fill_level: sensor.fill_level,
         lat: sensor.lat,

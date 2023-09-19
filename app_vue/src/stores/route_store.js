@@ -8,7 +8,7 @@ export const useRouteStore = defineStore('route', {
     startPointAddress: '6900 Airport Rd Mississauga ON',
     endPointAddress: '6135 Airport Rd Mississauga ON',
     routeDuration: '',
-    routeDistance: '',
+    routeDistance: 0,
     hasMappedStartEnd: false
   }),
   getters: {
