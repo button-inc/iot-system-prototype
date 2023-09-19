@@ -114,9 +114,6 @@
   <div class="sensor-map-container">
     <l-map ref="map" v-model:zoom="state.zoom" :use-global-leaflet="false" :center="state.center" :options="{zoomControl: false}">
       <l-control-zoom v-if="state.location" :position="state.location"/>
-      <!-- alternative maps URLS (for aesthetic): -->
-      <!-- https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png -->
-      <!-- https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png -->
       <l-tile-layer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         layer-type="base"
