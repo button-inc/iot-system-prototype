@@ -681,7 +681,7 @@ async def automatic_alerts():
         print("Not in 'prod' environment. Skipping alerts.")
         return
 
-    alert_email_data = AlertEmailSchema(recipient_list=["lin.yaokun1@gmail.com", "patrick@button.is", "elliott@button.is", "suha@button.is", "mike@button.is"], 
+    alert_email_data = AlertEmailSchema(recipient_list=["lin.yaokun1@gmail.com", "patrick@button.is", "elliott@button.is", "mike@button.is"], 
                                         alert_level=75)
     
     print("sending out alerts on over filled sensors")
