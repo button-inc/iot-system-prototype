@@ -3,13 +3,14 @@ from enum import Enum
 import re
 import time
 import requests
+from google_routes_services import RouteRequest, get_optimized_routes_response
 from mail_services import AlertEmailSchema, EmailSchema, get_email_msg, get_fm
 from utils import filter_nulls
 
 import gspread
 from dotenv import load_dotenv
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.tasks import repeat_every
 
@@ -676,14 +677,32 @@ async def send_alerts(email: AlertEmailSchema) -> JSONResponse:
 @app.on_event("startup")
 @repeat_every(seconds=60*60*24)
 async def automatic_alerts():
+    if env != "prod":
+        print("Not in 'prod' environment. Skipping alerts.")
+        return
+
     alert_email_data = AlertEmailSchema(recipient_list=["lin.yaokun1@gmail.com", "patrick@button.is", "elliott@button.is", "suha@button.is", "mike@button.is"], 
                                         alert_level=75)
-    
     
     print("sending out alerts on over filled sensors")
     response = await send_alerts(alert_email_data)
     return response
 
+
+@app.post("/getOptimizedRoute")
+async def get_optimized_route(request: RouteRequest):  
+    if not request.selectedRouteList:
+        raise HTTPException(status_code=400, detail="selectedRouteList cannot be empty")
+    
+    if len(request.selectedRouteList) > 25:
+        raise HTTPException(status_code=400, detail="selectedRouteList cannot be more than 25 in size")
+
+    response = await get_optimized_routes_response(request)
+
+    if response.status_code != 200:
+        raise HTTPException(status_code=response.status_code, detail=response.text)
+
+    return response.json()
 
 # @app.get("/sensors/{sensor_id}")
 # def query_sensor_by_id(sensor_id: str) -> Sensor:
