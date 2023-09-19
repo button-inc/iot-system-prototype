@@ -57,22 +57,25 @@
       <span class="text-h6">{{ props.sensor.bin_name }}</span>
       <div class="bin-details__address color-cyan-blue" v-if="props.sensor.address_line1 || props.sensor.address_line2">
         <span v-if="props.sensor.address_line1">{{ props.sensor.address_line1 }}</span>
+        <br v-if="props.sensor.address_line1 && props.sensor.address_line2" />
         <span v-if="props.sensor.address_line2">{{ props.sensor.address_line2 }}</span>
       </div>
       <div class="bin-details__group" v-if="props.sensor.group">
         <span class="color-gray-grey">Group</span>
         {{ props.sensor.group }}
       </div>
-      <div class="bin-details__bin-type" v-if="props.sensor.bin_type && props.sensor.bin_type.length">
-        <span class="color-gray-grey">Bin type</span>
-        {{ props.sensor.bin_type }}
-      </div>
-      <div class="bin-details__bin-volume" v-if="props.sensor.bin_volume">
-        <span class="color-gray-grey">Bin Volume: </span>
-        {{ props.sensor.bin_volume }}
+      <div class="bin-details__volume_and_type">
+        <div class="bin-details__bin-volume" v-if="props.sensor.bin_volume">
+          <span class="color-gray-grey">Bin Volume </span>
+          {{ props.sensor.bin_volume }}
+        </div>
+        <div class="bin-details__bin-type" v-if="props.sensor.bin_type && props.sensor.bin_type.length">
+          <span class="color-gray-grey">Bin Type</span>
+          {{ props.sensor.bin_type }}
+        </div>
       </div>
       <div class="bin-details__tag-list" v-if="props.sensor.asset_tag && props.sensor.asset_tag.length">
-        <span class="bin-details__tag-list-text">Tags:</span>
+        <span class="bin-details__tag-list-text">Tags</span>
         <span class="bin-details__tag">{{ props.sensor.asset_tag }}</span>
       </div>
       <div class="bin-details__cta-routes" v-if="isRouteCreated">
@@ -173,6 +176,18 @@
     display: flex;
     flex-direction: column;
     @include fontBody;
+
+    &__volume_and_type {
+      display: flex;
+      flex-direction: row;
+    }
+
+    &__bin-volume,
+    &__bin-type {
+      display: flex;
+      flex-direction: row;
+      margin-right: 20px;
+    }
 
     &__address {
       margin: 6px 0;
