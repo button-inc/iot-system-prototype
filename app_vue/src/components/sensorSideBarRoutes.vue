@@ -149,7 +149,7 @@
   }
 
   .find-route-btn {
-    margin-top: -45px;
+    margin-top: -35px;
   }
 
   .find-route-text {

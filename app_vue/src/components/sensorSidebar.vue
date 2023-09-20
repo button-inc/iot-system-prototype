@@ -42,7 +42,7 @@
         <SensorSideBarRoutes></SensorSideBarRoutes>
 
         <!-- Map Updated button -->
-        <v-btn class="map-updated" variant="plain">
+        <v-btn class="map-updated" variant="plain" disabled="true">
           <vue-feather class="map-updated__icon" type="refresh-ccw"></vue-feather>
           <div>
             <span class="map-updated__text">Map updated:</span>
@@ -89,12 +89,10 @@
   }
 
   .map-updated {
-    display: none; //TODO: switch to flex when needed
-    // display: flex;
+    display: flex;
     align-items: center;
     margin-top: auto;
     gap: 10px;
-    color: #8D8D8D;
     min-width: 204px;
     width: 100%;
     justify-content: flex-start;
