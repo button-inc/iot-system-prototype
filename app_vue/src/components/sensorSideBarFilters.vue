@@ -183,7 +183,7 @@
     
     <section v-if="!state.isCollapsed" class="filter-list__fields">
       <div class="filter-list__fill-level">
-        <div class="filter-list__label color-gray-grey">Fill Level Threshold</div>
+        <div class="filter-list__label color-gray-grey">Fill Level</div>
         <v-range-slider class="filter-list__slider" 
           v-model="state.selectedFillRange"
           strict
@@ -214,21 +214,21 @@
       ></v-autocomplete>
 
       <v-autocomplete class="filter-list__dropdown"
+        v-model="state.selectedMaterialType"
+        label="Material Type"
+        chips
+        multiple
+        :items="state.materialType"
+        @update:modelValue="updateMaterialTypeFilter"
+      ></v-autocomplete>
+
+      <v-autocomplete class="filter-list__dropdown"
         v-model="state.selectedAssetTag"
         label="Asset Tag"
         chips
         multiple
         :items="state.assetTag"
         @update:modelValue="updateAssetTagFilter"
-      ></v-autocomplete>
-
-      <v-autocomplete class="filter-list__dropdown"
-        v-model="state.selectedBinType"
-        label="Bin Type"
-        chips
-        multiple
-        :items="state.binType"
-        @update:modelValue="updateBinTypeFilter"
       ></v-autocomplete>
 
       <v-autocomplete class="filter-list__dropdown"
@@ -240,13 +240,14 @@
       ></v-autocomplete>
 
       <v-autocomplete class="filter-list__dropdown"
-        v-model="state.selectedMaterialType"
-        label="Material Type"
+        v-model="state.selectedBinType"
+        label="Bin Type"
         chips
         multiple
-        :items="state.materialType"
-        @update:modelValue="updateMaterialTypeFilter"
+        :items="state.binType"
+        @update:modelValue="updateBinTypeFilter"
       ></v-autocomplete>
+
     </section>
 
 
