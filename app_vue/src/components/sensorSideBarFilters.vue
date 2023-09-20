@@ -3,6 +3,7 @@
   import { useSensorStore } from '@/stores/sensors_store';
   import { useRouteStore } from '@/stores/route_store';
   import { storeToRefs } from 'pinia';
+  import { telusUi } from '@/styles/telusUi';
 
   const thresholdRange = ref([0,100]);
 
@@ -186,8 +187,8 @@
         <v-range-slider class="filter-list__slider" 
           v-model="state.selectedFillRange"
           strict
-          color="#2B8000"
-          track-color="#2B8000"
+          :color="telusUi.green"
+          :track-color="telusUi.green"
           :ticks="[0,50,100]"
           show-ticks="always"
           tick-size="0"
