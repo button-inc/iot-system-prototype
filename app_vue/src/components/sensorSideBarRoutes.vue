@@ -73,7 +73,7 @@
 
 <template>
   <section class="routes-list">
-    <div class="text-h6 padding-b-16">Routes</div>
+    <div class="text-h6 padding-b-16">Create Route</div>
 
     <!-- route info display -->
     <section v-if="state.isRouteGenerated">
