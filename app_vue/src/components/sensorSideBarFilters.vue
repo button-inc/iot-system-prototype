@@ -170,7 +170,7 @@
   <section class="filter-list">
     <div class="filter-list__heading">
       <div class="d-flex align-center">
-        <span class="filter-list__title">Filter Sensors ({{ getFilterCount() }})</span> 
+        <span class="filter-list__title">Filter ({{ getFilterCount() }})</span> 
         <span class="mx-3">|</span>
         <v-btn variant="plain" color="#2196F3" class="pa-0 pt-1 text-capitalize" @click="clearFilters">Clear</v-btn>
       </div>
@@ -186,11 +186,11 @@
         <v-range-slider class="filter-list__slider" 
           v-model="state.selectedFillRange"
           strict
-          color="#2196F3"
-          track-color="#2196F3"
+          color="#2B8000"
+          track-color="#2B8000"
           :ticks="[0,50,100]"
           show-ticks="always"
-          tick-size="4"
+          tick-size="0"
           :step="1"
           :max="thresholdRange[1]"
           :min="thresholdRange[0]"
