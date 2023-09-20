@@ -268,6 +268,14 @@
     height: 12px;
   }
 
+  :deep .v-slider-track__fill{ // slider track size
+    height: 2px !important;
+  }
+
+  :deep .v-slider-track__background{ // slider bg size
+    height: 2px !important;
+  }
+
   :deep .v-input__details { // input padding size
     min-height: 14px;
   }
