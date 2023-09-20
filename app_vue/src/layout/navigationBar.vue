@@ -1,5 +1,6 @@
 <script setup>
   import { reactive } from 'vue';
+  import { telusUi } from '@/styles/telusUi';
 
   const expandNavBar = () => {
     state.expand = !state.expand;
@@ -44,7 +45,7 @@
       :expand-on-hover="false"
       :rail="!state.expand"
       :key="state.expand"
-      color="#191A1C"
+      :color="telusUi.purple"
       rail-width="41"
       width="400"
       permanent
