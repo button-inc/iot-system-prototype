@@ -250,7 +250,7 @@
 
 
     <div class="my-6">
-      <span class="font-weight-bold">Result: {{ state.totalSensors }} </span>
+      <span class="font-weight-bold">Result: {{ state.totalSensors }} bin{{ state.totalSensors > 1 ? 's' : '' }}</span>
       displayed on map
     </div>
   </section>
