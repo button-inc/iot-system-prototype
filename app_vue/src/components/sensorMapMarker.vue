@@ -135,7 +135,6 @@
     flex-direction: column;
 
     @include smallScreens {
-      // width: 260px;
       margin: 0;
     }
 
