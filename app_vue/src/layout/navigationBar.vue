@@ -84,8 +84,8 @@
           Sign out
         </v-list-item>
 
-        <img src="@/assets/TELUS_LOGO.svg" alt="TELUS Logo">
       </v-list>
+      <img src="@/assets/TELUS_LOGO.svg" alt="TELUS Logo" class="bottom-logo">
 
     </v-navigation-drawer>
 
@@ -121,6 +121,15 @@
       align-items: flex-start;
       line-height: 16px;
     }
+  }
+
+  :deep .bottom-logo {
+    position: relative;
+    bottom: -250px;
+    left: 48%;
+    transform: translateX(-50%);
+    width: 310px;
+    height: 81.72px;
   }
 
   // custom css
