@@ -67,9 +67,10 @@
         <v-divider class="mt-3 mb-3"></v-divider>
 
         <div>
+          <img v-show="state.expand" src="@/assets/WAV_LOGO.svg" alt="WAV Logo" class="wav-logo">
           <v-list-item class="navbar-links__item user">
-            <span>John Doe</span>
-            <span>jdoe@acme.com</span>
+            <span>Peter Uppal</span>
+            <span>peteru@wavsmart.com</span>
           </v-list-item>
           <v-list-item class="navbar-links__item" link href="/" rounded>
             <vue-feather type="user"></vue-feather>
@@ -123,9 +124,16 @@
     }
   }
 
+  :deep .wav-logo {
+    position: relative;
+    width: 220px;
+    height: 50.18px;
+    left: 13%;
+  }
+
   :deep .bottom-logo {
     position: relative;
-    bottom: -250px;
+    bottom: -225px;
     left: 48%;
     transform: translateX(-50%);
     width: 310px;
