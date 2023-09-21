@@ -18,8 +18,9 @@ const getBinIconName = (sensor) => {
 
 export const getMaterialTypeIconURL = (materialType) => {
   const directory = 'src/assets/images/materialTypeIcons';
+  const genericMaterialIconPath = `${directory}/generic-material.svg`;
   if (!materialType) {
-    return 'src/assets/images/generic-material.png';
+    return genericMaterialIconPath;
   }
   const materialMap = {
     'Cardboard': `${directory}/cardboard.svg`, //confirmed
@@ -32,7 +33,7 @@ export const getMaterialTypeIconURL = (materialType) => {
     'Gas Oil': `${directory}/oil-drum.svg`,
     'Mixed waste': `${directory}/trash.svg`
   };
-  return materialMap[materialType] || 'src/assets/images/generic-material.png';
+  return materialMap[materialType] || genericMaterialIconPath;
 }
 
 // linearProgressColor -> used by Vuetify to determine progress bar color
