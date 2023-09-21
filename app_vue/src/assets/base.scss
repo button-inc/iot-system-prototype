@@ -1,7 +1,14 @@
 /* color palette from <https://github.com/vuejs/theme> */
+@font-face {
+  font-family: 'Inter';
+  src: url('@/assets/fonts/Inter.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: block;
+}
+
 @import './stylesheets/variables';
 @import './stylesheets/mixins';
-@import './stylesheets/fonts';
+
 
 *,
 *::before,
