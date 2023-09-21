@@ -53,7 +53,7 @@
       :class="{ 'expanded-drawer': state.expand }" 
     >
       <v-list class="navbar-icon" :class="{'navbar-icon__x': state.expand}" @click="expandNavBar">
-        <vue-feather v-show="!state.expand" type="align-justify"></vue-feather>
+        <div class="icon-wrapper"><vue-feather v-show="!state.expand" type="align-justify"></vue-feather></div>
         <vue-feather v-show="state.expand" type="x"></vue-feather>
       </v-list>
 
@@ -182,5 +182,23 @@
       margin-right: 8px;
     }
   }
+
+  .icon-wrapper {
+    position: relative;
+    display: inline-block; // To ensure the wrapper doesn't take full width
+
+    ::before {
+        content: ''; 
+        width: 8px; 
+        height: 8px;
+        background-color: red;
+        border-radius: 50%; // Makes it a circle
+        position: absolute;
+        top: 0;
+        right: 0;
+        transform: translate(10%, 10%); 
+        z-index: 1; 
+      }
+    }
   
 </style>
