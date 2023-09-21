@@ -56,7 +56,7 @@
     <div class="d-flex direction-row">
       <!-- bin data details -->
       <section class="bin-details">
-        <span class="text-h6">{{ props.sensor.bin_name }}</span>
+        <div class="text-h6 bin-details__bin-name">{{ props.sensor.bin_name }}</div>
         <div class="bin-details__address color-cyan-blue" v-if="props.sensor.address_line1 || props.sensor.address_line2">
           <span v-if="props.sensor.address_line1">{{ props.sensor.address_line1 }}</span>
           <span v-if="props.sensor.address_line2">{{ props.sensor.address_line2 }}</span>
@@ -147,6 +147,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
+      max-width: 80px;
     }
   }
   .fill-level {
@@ -190,6 +191,10 @@
     flex-direction: column;
     @include fontBody;
 
+    &__bin-name {
+      margin-bottom: 6px;
+    }
+
     &__volume_and_type {
       display: flex;
       flex-direction: row;
@@ -205,7 +210,7 @@
     &__address {
       display: flex;
       flex-direction: column;
-      margin: 6px 0;
+      margin-bottom: 6px;
       @include fontBodySmall;
     }
 
