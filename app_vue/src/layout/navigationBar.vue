@@ -50,6 +50,7 @@
       rail-width="41"
       width="400"
       permanent
+      :class="{ 'expanded-drawer': state.expand }" 
     >
       <v-list class="navbar-icon" :class="{'navbar-icon__x': state.expand}" @click="expandNavBar">
         <vue-feather v-show="!state.expand" type="align-justify"></vue-feather>
@@ -102,12 +103,9 @@
 
 <style lang="scss" scoped>
   // vuetify overrides
-  :deep #navigation {
+  :deep .expanded-drawer {
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
   }
 
   :deep .v-list.navbar-icon {
