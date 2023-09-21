@@ -1,7 +1,8 @@
 /* color palette from <https://github.com/vuejs/theme> */
+// custom font used globally, used in _variables $font-face
+@import './stylesheets/fonts';
 @import './stylesheets/variables';
 @import './stylesheets/mixins';
-@import './stylesheets/fonts';
 
 *,
 *::before,
@@ -11,6 +12,10 @@
   scroll-behavior: smooth;
   font-weight: normal;
   font-family: $font-face;
+}
+
+html.html-class {
+  overflow-y: auto;
 }
 
 a {

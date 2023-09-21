@@ -20,6 +20,7 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         additionalData: `
+          @import "@/assets/stylesheets/fonts";
           @import "@/assets/stylesheets/variables";
           @import "@/assets/stylesheets/mixins";
           @import "@/assets/stylesheets/functions";
