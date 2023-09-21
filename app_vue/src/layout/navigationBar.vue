@@ -85,7 +85,7 @@
         </v-list-item>
 
       </v-list>
-      <img src="@/assets/TELUS_LOGO.svg" alt="TELUS Logo" class="bottom-logo">
+      <img v-show="state.expand" src="@/assets/TELUS_LOGO.svg" alt="TELUS Logo" class="bottom-logo">
 
     </v-navigation-drawer>
 
