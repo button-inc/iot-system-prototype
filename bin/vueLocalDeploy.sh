@@ -24,7 +24,7 @@ sleep .5
 echo "looking up docker containers..."
 docker container ls -a
 sleep .5
-if [ "$( docker inspect --format '{{json .State.Running}}' real-fake-sensors )" = "true" ] && [ "$( docker inspect --format '{{json .State.Running}}' sensational-sensors )" = "true" ];
+if [ "$( docker inspect --format '{{json .State.Running}}' api )" = "true" ];
 then 
     echo "docker is running, continuing execution..."
 else
