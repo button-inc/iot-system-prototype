@@ -98,6 +98,11 @@
 
 <style lang="scss" scoped>
   // vuetify overrides
+  :deep #navigation {
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+  }
+
   :deep .v-list.navbar-icon {
     padding: 14px 0;
   }
@@ -129,6 +134,7 @@
     width: 220px;
     height: 50.18px;
     left: 13%;
+    margin-bottom: 5px;
   }
 
   :deep .bottom-logo {
