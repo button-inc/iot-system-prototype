@@ -83,6 +83,8 @@
           <vue-feather type="log-out"></vue-feather>
           Sign out
         </v-list-item>
+
+        <img src="@/assets/TELUS_LOGO.svg" alt="TELUS Logo">
       </v-list>
 
     </v-navigation-drawer>
