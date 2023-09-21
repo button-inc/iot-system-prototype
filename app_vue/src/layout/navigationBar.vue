@@ -15,7 +15,12 @@
         featherIcon: 'map'
       },
       {
-        text: 'Route History',
+        text: 'Reports',
+        href: '/',
+        featherIcon: 'pie-chart'
+      },
+      {
+        text: 'Collection Schedules',
         href: '/',
         featherIcon: 'truck'
       },
@@ -24,11 +29,7 @@
         href: '/',
         featherIcon: 'database'
       },
-      {
-        text: 'Reports',
-        href: '/',
-        featherIcon: 'pie-chart'
-      },
+      
       {
         text: 'Settings',
         href: '/',
@@ -73,20 +74,23 @@
             <span>peteru@wavsmart.com</span>
           </v-list-item>
           <v-list-item class="navbar-links__item" link href="/" rounded>
-            <vue-feather type="user"></vue-feather>
-            Profile
+            <vue-feather type="users" />
+            Account
           </v-list-item>
         </div>
 
         <v-divider class="mt-3 mb-3"></v-divider>
 
-        <v-list-item class="navbar-links__item" link href="/" rounded>
+      </v-list>
+      
+      <div v-show="state.expand"  id="bottom-section">
+        <v-list-item class="navbar-links__item" link href="/" rounded >
           <vue-feather type="log-out"></vue-feather>
           Sign out
         </v-list-item>
-
-      </v-list>
-      <img v-show="state.expand" src="@/assets/TELUS_LOGO.svg" alt="TELUS Logo" class="bottom-logo">
+        <v-divider class="mt-3 mb-3" />
+        <img v-show="state.expand" src="@/assets/TELUS_LOGO.svg" alt="TELUS Logo" class="bottom-logo">
+      </div>
 
     </v-navigation-drawer>
 
@@ -101,6 +105,9 @@
   :deep #navigation {
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
 
   :deep .v-list.navbar-icon {
@@ -138,12 +145,18 @@
   }
 
   :deep .bottom-logo {
-    position: relative;
-    bottom: -225px;
     left: 48%;
-    transform: translateX(-50%);
     width: 310px;
     height: 81.72px;
+  }
+
+  :deep #bottom-section {
+    position: relative;
+    margin-top: 55%;
+    width: 82%;
+    left: 10%;
+
+
   }
 
   // custom css
