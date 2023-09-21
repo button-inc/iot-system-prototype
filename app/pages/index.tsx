@@ -61,12 +61,6 @@ const Home: NextPage = () => {
     for (const sensorId in responseJson.brighterBins) {
       sensorsArray.push(responseJson.brighterBins[sensorId]);
     }
-    for (const sensorId in responseJson.realFakeSensors) {
-      sensorsArray.push(responseJson.realFakeSensors[sensorId]);
-    }
-    for (const sensorId in responseJson.sensationalSensors) {
-      sensorsArray.push(responseJson.sensationalSensors[sensorId]);
-    }
     setSensors(sensorsArray);
   }, []);
 

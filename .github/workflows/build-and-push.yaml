@@ -21,14 +21,6 @@ jobs:
             name: api
             build-args: |
               "BB_TOKEN=${{ secrets.BB_TOKEN }}"
-          - image: ghcr.io/button-inc/iot-system-prototype/real_fake_sensors
-            context: .
-            dockerfile: real_fake_sensors/Dockerfile
-            name: realFakeSensors
-          - image: ghcr.io/button-inc/iot-system-prototype/sensational_sensors
-            context: .
-            dockerfile: sensational_sensors/Dockerfile
-            name: sensationalSensors
     name: Build ${{ matrix.name }} docker image
     steps:
       - uses: actions/checkout@v3

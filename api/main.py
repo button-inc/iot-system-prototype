@@ -36,14 +36,6 @@ tkl_username = os.environ.get("TEKELEK_USERNAME")
 # 📚 Authenticate with Google Sheets service account
 sa = gspread.service_account(filename="google_sheets_sa_key.json")
 
-# 🌎 Set base URLs based on the environment
-if env == "prod":
-    REAL_FAKE_SENSORS_BASE_URL = "http://real-fake-sensors:8081"
-    SENSATIONAL_SENSORS_BASE_URL = "http://sensational-sensors:8082"
-else:
-    REAL_FAKE_SENSORS_BASE_URL = "http://localhost:8081"
-    SENSATIONAL_SENSORS_BASE_URL = "http://localhost:8082"
-
 # 🚀 Initialize FastAPI application
 app = FastAPI()
 
@@ -51,10 +43,6 @@ app = FastAPI()
 origins = [
     "http://localhost:5173",
     "http://localhost:3000",
-    "http://localhost:8081",
-    "http://localhost:8082",
-    "http://0.0.0.0:8081",
-    "http://0.0.0.0:8082",
     "http://wav.button.build",
     "http://34.123.69.225/",
     "http://34.123.69.225:80",
@@ -93,35 +81,6 @@ class BasicSensor(BaseModel):
     group: str | None
     bin_type: str
     material_type: str
-    asset_tag: str
-    bin_volume: str
-
-
-# 📝 Model to represent a RealFakeSensor
-class RealFakeSensor(BaseModel):
-    sensorsID: str
-    sensorCompany: str
-    sensorDeviceID: int
-    firmwareVersion: str
-    clientId: int
-    simCardNumber: str
-    connectivityProvider: str
-    latest_sensors_data: dict | None
-    latitude: float
-    longitude: float
-    asset_tag: str
-    bin_volume: str
-
-
-# 📝 Model to represent a SensationalSensor
-class SensationalSensor(BaseModel):
-    id: str
-    sensor_type: SensorType
-    fill_level: int
-    sim: str
-    lat: float
-    long: float
-    man: str
     asset_tag: str
     bin_volume: str
 
@@ -188,72 +147,6 @@ class TekelekSensor(BaseModel):
     AddressLine1: Optional[str] = (None,)
     AddressLine2: Optional[str] = (None,)
     PercentFull: Optional[float] = None
-
-
-# 🔧 Function to convert RealFakeSensor to BasicSensor
-def rfs_to_bs(sensor: RealFakeSensor) -> BasicSensor:
-    return BasicSensor(
-        id=sensor["sensorsID"],
-        sensor_type=SensorType.LIQUID_BIN_LEVEL,
-        fill_level=sensor["latest_sensors_data"]["level"]
-        if sensor["latest_sensors_data"]
-        else None,
-        lat=sensor["latitude"],
-        long=sensor["longitude"],
-        manufacturer=sensor["sensorCompany"],
-        bin_name=sensor["bin_name"],
-        address_line1=sensor["address_line1"],
-        address_line2=sensor["address_line2"],
-        group=sensor["group"],
-        bin_type=sensor["bin_type"],
-        material_type=sensor["material_type"],
-        asset_tag=sensor["asset_tag"],
-        bin_volume=sensor["bin_volume"],
-    )
-
-
-# 🔧 Function to convert RealFakeSensor dictionary to BasicSensor list
-def rfs_dict_to_bs_list(
-    sensors: dict[str, RealFakeSensor | None]
-) -> list[BasicSensor | None]:
-    bs_list = []
-    for index, sensor_id in enumerate(sensors):
-        if sensor_id in sensors:
-            bs_list.append(rfs_to_bs(sensors[sensor_id]))
-
-    return bs_list
-
-
-# 🔧 Function to convert SensationalSensor to BasicSensor
-def sensational_sensor_to_basic_sensor(sensor: SensationalSensor) -> BasicSensor:
-    return BasicSensor(
-        id=sensor["id"],
-        sensor_type=SensorType.SOLID_BIN_LEVEL,
-        fill_level=sensor["fill_level"] if sensor["fill_level"] else None,
-        lat=sensor["lat"],
-        long=sensor["long"],
-        manufacturer=sensor["man"],
-        bin_name=sensor["bin_name"],
-        address_line1=sensor["address_line1"],
-        address_line2=sensor["address_line2"],
-        group=sensor["group"],
-        bin_type=sensor["bin_type"],
-        material_type=sensor["material_type"],
-        asset_tag=sensor["asset_tag"],
-        bin_volume=sensor["bin_volume"],
-    )
-
-
-# 🔧 Function to convert SensationalSensor dictionary to BasicSensor list
-def ss_dict_to_bs_list(
-    sensors: dict[str, SensationalSensor | None]
-) -> list[BasicSensor | None]:
-    bs_list = []
-    for index, sensor_id in enumerate(sensors):
-        if sensor_id in sensors:
-            bs_list.append(sensational_sensor_to_basic_sensor(sensors[sensor_id]))
-
-    return bs_list
 
 
 # 🔧 Function to convert TekelekSensor to BasicSensor
@@ -442,27 +335,9 @@ def make_http_request(url, method="GET", headers=None, params=None, data=None):
 
 
 # Caches for sensor data
-rfs_cache = []
-ss_cache = []
 bb_cache = {}
-last_run_timestamp = 0
 tkl_cache = {}
-
-
-#  🤖 Event handler: Populate rfs_cache and ss_cache with initial data on start up
-@app.on_event("startup")
-def set_rfs_and_ss_cache():
-    global rfs_cache
-    global ss_cache
-    # Convert the sensors to the common "BasicSensor" type and cache their values
-    # rfs and ss are mock so they have a simple case, we can fetch once and never again, they won't change.
-    rfs_response = requests.get(REAL_FAKE_SENSORS_BASE_URL + "/sensors").json()
-    rfs_as_bs = rfs_dict_to_bs_list(rfs_response)
-    rfs_cache = rfs_as_bs
-    # print(f"rfs_cache: {rfs_cache}")
-    ss_response = requests.get(SENSATIONAL_SENSORS_BASE_URL + "/sensors").json()
-    ss_cache = ss_dict_to_bs_list(ss_response)
-    return
+last_run_timestamp = 0
 
 
 #  🤖 Event handler: Populate Tekelek data in tkl_cache with initial data on start up
@@ -611,8 +486,6 @@ def update_bb_cache() -> None:
 # 🚀 API endpoint: Get the latest readings from all types of sensors
 @app.get("/latest_readings")
 def get_latest_readings():
-    global rfs_cache
-    global ss_cache
     global bb_cache
     global tkl_cache
 
@@ -626,7 +499,7 @@ def get_latest_readings():
     for index, sensor in enumerate(tkl_cache):
         tkl_readings.append(tkl_cache[sensor])
 
-    latest_readings = bb_readings + tkl_readings + rfs_cache + ss_cache
+    latest_readings = bb_readings + tkl_readings
     # latest_readings = filter_nulls(latest_readings)
     return {"sensors": latest_readings}
 
