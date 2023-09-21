@@ -23,15 +23,20 @@ export const getMaterialTypeIconURL = (materialType) => {
     return genericMaterialIconPath;
   }
   const materialMap = {
-    'Cardboard': `${directory}/cardboard.svg`, //confirmed
-    'Plastic': `${directory}/plastic.svg`, // confirmed
-    'Compost': `${directory}/compost.svg`, // confirmed
-    'Diesel': `${directory}/oil-drum.svg`,
-    'Dyed Diesel': `${directory}/oil-drum.svg`,
-    'Kerosene': `${directory}/oil-drum.svg`,
-    'Water': `${directory}/plastic.svg`, // TODO: confirm water icon
-    'Gas Oil': `${directory}/oil-drum.svg`,
-    'Mixed waste': `${directory}/trash.svg`
+    'Cardboard': `${directory}/cardboard.svg`,
+    'Plastic': `${directory}/plastic.svg`,
+    'Compost': `${directory}/compost.svg`,
+    'Garbage': `${directory}/garbage.svg`,
+    'Mixed Recyclables': `${directory}/mixed_recyclables.svg`,
+    'Paper': `${directory}/paper.svg`,
+    'Mixed Containers': `${directory}/mixed_containers.svg`,
+    'Glass, Metal, Plastic': `${directory}/glass_metal_plastic.svg`,
+    'Soft Plastic': `${directory}/soft_plastic.svg`,
+    'WTE': `${directory}/wte.svg`,
+    'Shredding': `${directory}/shredding.svg`,
+    'Scrap Metal': `${directory}/scrap_metal.svg`,
+    'Wood': `${directory}/wood.svg`,
+    'Construction Waste': `${directory}/construction_waste.svg`,
   };
   return materialMap[materialType] || genericMaterialIconPath;
 }
