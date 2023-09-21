@@ -55,7 +55,6 @@
 
   function updateStartAddress(value) {
     state.startAddressOptions.push(value);
-    
   }
 
   function updateStartPoint(value) {
