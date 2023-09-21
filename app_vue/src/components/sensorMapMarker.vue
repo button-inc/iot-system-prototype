@@ -59,8 +59,13 @@
         <span class="text-h6">{{ props.sensor.bin_name }}</span>
         <div class="bin-details__address color-cyan-blue" v-if="props.sensor.address_line1 || props.sensor.address_line2">
           <span v-if="props.sensor.address_line1">{{ props.sensor.address_line1 }}</span>
-          <br v-if="props.sensor.address_line1 && props.sensor.address_line2" />
           <span v-if="props.sensor.address_line2">{{ props.sensor.address_line2 }}</span>
+          <div>
+            <span v-if="props.sensor.city">{{ props.sensor.city }}</span>
+            <span v-if="props.sensor.province || props.sensor.postal_code">,</span>
+            <span v-if="props.sensor.province">{{ ' ' + props.sensor.province }}</span>
+            <span v-if="props.sensor.postal_code">{{ ' ' + props.sensor.postal_code }}</span>
+          </div>
         </div>
         <div class="bin-details__group" v-if="props.sensor.group">
           <span class="color-gray-grey">Group</span>
@@ -198,6 +203,8 @@
     }
 
     &__address {
+      display: flex;
+      flex-direction: column;
       margin: 6px 0;
       @include fontBodySmall;
     }
