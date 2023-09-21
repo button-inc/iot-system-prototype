@@ -170,7 +170,7 @@
 <template>
   <section class="filter-list">
     <div class="filter-list__heading">
-      <div class="d-flex align-center">
+      <div class="align-center">
         <span class="filter-list__title">Filter ({{ getFilterCount() }})</span> 
         <span class="mx-3">|</span>
         <v-btn variant="plain" color="#2196F3" class="pa-0 pt-1 text-capitalize" @click="clearFilters">Clear</v-btn>
