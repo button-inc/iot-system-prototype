@@ -168,7 +168,7 @@
   :deep .leaflet-popup-content-wrapper {
     width: 300px;
     height: 300px;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
 
     @include smallScreens {
