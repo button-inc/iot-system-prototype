@@ -103,6 +103,10 @@
 
 <style lang="scss" scoped>
   // vuetify overrides
+  :deep #navigation {
+    position: relative; // Ensure this is set
+  }
+
   :deep .expanded-drawer {
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
@@ -149,12 +153,10 @@
   }
 
   :deep #bottom-section {
-    position: relative;
-    margin-top: 55%;
+    position: absolute;
+    bottom: 5%; 
     width: 82%;
     left: 10%;
-
-
   }
 
   // custom css
