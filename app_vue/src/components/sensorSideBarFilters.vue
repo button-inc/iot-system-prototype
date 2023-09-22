@@ -251,7 +251,7 @@
     </section>
 
 
-    <div class="my-6">
+    <div class="mb-6">
       <span class="font-weight-bold">Result: {{ state.totalSensors }} bin{{ state.totalSensors > 1 ? 's' : '' }}</span>
       displayed on map
     </div>
@@ -285,6 +285,10 @@
   .filter-list {
     width: 100%;
 
+    &__fields {
+      margin-bottom: 20px;
+    }
+    
     &__heading {
       display: flex;
       align-items: center;
