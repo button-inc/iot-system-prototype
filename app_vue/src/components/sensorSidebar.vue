@@ -96,7 +96,7 @@
     min-width: 204px;
     width: 100%;
     justify-content: flex-start;
-    padding: 24px 0 0 0;
+    padding: 28px 0 0 0;
     @include fontBodySmall;
 
     &__icon {
