@@ -292,7 +292,7 @@
     &__heading {
       display: flex;
       align-items: center;
-      padding-bottom: 30px;
+      padding-bottom: 24px;
       justify-content: space-between;
       flex-direction: column;
       @include fontHeading6;
