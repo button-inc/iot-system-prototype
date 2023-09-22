@@ -53,67 +53,78 @@
   <l-icon :icon-size="[19, 23]" :icon-anchor="[10, 18]" :icon-url="iconUrl" />
 
   <l-popup class="popup">
-    <section class="bin-details">
-      <span class="text-h6">{{ props.sensor.bin_name }}</span>
-      <div class="bin-details__address color-cyan-blue" v-if="props.sensor.address_line1 || props.sensor.address_line2">
-        <span v-if="props.sensor.address_line1">{{ props.sensor.address_line1 }}</span>
-        <br v-if="props.sensor.address_line1 && props.sensor.address_line2" />
-        <span v-if="props.sensor.address_line2">{{ props.sensor.address_line2 }}</span>
-      </div>
-      <div class="bin-details__group" v-if="props.sensor.group">
-        <span class="color-gray-grey">Group</span>
-        {{ props.sensor.group }}
-      </div>
-      <div class="bin-details__volume_and_type">
-        <div class="bin-details__bin-volume" v-if="props.sensor.bin_volume">
-          <span class="color-gray-grey">Bin Volume </span>
-          {{ props.sensor.bin_volume }}
+    <div class="d-flex direction-row">
+      <!-- bin data details -->
+      <section class="bin-details">
+        <div class="text-h6 bin-details__bin-name">{{ props.sensor.bin_name }}</div>
+        <div class="bin-details__address color-cyan-blue" v-if="props.sensor.address_line1 || props.sensor.address_line2">
+          <span v-if="props.sensor.address_line1">{{ props.sensor.address_line1 }}</span>
+          <span v-if="props.sensor.address_line2">{{ props.sensor.address_line2 }}</span>
+          <div>
+            <span v-if="props.sensor.city">{{ props.sensor.city }}</span>
+            <span v-if="props.sensor.province || props.sensor.postal_code">,</span>
+            <span v-if="props.sensor.province">{{ ' ' + props.sensor.province }}</span>
+            <span v-if="props.sensor.postal_code">{{ ' ' + props.sensor.postal_code }}</span>
+          </div>
         </div>
-        <div class="bin-details__bin-type" v-if="props.sensor.bin_type && props.sensor.bin_type.length">
-          <span class="color-gray-grey">Bin Type</span>
-          {{ props.sensor.bin_type }}
+        <div class="bin-details__group" v-if="props.sensor.group">
+          <span class="color-gray-grey">Group</span>
+          {{ props.sensor.group }}
         </div>
-      </div>
-      <div class="bin-details__tag-list" v-if="props.sensor.asset_tag && props.sensor.asset_tag.length">
-        <span class="bin-details__tag-list-text">Tags</span>
-        <span class="bin-details__tag">{{ props.sensor.asset_tag }}</span>
-      </div>
-      <div class="bin-details__cta-routes" v-if="isRouteCreated">
-        <v-btn variant="flat"
-          class="mt-2 mb-2"
-          color="#191A1C"
-          :disabled="isAlreadyInRoute"
-          @click="addBinToRoute(props.sensor)">
-          + Add to route
-        </v-btn>
-        <v-btn variant="tonal" v-if="isAlreadyInRoute"
-          class="mt-2 mb-2"
-          @click="removeBinFromRoute(props.sensor)">
-          - Remove from route
-        </v-btn>
-      </div>
-    </section>
+        <div class="bin-details__volume_and_type">
+          <div class="bin-details__bin-volume" v-if="props.sensor.bin_volume">
+            <span class="color-gray-grey">Bin Volume </span>
+            {{ props.sensor.bin_volume }}
+          </div>
+          <div class="bin-details__bin-type" v-if="props.sensor.bin_type && props.sensor.bin_type.length">
+            <span class="color-gray-grey">Bin Type</span>
+            {{ props.sensor.bin_type }}
+          </div>
+        </div>
+        <div class="bin-details__tag-list" v-if="props.sensor.asset_tag && props.sensor.asset_tag.length">
+          <span class="bin-details__tag-list-text">Tags</span>
+          <span class="bin-details__tag">{{ props.sensor.asset_tag }}</span>
+        </div>
+      </section>
 
-    <section class="popup__sidebar">
-      <div class="fill-level">
-        <template v-if="fillPercent === null">level not captured</template>
-        <template v-else>
-          <span class="fill-level__percent">{{ fillPercent }}% </span>
-          <v-progress-linear class="fill-level__progress-bar" 
-            style="width:100px; height: 20px; transform: rotate(270deg); top: unset; left: unset;"
-            :model-value="fillPercent" 
-            :color="linearProgressColor" 
-            :max="100">
-          </v-progress-linear>
-          <div class="fill-level__text">Fill level</div>
-        </template>
-      </div>
+      <section class="popup__sidebar">
+        <div class="fill-level">
+          <template v-if="fillPercent === null">level not captured</template>
+          <template v-else>
+            <span class="fill-level__percent">{{ fillPercent }}% </span>
+            <v-progress-linear class="fill-level__progress-bar" 
+              style="width:100px; height: 20px; transform: rotate(270deg); top: unset; left: unset;"
+              :model-value="fillPercent" 
+              :color="linearProgressColor" 
+              :max="100">
+            </v-progress-linear>
+            <div class="fill-level__text">Fill level</div>
+          </template>
+        </div>
 
-      <div class="material-type">
-        <v-img class="material-type__image" :src="getMaterialTypeIconURL(props.sensor.material_type)" width="40" height="40" />
-        <!-- <img class="material-type__image" :src="getMaterialTypeIconURL(props.sensor.material_type)"/> -->
-        <span class="material-type__description">{{ props.sensor.material_type }}</span>
-      </div>
+        <div class="material-type">
+          <v-img class="material-type__image" :src="getMaterialTypeIconURL(props.sensor.material_type)" width="40" height="40" />
+          <!-- <img class="material-type__image" :src="getMaterialTypeIconURL(props.sensor.material_type)"/> -->
+          <span class="material-type__description">{{ props.sensor.material_type }}</span>
+        </div>
+      </section>
+    </div>
+
+
+    <!-- add to route buttons -->
+    <section class="bin-details__cta-routes" v-if="isRouteCreated">
+      <v-btn variant="flat"
+        class="mt-2 mb-2"
+        color="#191A1C"
+        :disabled="isAlreadyInRoute"
+        @click="addBinToRoute(props.sensor)">
+        + Add to route
+      </v-btn>
+      <v-btn variant="tonal" v-if="isAlreadyInRoute"
+        class="mt-2 mb-2"
+        @click="removeBinFromRoute(props.sensor)">
+        - Remove from route
+      </v-btn>
     </section>
   </l-popup>
 </template>
@@ -124,16 +135,19 @@
   .popup {
     display: flex;
     align-items: flex-start;
-    width: 250px;
+    justify-content: center;
+    margin: 20px;
+    flex-direction: column;
 
     @include smallScreens {
-      width: inherit;
+      margin: 0;
     }
 
     &__sidebar {
       display: flex;
       flex-direction: column;
       gap: 10px;
+      max-width: 80px;
     }
   }
   .fill-level {
@@ -177,6 +191,10 @@
     flex-direction: column;
     @include fontBody;
 
+    &__bin-name {
+      margin-bottom: 6px;
+    }
+
     &__volume_and_type {
       display: flex;
       flex-direction: row;
@@ -190,7 +208,9 @@
     }
 
     &__address {
-      margin: 6px 0;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 6px;
       @include fontBodySmall;
     }
 
@@ -221,11 +241,9 @@
       @include fontSubTitle2;
     }
 
+    &__cta-routes,
     &__cta-routes button {
-      width: 184px;
-      @include smallScreens {
-        width: 224px;
-      }
+      width: 100%;
     }
   }
 </style>
