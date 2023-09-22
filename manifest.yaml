@@ -1,0 +1,253 @@
+################################################################################
+# IOT API
+################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  labels:
+    app: api
+spec:
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+      - name: api
+        env:
+        - name: ENVIRONMENT
+          value: prod
+        image: ghcr.io/button-inc/iot-system-prototype/api:latest
+        resources:
+          requests:
+            cpu: "5m"
+            memory: "8Mi"
+          limits:
+            cpu: "10m"
+            memory: "32Mi"
+        ports:
+          - containerPort: 8080
+      imagePullSecrets:
+      - name: ghcr-login-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  labels:
+    app: api
+    service: api
+spec:
+  selector:
+    app: api
+  ports:
+  - port: 8080
+    name: "8080"
+    targetPort: 8080
+---
+################################################################################
+# IOT APP
+################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  labels:
+    app: app
+spec:
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: app
+        image: ghcr.io/button-inc/iot-system-prototype/app:latest
+        resources:
+          requests:
+            cpu: "5m"
+            memory: "8Mi"
+          limits:
+            cpu: "10m"
+            memory: "64Mi"
+        ports:
+          - containerPort: 3000
+        env:
+          - name: NEXT_PUBLIC_API_HOST
+            value: "http://34.95.61.243/iot/sensor-api"
+      imagePullSecrets:
+      - name: ghcr-login-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app
+  labels:
+    app: app
+    service: app
+spec:
+  selector:
+    app: app
+  ports:
+  - port: 80
+    name: "http"
+    targetPort: 3000
+---
+################################################################################
+# REAL FAKE SENSORS API 
+################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: real-fake-sensors
+  labels:
+    app: real-fake-sensors
+spec:
+  selector:
+    matchLabels:
+      app: real-fake-sensors
+  template:
+    metadata:
+      labels:
+        app: real-fake-sensors
+    spec:
+      containers:
+      - name: real-fake-sensors
+        image: ghcr.io/button-inc/iot-system-prototype/real_fake_sensors:latest
+        resources:
+          requests:
+            cpu: "5m"
+            memory: "8Mi"
+          limits:
+            cpu: "10m"
+            memory: "32Mi"
+        ports:
+          - containerPort: 8081
+      imagePullSecrets:
+      - name: ghcr-login-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: real-fake-sensors
+  labels:
+    app: real-fake-sensors
+    service: real-fake-sensors
+spec:
+  selector:
+    app: real-fake-sensors
+  ports:
+  - port: 8081
+    name: "8081"
+    targetPort: 8081
+---
+################################################################################
+# SENSATIONAL SENSORS API 
+################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sensational-sensors
+  labels:
+    app: sensational-sensors
+spec:
+  selector:
+    matchLabels:
+      app: sensational-sensors
+  template:
+    metadata:
+      labels:
+        app: sensational-sensors
+    spec:
+      containers:
+      - name: sensational-sensors
+        image: ghcr.io/button-inc/iot-system-prototype/sensational_sensors:latest
+        resources:
+          requests:
+            cpu: "5m"
+            memory: "8Mi"
+          limits:
+            cpu: "10m"
+            memory: "32Mi"
+        ports:
+          - containerPort: 8082
+      imagePullSecrets:
+      - name: ghcr-login-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sensational-sensors
+  labels:
+    app: sensational-sensors
+    service: sensational-sensors
+spec:
+  selector:
+    app: sensational-sensors
+  ports:
+  - port: 8082
+    name: "8082"
+    targetPort: 8082
+---
+################################################################################
+# ISTIO INGRESS GATEWAY
+# Istio already handles the internal routing/dns, this exposes specific services
+# to the web.
+################################################################################
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: iot-gateway
+spec:
+  selector:
+    istio: ingress
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: iot-service-routing
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - iot-gateway
+  # double the matching URIs to properly handle rewriting to root on the destination services
+  http:
+  - match:
+    - uri:
+        prefix: /iot/sensor-api/
+    - uri:
+        exact: /iot/sensor-api
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        port:
+          number: 8080
+        host: api
+  - match:
+    - uri:
+        exact: /iot/
+    - uri:
+        exact: /iot
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        port:
+          number: 80
+        host: app
