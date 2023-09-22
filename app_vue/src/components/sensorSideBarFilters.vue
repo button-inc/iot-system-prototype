@@ -170,7 +170,7 @@
 <template>
   <section class="filter-list">
     <div class="filter-list__heading">
-      <div class="align-center">
+      <div class="d-flex align-center">
         <span class="filter-list__title">Filter ({{ getFilterCount() }})</span> 
         <span class="mx-3">|</span>
         <v-btn variant="plain" color="#2196F3" class="pa-0 pt-1 text-capitalize" @click="clearFilters">Clear</v-btn>
@@ -292,7 +292,7 @@
     &__heading {
       display: flex;
       align-items: center;
-      padding-bottom: 30px;
+      padding-bottom: 24px;
       justify-content: space-between;
       flex-direction: column;
       @include fontHeading6;
@@ -308,10 +308,6 @@
 
     &__label {
       @include fontBody;
-    }
-
-    &__title {
-      min-width: 164px;
     }
 
     .v-btn {
