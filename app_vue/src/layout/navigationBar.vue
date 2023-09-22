@@ -59,39 +59,42 @@
 
       <v-list v-show="state.expand" class="navbar-links" density="compact" nav>
 
-        <template v-for="link in state.links" :key="link.text">
-          <v-list-item class="navbar-links__item" link :href="link.href" rounded>
-            <vue-feather :type="link.featherIcon"></vue-feather>
-            {{  link.text }}
-          </v-list-item>
-        </template>
-
-        <v-divider class="mt-3 mb-3"></v-divider>
-
         <div>
-          <img v-show="state.expand" src="@/assets/WAV_LOGO.svg" alt="WAV Logo" class="wav-logo">
-          <v-list-item class="navbar-links__item user">
-            <span>Peter Uppal</span>
-            <span>peteru@wavsmart.com</span>
-          </v-list-item>
-          <v-list-item class="navbar-links__item" link href="/" rounded>
-            <vue-feather type="users" />
-            Account
-          </v-list-item>
+          <template v-for="link in state.links" :key="link.text">
+            <v-list-item class="navbar-links__item" link :href="link.href" rounded>
+              <vue-feather :type="link.featherIcon"></vue-feather>
+              {{  link.text }}
+            </v-list-item>
+          </template>
+
+          <v-divider class="mt-3 mb-3"></v-divider>
+
+          <div>
+            <img v-show="state.expand" src="@/assets/WAV_LOGO.svg" alt="WAV Logo" class="wav-logo">
+            <v-list-item class="navbar-links__item user">
+              <span>Peter Uppal</span>
+              <span>peteru@wavsmart.com</span>
+            </v-list-item>
+            <v-list-item class="navbar-links__item" link href="/" rounded>
+              <vue-feather type="users" />
+              Account
+            </v-list-item>
+          </div>
+
+          <v-divider class="mt-3 mb-3"></v-divider>
         </div>
 
-        <v-divider class="mt-3 mb-3"></v-divider>
+
+        <div v-show="state.expand">
+          <v-list-item class="navbar-links__item" link href="/" rounded >
+            <vue-feather type="log-out"></vue-feather>
+            Sign out
+          </v-list-item>
+          <v-divider class="mt-3 mb-3" />
+          <img v-show="state.expand" src="@/assets/TELUS_LOGO.svg" alt="TELUS Logo" class="bottom-logo">
+        </div>
 
       </v-list>
-      
-      <div v-show="state.expand"  id="bottom-section">
-        <v-list-item class="navbar-links__item" link href="/" rounded >
-          <vue-feather type="log-out"></vue-feather>
-          Sign out
-        </v-list-item>
-        <v-divider class="mt-3 mb-3" />
-        <img v-show="state.expand" src="@/assets/TELUS_LOGO.svg" alt="TELUS Logo" class="bottom-logo">
-      </div>
 
     </v-navigation-drawer>
 
@@ -138,7 +141,15 @@
     }
   }
 
-  :deep .wav-logo {
+  // custom css
+  .navbar-links {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: calc(100% - 52px);
+  }
+
+  .wav-logo {
     position: relative;
     width: 220px;
     height: 50.18px;
@@ -146,20 +157,12 @@
     margin-bottom: 5px;
   }
 
-  :deep .bottom-logo {
+  .bottom-logo {
     left: 48%;
     width: 310px;
     height: 81.72px;
   }
 
-  :deep #bottom-section {
-    position: absolute;
-    bottom: 5%; 
-    width: 82%;
-    left: 10%;
-  }
-
-  // custom css
   .navigation-overlay {
     background-color: black;
     opacity: 0.2;
