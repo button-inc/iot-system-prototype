@@ -70,7 +70,7 @@
           <v-divider class="mt-3 mb-3"></v-divider>
 
           <div>
-            <img v-show="state.expand" src="@/assets/WAV_LOGO.svg" alt="WAV Logo" class="wav-logo">
+            <img v-show="state.expand" src="@/assets/WASTECO_LOGO.svg" alt="WASTECO Logo" class="wasteco-logo">
             <v-list-item class="navbar-links__item user">
               <span>Peter Uppal</span>
               <span>peteru@wavsmart.com</span>
@@ -149,10 +149,11 @@
     height: calc(100% - 52px);
   }
 
-  .wav-logo {
+
+  .wasteco-logo {
     position: relative;
-    width: 220px;
-    height: 50.18px;
+    width: 196px;
+    height: 23px;
     left: 13%;
     margin-bottom: 5px;
   }
