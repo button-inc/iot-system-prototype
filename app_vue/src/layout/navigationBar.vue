@@ -1,5 +1,6 @@
 <script setup>
   import { reactive } from 'vue';
+  import { telusUi } from '@/styles/telusUi';
 
   const expandNavBar = () => {
     state.expand = !state.expand;
@@ -14,7 +15,12 @@
         featherIcon: 'map'
       },
       {
-        text: 'Route History',
+        text: 'Reports',
+        href: '/',
+        featherIcon: 'pie-chart'
+      },
+      {
+        text: 'Collection Schedules',
         href: '/',
         featherIcon: 'truck'
       },
@@ -23,11 +29,7 @@
         href: '/',
         featherIcon: 'database'
       },
-      {
-        text: 'Reports',
-        href: '/',
-        featherIcon: 'pie-chart'
-      },
+      
       {
         text: 'Settings',
         href: '/',
@@ -44,44 +46,54 @@
       :expand-on-hover="false"
       :rail="!state.expand"
       :key="state.expand"
-      color="#191A1C"
+      :color="telusUi.purple"
       rail-width="41"
       width="400"
       permanent
+      :class="{ 'expanded-drawer': state.expand }" 
     >
       <v-list class="navbar-icon" :class="{'navbar-icon__x': state.expand}" @click="expandNavBar">
-        <vue-feather v-show="!state.expand" type="align-justify"></vue-feather>
+        <div class="icon-wrapper"><vue-feather v-show="!state.expand" type="align-justify"></vue-feather></div>
         <vue-feather v-show="state.expand" type="x"></vue-feather>
       </v-list>
 
       <v-list v-show="state.expand" class="navbar-links" density="compact" nav>
 
-        <template v-for="link in state.links" :key="link.text">
-          <v-list-item class="navbar-links__item" link :href="link.href" rounded>
-            <vue-feather :type="link.featherIcon"></vue-feather>
-            {{  link.text }}
-          </v-list-item>
-        </template>
-
-        <v-divider class="mt-3 mb-3"></v-divider>
-
         <div>
-          <v-list-item class="navbar-links__item user">
-            <span>John Doe</span>
-            <span>jdoe@acme.com</span>
-          </v-list-item>
-          <v-list-item class="navbar-links__item" link href="/" rounded>
-            <vue-feather type="user"></vue-feather>
-            Profile
-          </v-list-item>
+          <template v-for="link in state.links" :key="link.text">
+            <v-list-item class="navbar-links__item" link :href="link.href" rounded>
+              <vue-feather :type="link.featherIcon"></vue-feather>
+              {{  link.text }}
+            </v-list-item>
+          </template>
+
+          <v-divider class="mt-3 mb-3"></v-divider>
+
+          <div>
+            <img v-show="state.expand" src="@/assets/WASTECO_LOGO.svg" alt="WASTECO Logo" class="wasteco-logo">
+            <v-list-item class="navbar-links__item user">
+              <span>Peter Uppal</span>
+              <span>peteru@wavsmart.com</span>
+            </v-list-item>
+            <v-list-item class="navbar-links__item" link href="/" rounded>
+              <vue-feather type="users" />
+              Account
+            </v-list-item>
+          </div>
+
+          <v-divider class="mt-3 mb-3"></v-divider>
         </div>
 
-        <v-divider class="mt-3 mb-3"></v-divider>
 
-        <v-list-item class="navbar-links__item" link href="/" rounded>
-          <vue-feather type="log-out"></vue-feather>
-          Sign out
-        </v-list-item>
+        <div v-show="state.expand">
+          <v-list-item class="navbar-links__item" link href="/" rounded >
+            <vue-feather type="log-out"></vue-feather>
+            Sign out
+          </v-list-item>
+          <v-divider class="mt-3 mb-3" />
+          <img v-show="state.expand" src="@/assets/TELUS_LOGO.svg" alt="TELUS Logo" class="bottom-logo">
+        </div>
+
       </v-list>
 
     </v-navigation-drawer>
@@ -94,6 +106,15 @@
 
 <style lang="scss" scoped>
   // vuetify overrides
+  :deep #navigation {
+    position: relative; // Ensure this is set
+  }
+
+  :deep .expanded-drawer {
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+  }
+
   :deep .v-list.navbar-icon {
     padding: 14px 0;
   }
@@ -121,6 +142,30 @@
   }
 
   // custom css
+  .navbar-links {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: calc(100% - 52px);
+  }
+
+
+  .wasteco-logo {
+    position: relative;
+    width: 196px;
+    height: 23px;
+    left: 13%;
+    margin-bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .bottom-logo {
+    left: 48%;
+    width: 310px;
+    height: 81.72px;
+  }
+
   .navigation-overlay {
     background-color: black;
     opacity: 0.2;
@@ -143,5 +188,23 @@
       margin-right: 8px;
     }
   }
+
+  .icon-wrapper {
+    position: relative;
+    display: inline-block; // To ensure the wrapper doesn't take full width
+
+    ::before {
+        content: ''; 
+        width: 8px; 
+        height: 8px;
+        background-color: red;
+        border-radius: 50%; // Makes it a circle
+        position: absolute;
+        top: 0;
+        right: 0;
+        transform: translate(10%, 10%); 
+        z-index: 1; 
+      }
+    }
   
 </style>

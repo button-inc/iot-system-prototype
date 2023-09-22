@@ -5,6 +5,7 @@
   import { storeToRefs } from 'pinia';
   import SensorRouteBlock from '@/components/sensorRouteBlock.vue';
   import PointAddressField from '@/components/shared/pointAddressField.vue';
+  import { telusUi } from '@/styles/telusUi';
 
   // stores
   const routeStore = useRouteStore();
@@ -72,7 +73,7 @@
 
 <template>
   <section class="routes-list">
-    <div class="text-h6 padding-b-16">Routes</div>
+    <div class="text-h6 padding-b-16">Create Route</div>
 
     <!-- route info display -->
     <section v-if="state.isRouteGenerated">
@@ -105,14 +106,17 @@
         <vue-feather class="color-red mx-3" type="alert-triangle"></vue-feather>
         <span class="routes-list__warning-text">Note: Currently only 25 bins can be added to the route. Please deselect {{ routeStore.getSelectedRouteList - 25 }} bin(s).</span>
       </div>
-      <v-btn color="#191A1C" 
+
+      <v-btn 
+        class="find-route-btn"
+        :color="telusUi.green" 
         :disabled="!state.isMapInitialized || routeStore.getSelectedRouteList > 25 || sensorStore.getTotalSensors === 0" 
         @click="findRouteClicked">
-        <span class="pr-1">Find Route</span>
+        <span class="find-route-text pr-1">Find Route</span>
         <v-progress-circular v-if="!state.isMapInitialized || state.isLoadingGoogApi"
           indeterminate
           :size="20"
-          color="#8D8D8D"
+          :color="telusUi.green"
         ></v-progress-circular>
         <vue-feather type="search" v-else></vue-feather>
       </v-btn>
@@ -141,5 +145,16 @@
       max-width: 200px;
       @include fontBodySmall;
     }
+  }
+
+  .find-route-btn {
+    margin-top: -35px;
+  }
+
+  .find-route-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: #FFFFFF;
+    font-weight: bold;
   }
 </style>

@@ -3,6 +3,7 @@
   import { useSensorStore } from '@/stores/sensors_store';
   import { useRouteStore } from '@/stores/route_store';
   import { storeToRefs } from 'pinia';
+  import { telusUi } from '@/styles/telusUi';
 
   const thresholdRange = ref([0,100]);
 
@@ -169,8 +170,8 @@
 <template>
   <section class="filter-list">
     <div class="filter-list__heading">
-      <div class="d-flex align-center">
-        <span class="filter-list__title">Filter Sensors ({{ getFilterCount() }})</span> 
+      <div class="align-center">
+        <span class="filter-list__title">Filter ({{ getFilterCount() }})</span> 
         <span class="mx-3">|</span>
         <v-btn variant="plain" color="#2196F3" class="pa-0 pt-1 text-capitalize" @click="clearFilters">Clear</v-btn>
       </div>
@@ -182,15 +183,15 @@
     
     <section v-if="!state.isCollapsed" class="filter-list__fields">
       <div class="filter-list__fill-level">
-        <div class="filter-list__label color-gray-grey">Fill Level Threshold</div>
+        <div class="filter-list__label color-gray-grey">Fill Level</div>
         <v-range-slider class="filter-list__slider" 
           v-model="state.selectedFillRange"
           strict
-          color="#2196F3"
-          track-color="#2196F3"
+          :color="telusUi.green"
+          :track-color="telusUi.green"
           :ticks="[0,50,100]"
           show-ticks="always"
-          tick-size="4"
+          tick-size="0"
           :step="1"
           :max="thresholdRange[1]"
           :min="thresholdRange[0]"
@@ -213,21 +214,21 @@
       ></v-autocomplete>
 
       <v-autocomplete class="filter-list__dropdown"
+        v-model="state.selectedMaterialType"
+        label="Material Type"
+        chips
+        multiple
+        :items="state.materialType"
+        @update:modelValue="updateMaterialTypeFilter"
+      ></v-autocomplete>
+
+      <v-autocomplete class="filter-list__dropdown"
         v-model="state.selectedAssetTag"
         label="Asset Tag"
         chips
         multiple
         :items="state.assetTag"
         @update:modelValue="updateAssetTagFilter"
-      ></v-autocomplete>
-
-      <v-autocomplete class="filter-list__dropdown"
-        v-model="state.selectedBinType"
-        label="Bin Type"
-        chips
-        multiple
-        :items="state.binType"
-        @update:modelValue="updateBinTypeFilter"
       ></v-autocomplete>
 
       <v-autocomplete class="filter-list__dropdown"
@@ -239,18 +240,19 @@
       ></v-autocomplete>
 
       <v-autocomplete class="filter-list__dropdown"
-        v-model="state.selectedMaterialType"
-        label="Material Type"
+        v-model="state.selectedBinType"
+        label="Bin Type"
         chips
         multiple
-        :items="state.materialType"
-        @update:modelValue="updateMaterialTypeFilter"
+        :items="state.binType"
+        @update:modelValue="updateBinTypeFilter"
       ></v-autocomplete>
+
     </section>
 
 
     <div class="my-6">
-      <span class="font-weight-bold">Result: {{ state.totalSensors }} </span>
+      <span class="font-weight-bold">Result: {{ state.totalSensors }} bin{{ state.totalSensors > 1 ? 's' : '' }}</span>
       displayed on map
     </div>
   </section>
@@ -266,6 +268,14 @@
   :deep .v-slider-thumb__surface { // slider size
     width: 12px;
     height: 12px;
+  }
+
+  :deep .v-slider-track__fill{ // slider track size
+    height: 2px !important;
+  }
+
+  :deep .v-slider-track__background{ // slider bg size
+    height: 2px !important;
   }
 
   :deep .v-input__details { // input padding size
