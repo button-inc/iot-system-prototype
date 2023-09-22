@@ -244,9 +244,6 @@
     &__cta-routes,
     &__cta-routes button {
       width: 100%;
-      @include smallScreens {
-        width: 100%;
-      }
     }
   }
 </style>
