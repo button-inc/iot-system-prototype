@@ -4,6 +4,7 @@
   import { useRouteStore } from '@/stores/route_store';
   import { storeToRefs } from 'pinia';
   import { getIconAndProgressColor, getMaterialTypeIconURL } from '@/utils/mapMarkerHelper';
+  import { getDate12HrTime } from '@/utils/formattingHelper';
 
   const props = defineProps({
     sensor: {
@@ -104,11 +105,41 @@
 
         <div class="material-type">
           <v-img class="material-type__image" :src="getMaterialTypeIconURL(props.sensor.material_type)" width="40" height="40" />
-          <!-- <img class="material-type__image" :src="getMaterialTypeIconURL(props.sensor.material_type)"/> -->
           <span class="material-type__description">{{ props.sensor.material_type }}</span>
         </div>
       </section>
     </div>
+
+    <section class="alerts-section">
+      <div class="alerts">
+        <div class="alerts__title">
+          <span>Alerts Set</span>
+        </div>
+        <div class="alerts__item" v-if="props.sensor.fill_level_alert">
+          <vue-feather size="18" class="color-green mr-2" type="bell"></vue-feather>
+          <span>Fill-level > {{ props.sensor.fill_level_alert }}%</span>
+        </div>
+        <div class="alerts__item" v-if="props.sensor.temperature_alert">
+          <vue-feather size="18" class="color-green mr-2" type="bell"></vue-feather>
+          <span>Temperature > {{props.sensor.temperature_alert}}&deg;C</span>
+        </div>
+        <div class="alerts__item" v-if="props.sensor.illegal_dumping_alert">
+          <vue-feather size="18" class="color-green mr-2" type="bell"></vue-feather>
+          <span>Illegal dumping</span>
+        </div>
+        <div class="alerts__item" v-if="props.sensor.contamination_alert">
+          <vue-feather size="18" class="color-green mr-2" type="bell"></vue-feather>
+          <span>Contamination</span>
+        </div>
+      </div>
+      <div class="last-collected" v-if="props.sensor.last_collected">
+        <span class="last-collected__title">Last Collected</span>
+        <div class="last-collected__item">
+          <span>{{ getDate12HrTime(props.sensor.last_collected)}}</span>
+          <span>at 100% full</span> 
+        </div>
+      </div>
+    </section>
 
 
     <!-- add to route buttons -->
@@ -244,6 +275,48 @@
     &__cta-routes,
     &__cta-routes button {
       width: 100%;
+    }
+  }
+
+  .alerts-section {
+    display: flex;
+    align-items: flex-start;
+    flex: 1;
+    gap: 20px;
+    margin-top: 6px;
+    .alerts {
+      display: flex;
+      flex-direction: column;
+      &__title {
+        margin-bottom: 6px;
+        color: $grey;
+      }
+
+      &__item {
+        display: flex;
+        align-items: center;
+        padding-bottom: 2px;
+      }
+    }
+
+    .last-collected {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+
+      &__title {
+        margin-bottom: 6px;
+        color: $grey;
+        text-align: center;
+      }
+
+      &__item {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        max-width: 86px;
+        text-align: center;
+      }
     }
   }
 </style>
