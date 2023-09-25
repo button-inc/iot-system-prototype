@@ -135,8 +135,10 @@
       <div class="last-collected" v-if="props.sensor.last_collected">
         <span class="last-collected__title">Last Collected</span>
         <div class="last-collected__item">
-          <span>{{ getDate12HrTime(props.sensor.last_collected)}}</span>
-          <span>at 100% full</span> 
+          <span>{{ getDate12HrTime(props.sensor.last_collected) }}</span>
+          <span v-if="props.sensor.fill_level_last_collected">
+            at {{ props.sensor.fill_level_last_collected }}% full
+          </span> 
         </div>
       </div>
     </section>
@@ -306,7 +308,7 @@
       flex-direction: column;
       flex: 1;
       align-items: center;
-      
+
       &__title {
         margin-bottom: 6px;
         color: $grey;
