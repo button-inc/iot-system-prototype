@@ -347,10 +347,11 @@ def set_tkl_cache():
     try:
         print("Tekelek sensor data cache: fetching sensor data...")
         # get api token
-        tekelek_api_token = get_tekelek_token()
+        # tekelek_api_token = get_tekelek_token() # TODO: put this back on after trade show
 
         # Define the base URL
         base_url = "https://phoenixapiprod.azurewebsites.net/api/"
+        date_format = "%m/%d/%Y %H:%M:%S"
 
         # Make a request to get all sensor data from tank records
         # tanks_url = base_url + "tanks"
@@ -366,14 +367,15 @@ def set_tkl_cache():
         if records:
             # Iterate asset records to get additional information from related API endpoints
             for index, record in enumerate(records):
-                id = record["Sensor ID"]
+                id = index # TODO: after trade show, id = record["Sensor ID"] 
                 # get the latest sensor fill reading
-                latest_reading_url = base_url + "latestReading/" + str(id)
-                reading_response = make_http_request(
-                    latest_reading_url,
-                    method="GET",
-                    headers={"Authorization": "Bearer " + tekelek_api_token},
-                )
+                # TODO: put the api call back on after trade show
+                # latest_reading_url = base_url + "latestReading/" + str(id)
+                # reading_response = make_http_request(
+                #     latest_reading_url,
+                #     method="GET",
+                #     headers={"Authorization": "Bearer " + tekelek_api_token},
+                # )
 
                 sensor = {
                     "id": id,
@@ -391,9 +393,13 @@ def set_tkl_cache():
                     "material_type": record["Material/Waste Type"],
                     "asset_tag": record["Addiontal Asset Tags"],
                     "group": record["Group"],
-                    "fill_level": reading_response["PercentFull"]
-                    if reading_response is not None
-                    else None,
+                    "fill_level_last_collected": record["Fill_level_last_collected"],
+                    "fill_level": record["Fill_level"], # TODO: after trade show: "fill_level": reading_response["PercentFull"] if reading_response else None
+                    "fill_level_alert": record["Fill_level_alert"],
+                    "temperature_alert": record["Temperature_alert"],
+                    "illegal_dumping_alert": True if record["Illegal_dumping_alert"].upper() == "YES" else False,
+                    "contamination_alert": True if record["Contamination_alert"].upper() == "YES" else False,
+                    "last_collected": datetime.strptime(record["Last_collected"], date_format)
                 }
                 tkl_cache[id] = sensor
             print("Tekelek sensor data cache: fetch complete")
@@ -406,8 +412,8 @@ def set_tkl_cache():
 # The purpose is to maintain a historical record of sensor readings over time.
 # This allows the program to access and analyze past readings without repeatedly querying the API for the same data
 # event handler continues to run periodically, in the background, due to the @repeat_every decorator
-@app.on_event("startup")
-@repeat_every(seconds=60 * 60)  # Every 1 hour
+#@app.on_event("startup")
+#@repeat_every(seconds=60 * 60)  # Every 1 hour
 def update_bb_cache() -> None:
     global bb_cache
     global last_run_timestamp
