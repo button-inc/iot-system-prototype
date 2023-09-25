@@ -70,7 +70,7 @@ export const useSensorStore = defineStore('sensors', {
       this.sensors = this.allSensors.filter(sensor => {
         // filter for fill range
         const fillRangeFilter = () => {
-          if (this.selectedFillRange && sensor.fill_level) {
+          if (this.selectedFillRange && (sensor.fill_level || sensor.fill_level === 0)) {
             return sensor.fill_level >= this.selectedFillRange[0] && sensor.fill_level <= this.selectedFillRange[1];
           }
           return true;

@@ -70,7 +70,7 @@
           <v-divider class="mt-3 mb-3"></v-divider>
 
           <div>
-            <img v-show="state.expand" src="@/assets/WASTECO_LOGO.svg" alt="WASTECO Logo" class="wasteco-logo">
+            <img v-show="state.expand" src="@/assets/images/navBar/wastecoLogo.svg" alt="WASTECO Logo" class="wasteco-logo">
             <v-list-item class="navbar-links__item user">
               <span>Peter Uppal</span>
               <span>peteru@wavsmart.com</span>
@@ -91,7 +91,7 @@
             Sign out
           </v-list-item>
           <v-divider class="mt-3 mb-3" />
-          <img v-show="state.expand" src="@/assets/TELUS_LOGO.svg" alt="TELUS Logo" class="bottom-logo">
+          <img v-show="state.expand" src="@/assets/images/navBar/telusLogo.svg" alt="TELUS Logo" class="bottom-logo">
         </div>
 
       </v-list>
