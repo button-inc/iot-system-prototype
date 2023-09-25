@@ -50,7 +50,7 @@
       rail-width="41"
       width="400"
       permanent
-      :class="{ 'expanded-drawer': state.expand }" 
+      :class="{ 'expanded-drawer': state.expand }"
     >
       <v-list class="navbar-icon" :class="{'navbar-icon__x': state.expand}" @click="expandNavBar">
         <div class="icon-wrapper"><vue-feather v-show="!state.expand" type="align-justify"></vue-feather></div>
