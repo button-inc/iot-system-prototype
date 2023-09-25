@@ -291,6 +291,7 @@
       &__title {
         margin-bottom: 6px;
         color: $grey;
+        @include fontSubTitle2;
       }
 
       &__item {
@@ -305,10 +306,12 @@
       flex-direction: column;
       flex: 1;
       align-items: center;
+      
       &__title {
         margin-bottom: 6px;
         color: $grey;
         text-align: center;
+        @include fontSubTitle2;
       }
 
       &__item {
