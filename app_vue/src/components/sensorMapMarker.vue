@@ -215,7 +215,7 @@
     }
 
     &__description {
-      white-space: nowrap;
+      text-align: center;
     }
   }
 
