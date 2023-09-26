@@ -81,7 +81,7 @@
     sensorStore.setSelectedGroup(state.selectedGroup);
     updateSensorsShown();
 
-    if (state.selectedGroup) {
+    if (state.selectedGroup.length > 0) {
       state.filterEnabledMap['group'] = true;
     } else {
       state.filterEnabledMap['group'] = false;
@@ -114,7 +114,7 @@
     sensorStore.setSelectedBinVolume(state.selectedBinVolume);
     updateSensorsShown();
 
-    if (state.selectedBinVolume) {
+    if (state.selectedBinVolume.length > 0) {
       state.filterEnabledMap['binVolume'] = true;
     } else {
       state.filterEnabledMap['binVolume'] = false;
@@ -148,10 +148,10 @@
     sensorStore.clearSelected(); // clear store of selected values
     routeStore.clearSensorRoute(); // clear route
     // clear v-models in form
-    state.selectedGroup = null;
+    state.selectedGroup = [];
     state.selectedAssetTag = [];
-    state.selectedBinType = null;
-    state.selectedBinVolume = null;
+    state.selectedBinType = [];
+    state.selectedBinVolume = [];
     state.selectedFillRange = [0, 100];
     state.selectedMaterialType = [];
 
