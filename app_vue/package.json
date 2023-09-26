@@ -10,7 +10,7 @@
     "build-only": "vite build",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
-    "prepare": "cd .. && husky install .husky",
+    "prepare": "cd .. && husky install app_vue/.husky",
     "pre-commit": "lint-staged"
   },
   "dependencies": {
