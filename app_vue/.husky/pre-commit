@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+# this is being run in parent directory, hence we need to navigate to child folder
 cd ./app_vue && npm run pre-commit
