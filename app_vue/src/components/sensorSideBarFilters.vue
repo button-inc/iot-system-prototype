@@ -22,10 +22,10 @@
 
   // component reactive variables
   const state = reactive({
-    selectedGroup: null,
+    selectedGroup: [],
     selectedAssetTag: [],
     selectedBinType: [],
-    selectedBinVolume: null,
+    selectedBinVolume: [],
     selectedFillRange: [0, 100],
     selectedMaterialType: [],
     group: [],
@@ -208,7 +208,8 @@
       <v-autocomplete class="filter-list__dropdown"
         v-model="state.selectedGroup"
         label="Group"
-        clearable
+        chips
+        multiple
         :items="state.group"
         @update:modelValue="updateGroupFilter"
       ></v-autocomplete>
@@ -234,7 +235,8 @@
       <v-autocomplete class="filter-list__dropdown"
         v-model="state.selectedBinVolume"
         label="Bin Volume"
-        clearable
+        chips
+        multiple
         :items="state.binVolume"
         @update:modelValue="updateBinVolumeFilter"
       ></v-autocomplete>
