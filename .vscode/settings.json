@@ -3,6 +3,5 @@
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
   "python.formatting.provider": "none",
-  "prettier.configPath": "app_vue/.prettierrc.json",
-  "editor.formatOnSave": true
+  "prettier.configPath": "app_vue/.prettierrc.json"
 }
