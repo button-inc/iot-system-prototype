@@ -108,30 +108,55 @@ function exportRouteClicked() {
 <template>
   <!-- route display -->
   <section class="route-display">
-    <div v-if="state.selectedRouteList && state.selectedRouteList.length !== 0" class="padding-b-16">1 route(s) found</div>
+    <div
+      v-if="state.selectedRouteList && state.selectedRouteList.length !== 0"
+      class="padding-b-16"
+    >
+      1 route(s) found
+    </div>
     <div class="py-4 px-4 route-display__route-container">
       <div class="w-100 h-100">
-        <div tabindex="0" class="route-display__header">
+        <div
+          tabindex="0"
+          class="route-display__header"
+        >
           <span class="font-body">{{ state.selectedRouteList.length }} Bins</span>
           <span class="mx-2">&#8226;</span>
           <span v-if="routeStore.getRouteDuration">
             {{ getMinutesString(routeStore.getRouteDuration) }}
           </span>
-          <span class="ml-1" v-if="routeStore.getRouteDistance">({{ getKmFromMeterString(routeStore.getRouteDistance) }}km)</span>
+          <span
+            class="ml-1"
+            v-if="routeStore.getRouteDistance"
+          >
+            ({{ getKmFromMeterString(routeStore.getRouteDistance) }}km)
+          </span>
         </div>
 
         <!-- route list -->
         <section>
           <!-- starting point -->
           <div class="route-display__items">
-            <vue-feather class="color-green" type="disc"></vue-feather>
+            <vue-feather
+              class="color-green"
+              type="disc"
+            ></vue-feather>
             <span class="route-display__point ml-2 mt-4">{{ state.startPointAddress }}</span>
           </div>
           <!-- destinations -->
-          <draggable v-model="state.selectedRouteList" tag="div" item-key="id" @start="state.drag = true" @end="draggedRoute">
+          <draggable
+            v-model="state.selectedRouteList"
+            tag="div"
+            item-key="id"
+            @start="state.drag = true"
+            @end="draggedRoute"
+          >
             <template #item="{ element: sensor }">
               <li class="route-display__items cursor-pointer hover-item">
-                <vue-feather class="transform-rotate-270" type="git-commit"></vue-feather>
+                <vue-feather
+                  class="transform-rotate-270"
+                  type="git-commit"
+                ></vue-feather>
                 <div class="d-flex flex-column ml-2">
                   <span v-if="sensor.address_line1">{{ sensor.address_line1 }}</span>
                   <span v-if="sensor.address_line2">{{ sensor.address_line2 }}</span>
@@ -145,9 +170,12 @@ function exportRouteClicked() {
               </li>
             </template>
           </draggable>
-          <!-- ending point -->
+          <!-- end point -->
           <div class="route-display__items mb-4">
-            <vue-feather class="color-red mr-2" type="map-pin"></vue-feather>
+            <vue-feather
+              class="color-red mr-2"
+              type="map-pin"
+            ></vue-feather>
             <span class="route-display__point">{{ state.endPointAddress }}</span>
           </div>
 
@@ -160,12 +188,20 @@ function exportRouteClicked() {
             }"
           >
             <div v-if="state.selectedRouteList && state.selectedRouteList.length > 1">
-              <v-btn class="pa-0 route-display__export" variant="plain" @click="exportRouteClicked">
+              <v-btn
+                class="pa-0 route-display__export"
+                variant="plain"
+                @click="exportRouteClicked"
+              >
                 Export route
                 <vue-feather type="upload"></vue-feather>
               </v-btn>
             </div>
-            <v-btn class="route-display__delete pl-0 align-self-end" variant="plain" @click="routeStore.clearSensorRoute">
+            <v-btn
+              class="route-display__delete pl-0 align-self-end"
+              variant="plain"
+              @click="routeStore.clearSensorRoute"
+            >
               <vue-feather type="trash-2"></vue-feather>
             </v-btn>
           </div>
