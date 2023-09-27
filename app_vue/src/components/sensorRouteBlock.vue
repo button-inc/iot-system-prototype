@@ -118,17 +118,16 @@ function exportRouteClicked() {
       1 route(s) found
     </div>
     <div class="py-4 px-4 route-display__route-container">
-      <!-- route is present -->
       <div class="w-100 h-100">
         <div tabindex="0" class="route-display__header">
-          <span class="font-body"> {{ state.selectedRouteList.length }} Bins </span>
+          <span class="font-body">{{ state.selectedRouteList.length }} Bins</span>
           <span class="mx-2">&#8226;</span>
           <span v-if="routeStore.getRouteDuration">
-            {{ getMinutesString(routeStore.getRouteDuration) }}</span
-          >
+            {{ getMinutesString(routeStore.getRouteDuration) }}
+          </span>
           <span class="ml-1" v-if="routeStore.getRouteDistance">
-            ({{ getKmFromMeterString(routeStore.getRouteDistance) }}km)</span
-          >
+            ({{ getKmFromMeterString(routeStore.getRouteDistance) }}km)
+          </span>
         </div>
 
         <!-- route list -->
