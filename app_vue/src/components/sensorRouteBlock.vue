@@ -59,18 +59,15 @@ function exportRouteClicked() {
   if (duration || distance) {
     const formattedDuration = getMinutesString(duration);
     const formattedDistance = getKmFromMeterString(distance);
-    csv += `${formattedDuration ? formattedDuration : ''},${
-      formattedDistance ? formattedDistance + 'km' : ''
-    }\n`;
+    csv += `${formattedDuration ? formattedDuration : ''},${formattedDistance ? formattedDistance + 'km' : ''}\n`;
   } else {
     csv += '\n';
   }
 
   csv += '\n';
 
-  // columns -- NOTE: order is important
-  csv +=
-    'Route Order,Sensor Type,Fill Level,Latitude,Longitude,Manufacturer,Bin Name,Address Line 1,Address Line 2,Group,Bin Type,Material Type,Asset Tag,Bin Volume\n';
+  // columns - NOTE: order is important
+  csv += 'Route Order,Sensor Type,Fill Level,Latitude,Longitude,Manufacturer,Bin Name,Address Line 1,Address Line 2,Group,Bin Type,Material Type,Asset Tag,Bin Volume\n';
 
   // grab required data to be exported
   const csvObjectArray = state.selectedRouteList.map((sensor, index) => {
@@ -111,12 +108,7 @@ function exportRouteClicked() {
 <template>
   <!-- route display -->
   <section class="route-display">
-    <div
-      v-if="state.selectedRouteList && state.selectedRouteList.length !== 0"
-      class="padding-b-16"
-    >
-      1 route(s) found
-    </div>
+    <div v-if="state.selectedRouteList && state.selectedRouteList.length !== 0" class="padding-b-16">1 route(s) found</div>
     <div class="py-4 px-4 route-display__route-container">
       <div class="w-100 h-100">
         <div tabindex="0" class="route-display__header">
@@ -125,9 +117,7 @@ function exportRouteClicked() {
           <span v-if="routeStore.getRouteDuration">
             {{ getMinutesString(routeStore.getRouteDuration) }}
           </span>
-          <span class="ml-1" v-if="routeStore.getRouteDistance">
-            ({{ getKmFromMeterString(routeStore.getRouteDistance) }}km)
-          </span>
+          <span class="ml-1" v-if="routeStore.getRouteDistance">({{ getKmFromMeterString(routeStore.getRouteDistance) }}km)</span>
         </div>
 
         <!-- route list -->
@@ -138,13 +128,7 @@ function exportRouteClicked() {
             <span class="route-display__point ml-2 mt-4">{{ state.startPointAddress }}</span>
           </div>
           <!-- destinations -->
-          <draggable
-            v-model="state.selectedRouteList"
-            tag="div"
-            item-key="id"
-            @start="state.drag = true"
-            @end="draggedRoute"
-          >
+          <draggable v-model="state.selectedRouteList" tag="div" item-key="id" @start="state.drag = true" @end="draggedRoute">
             <template #item="{ element: sensor }">
               <li class="route-display__items cursor-pointer hover-item">
                 <vue-feather class="transform-rotate-270" type="git-commit"></vue-feather>
@@ -171,8 +155,7 @@ function exportRouteClicked() {
           <div
             class="d-flex align-center"
             :class="{
-              'justify-space-between':
-                state.selectedRouteList && state.selectedRouteList.length > 1,
+              'justify-space-between': state.selectedRouteList && state.selectedRouteList.length > 1,
               'justify-end': state.selectedRouteList && state.selectedRouteList.length <= 1
             }"
           >
@@ -182,11 +165,7 @@ function exportRouteClicked() {
                 <vue-feather type="upload"></vue-feather>
               </v-btn>
             </div>
-            <v-btn
-              class="route-display__delete pl-0 align-self-end"
-              variant="plain"
-              @click="routeStore.clearSensorRoute"
-            >
+            <v-btn class="route-display__delete pl-0 align-self-end" variant="plain" @click="routeStore.clearSensorRoute">
               <vue-feather type="trash-2"></vue-feather>
             </v-btn>
           </div>
