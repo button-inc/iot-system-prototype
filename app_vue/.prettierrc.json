@@ -8,5 +8,5 @@
   "htmlWhitespaceSensitivity": "ignore",
   "bracketSpacing": true,
   "singleAttributePerLine": true,
-  "bracketSameLine": true
+  "bracketSameLine": false
 }
