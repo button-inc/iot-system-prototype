@@ -28,8 +28,8 @@ cd /home/mike/iot-system-prototype
 # Must use sudo for git commands on VM
 sudo -s
 
-# Pull the latest changes from the develop branch
-git pull origin develop
+# Pull the latest changes from the main branch
+git pull origin main
 
 # Build and start the Docker containers using docker-compose
 docker-compose --file prod.docker-compose.yml up --build 
