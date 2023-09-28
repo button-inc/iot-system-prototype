@@ -14,4 +14,5 @@ module.exports = {
   globals: {
     process: 'readonly', 
   },
+  "ignorePatterns": ["**/*.test.js"],
 };
