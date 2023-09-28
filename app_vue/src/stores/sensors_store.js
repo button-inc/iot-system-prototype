@@ -78,8 +78,8 @@ export const useSensorStore = defineStore('sensors', {
   
         // filter for group
         const groupFilter = () => {
-          if (this.selectedGroup && sensor.group) {
-            return sensor.group === this.selectedGroup;
+          if (this.selectedGroup && this.selectedGroup.length > 0 && sensor.group) {
+            return this.selectedGroup.includes(sensor.group);
           }
           return true;
         };
@@ -102,8 +102,8 @@ export const useSensorStore = defineStore('sensors', {
   
         // filter for bin volume
         const binVolumeFilter = () => {
-          if (this.selectedBinVolume && sensor.bin_volume) {
-            return sensor.bin_volume === this.selectedBinVolume;
+          if (this.selectedBinVolume && this.selectedBinVolume.length > 0 && sensor.bin_volume) {
+            return this.selectedBinVolume.includes(sensor.bin_volume);
           }
           return true;
         };
