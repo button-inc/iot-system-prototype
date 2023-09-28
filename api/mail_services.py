@@ -19,8 +19,8 @@ conf = ConnectionConfig(
     MAIL_PORT=mail_port,
     MAIL_SERVER=mail_server,
     MAIL_FROM_NAME="WavSmart Notification",
-    MAIL_TLS=True,
-    MAIL_SSL=False,
+    MAIL_STARTTLS=True, 
+    MAIL_SSL_TLS=False, 
     USE_CREDENTIALS=True,
     VALIDATE_CERTS=True,
 )
