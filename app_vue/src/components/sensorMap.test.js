@@ -1,10 +1,16 @@
-import HelloWorld from "./HelloWorld.vue"
-import { mount } from "@vue/test-utils"
+import SensorMap from './sensorMap.vue';
+import { mount } from '@vue/test-utils';
 
-describe("SensorMap component", () => {
-    it("renders properly", () => {
-        const wrapper = mount(HelloWorld, { props: { msg: "Hello Jest" } })
+let wrapper;
 
-        expect(wrapper.text()).toContain("Hello Jest")
-    })
-})
+const options = {
+  mocks: {},
+  methods: []
+};
+
+describe('SensorMap component', () => {
+  it('should render component', () => {
+    wrapper = mount(SensorMap, options);
+    expect(wrapper).toBeTruthy();
+  });
+});
