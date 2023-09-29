@@ -59,6 +59,7 @@ Ensure you have followed the README file located here: api/README.md
 - simply name your files in the format of camelCase.test.js, paired with the relevant component
 - can run `npm test` to run full test suite
 - when testing a component with Vuetify see the following tutorial: [here](https://vuetifyjs.com/en/getting-started/unit-testing/)
+- aim to use `shallowMount` when possible, however some components that use Vuetify will have issues that come up with this, for these you can use `mount` and it could solve the errors for you.
 
 ####  commands
 Ensure you are in `app_vue` folder from root
