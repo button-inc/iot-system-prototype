@@ -53,13 +53,19 @@ Ensure you have followed the README file located here: api/README.md
 - this is used to calculate the optimal order of bins to visit
 - note that if it returns empty object {} it is likely that your request is passing incorrect lat/long or location data
 
+### JEST 
+- allows us to create frontend unit tests
+- Following [Given When Then](https://smartbear.com/blog/test-automation-with-gherkin-scenarios/) naming strategy so that tests are readable
+- simply name your files in the format of camelCase.test.js, paired with the relevant component
+- can run `npm test` to run full test suite
+
 ## Folder structure
 
 (Last Updated as of Sep 5,2023)
 Note that all of these folders are under app_vue/:
 - src/assets -> holds images, stylesheets, fonts
 - components/shared -> holds components created for global use (ex. generalized button component)
-- components -> holds components pertaining to features that would be placed on our pages
+- components -> holds components pertaining to features that would be placed on our pages, as well as *.test.js files
 - data -> holds json mock data files
 - pages -> holds components loaded once on a per-route basis
 - router -> holds index.js which contains our configured routes (default is '/')
@@ -67,7 +73,7 @@ Note that all of these folders are under app_vue/:
 - layout -> holds layout based components (ie. navbar/header/footer)
 - utils -> holds shared javascript functions, and services
 
-## Recommended Coding Strategy
+## Coding Strategies
 
 ### CSS
 - we are using the [BEM](https://getbem.com/) approach where possible
@@ -76,7 +82,7 @@ Note that all of these folders are under app_vue/:
 - we have also added some of the vuetify typography in our own mixins located in /assets/stylesheets/mixins
   - you can feel free to use `@include <mixinName>` in your custom class to avoid rewriting repetitive code
 
-### stores
+### Vue Pinia tores
 - we are using the concept of vue [stores](https://vuex.vuejs.org/guide/) in our app
 - we are also using a library called [pinia](https://pinia.vuejs.org/) to make the syntax for this a lot simpler, it is recommended by Vue itself!
 - think of it as a simple way to manage holding app state. You know its a good tool to use when you find that too many variables are being passed back and forth to components through events (hot potato style). That is where the store can come in and hold that variable globally for you.

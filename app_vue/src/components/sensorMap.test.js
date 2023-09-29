@@ -1,16 +1,27 @@
 import SensorMap from './sensorMap.vue';
-import { mount } from '@vue/test-utils';
+import { mount, enableAutoUnmount } from '@vue/test-utils';
+import { createTestingPinia } from '@pinia/testing';
+// import { useSensorStore } from '@/stores/sensors_store';
+// import { useRouteStore } from '@/stores/route_store';
 
 let wrapper;
 
-const options = {
-  mocks: {},
-  methods: []
-};
+enableAutoUnmount(afterAll);
 
-describe('SensorMap component', () => {
-  it('should render component', () => {
-    wrapper = mount(SensorMap, options);
+jest.mock('axios', () => ({
+  get: jest.fn(() => Promise.resolve('value'))
+}));
+
+beforeAll(() => {
+  wrapper = mount(SensorMap, {
+    global: {
+      plugins: [createTestingPinia()] // stubs out all store actions unless told otherwise
+    }
+  });
+});
+
+describe('Given SensorMap component', () => {
+  it('component should be rendered', () => {
     expect(wrapper).toBeTruthy();
   });
 });

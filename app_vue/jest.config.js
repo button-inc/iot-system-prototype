@@ -1,3 +1,4 @@
+const esModules = ['leaflet', '@vue-leaflet/vue-leaflet'].join('|');
 module.exports = {
   testEnvironment: 'jsdom',
   transform: {
@@ -5,6 +6,7 @@ module.exports = {
     '^.+\\js$': 'babel-jest',
     '.+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$': 'jest-transform-stub'
   },
+  transformIgnorePatterns: [`/node_modules/(?!${esModules})`],
   testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$',
   moduleFileExtensions: ['vue', 'js'],
   moduleNameMapper: {
@@ -17,5 +19,9 @@ module.exports = {
   // https://test-utils.vuejs.org/migration/#test-runners-upgrade-notes
   testEnvironmentOptions: {
     customExportConditions: ['node', 'node-addons']
-  }
+  },
+  verbose: true,
+  collectCoverage: true,
+  coverageDirectory: '<rootDir>/src/test/coverage',
+  coverageReporters: ['html', 'text']
 };
