@@ -12,7 +12,7 @@
     "format": "prettier --write src/",
     "prepare": "cd .. && husky install app_vue/.husky",
     "pre-commit": "lint-staged",
-    "test": "jest --runInBand"
+    "test": "jest"
   },
   "dependencies": {
     "@vue-leaflet/vue-leaflet": "^0.10.1",

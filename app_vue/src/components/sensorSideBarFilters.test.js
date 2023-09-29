@@ -1,5 +1,5 @@
-import SensorSidebarFilters from './sensorSidebarFilters.vue';
-import { shallowMount, enableAutoUnmount } from '@vue/test-utils';
+import SensorSidebarFilters from './sensorSideBarFilters.vue';
+import { mount, enableAutoUnmount } from '@vue/test-utils';
 import { createVuetify } from 'vuetify';
 import { createTestingPinia } from '@pinia/testing';
 import * as components from 'vuetify/components';
@@ -15,7 +15,7 @@ beforeAll(() => {
     components,
     directives
   });
-  wrapper = shallowMount(SensorSidebarFilters, {
+  wrapper = mount(SensorSidebarFilters, {
     global: {
       // global is equivalent to createlocalvue from vue2 jest
       plugins: [
