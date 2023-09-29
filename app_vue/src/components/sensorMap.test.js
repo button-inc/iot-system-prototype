@@ -1,5 +1,5 @@
 import SensorMap from './sensorMap.vue';
-import { mount, enableAutoUnmount } from '@vue/test-utils';
+import { shallowMount, enableAutoUnmount } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 // import { useSensorStore } from '@/stores/sensors_store';
 // import { useRouteStore } from '@/stores/route_store';
@@ -13,7 +13,7 @@ jest.mock('axios', () => ({
 }));
 
 beforeAll(() => {
-  wrapper = mount(SensorMap, {
+  wrapper = shallowMount(SensorMap, {
     global: {
       plugins: [createTestingPinia()] // stubs out all store actions unless told otherwise
     }
