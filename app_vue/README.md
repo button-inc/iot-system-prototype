@@ -82,6 +82,8 @@ to run a single test:
 npm test -- <relative test.js path here>
 ```
 
+#### code coverage
+After successfully running `npm test`, you can visit `app_vue/src/test/coverage` file path, and open up the `index.html` file there to view code coverage. 
 
 ## Folder structure
 
