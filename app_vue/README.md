@@ -60,6 +60,26 @@ Ensure you have followed the README file located here: api/README.md
 - can run `npm test` to run full test suite
 - when testing a component with Vuetify see the following tutorial: [here](https://vuetifyjs.com/en/getting-started/unit-testing/)
 
+####  commands
+Ensure you are in `app_vue` folder from root
+
+```
+cd app_vue/
+```
+
+to run all tests:
+
+```
+npm test
+```
+
+to run a single test:
+
+```
+npm test -- <relative file path here>
+```
+
+
 ## Folder structure
 
 (Last Updated as of Sep 5,2023)
@@ -83,7 +103,7 @@ Note that all of these folders are under app_vue/:
 - we have also added some of the vuetify typography in our own mixins located in /assets/stylesheets/mixins
   - you can feel free to use `@include <mixinName>` in your custom class to avoid rewriting repetitive code
 
-### Vue Pinia tores
+### Vue Pinia stores
 - we are using the concept of vue [stores](https://vuex.vuejs.org/guide/) in our app
 - we are also using a library called [pinia](https://pinia.vuejs.org/) to make the syntax for this a lot simpler, it is recommended by Vue itself!
 - think of it as a simple way to manage holding app state. You know its a good tool to use when you find that too many variables are being passed back and forth to components through events (hot potato style). That is where the store can come in and hold that variable globally for you.
