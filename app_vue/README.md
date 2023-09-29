@@ -76,7 +76,7 @@ npm test
 to run a single test:
 
 ```
-npm test -- <relative file path here>
+npm test -- <relative test.js path here>
 ```
 
 
