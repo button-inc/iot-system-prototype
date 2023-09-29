@@ -1,8 +1,6 @@
 import SensorMap from './sensorMap.vue';
 import { shallowMount, enableAutoUnmount } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
-// import { useSensorStore } from '@/stores/sensors_store';
-// import { useRouteStore } from '@/stores/route_store';
 
 let wrapper;
 

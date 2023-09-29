@@ -53,11 +53,12 @@ Ensure you have followed the README file located here: api/README.md
 - this is used to calculate the optimal order of bins to visit
 - note that if it returns empty object {} it is likely that your request is passing incorrect lat/long or location data
 
-### JEST 
+### JEST
 - allows us to create frontend unit tests
 - Following [Given When Then](https://smartbear.com/blog/test-automation-with-gherkin-scenarios/) naming strategy so that tests are readable
 - simply name your files in the format of camelCase.test.js, paired with the relevant component
 - can run `npm test` to run full test suite
+- when testing a component with Vuetify see the following tutorial: [here](https://vuetifyjs.com/en/getting-started/unit-testing/)
 
 ## Folder structure
 

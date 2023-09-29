@@ -1,4 +1,4 @@
-const esModules = ['leaflet', '@vue-leaflet/vue-leaflet'].join('|');
+const esModules = ['leaflet', '@vue-leaflet/vue-leaflet', 'vuetify', 'vue-feather'].join('|');
 module.exports = {
   testEnvironment: 'jsdom',
   transform: {
