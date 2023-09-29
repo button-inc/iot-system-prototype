@@ -54,12 +54,14 @@ Ensure you have followed the README file located here: api/README.md
 - note that if it returns empty object {} it is likely that your request is passing incorrect lat/long or location data
 
 ### JEST
-- allows us to create frontend unit tests
-- Following [Given When Then](https://smartbear.com/blog/test-automation-with-gherkin-scenarios/) naming strategy so that tests are readable
-- simply name your files in the format of camelCase.test.js, paired with the relevant component
-- can run `npm test` to run full test suite
+- We are using Jest and specifically the `@vue/test-utils` version of it (more info [here](https://test-utils.vuejs.org/))
+- Following [Given When Then](https://smartbear.com/blog/test-automation-with-gherkin-scenarios/) naming strategy so that tests are human understandable
+- Test file naming is in the form of `camelCase.test.js`
+- place test files next to relevant component, using same camelCase name
+
+### Vuetify testing
 - when testing a component with Vuetify see the following tutorial: [here](https://vuetifyjs.com/en/getting-started/unit-testing/)
-- aim to use `shallowMount` when possible, however some components that use **Vuetify** will have issues that come up with this, for these you can use `mount` and it could solve the errors for you.
+- in some cases you may see an error mentioning `stub value undefined` you can check whether switching from `shallowMount` to `mount` resolves this issue
 
 ####  commands
 Ensure you are in `app_vue` folder from root
