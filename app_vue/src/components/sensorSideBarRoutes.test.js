@@ -1,4 +1,4 @@
-import SensorSidebarRoutes from './sensorSidebarRoutes.vue';
+import SensorSideBarRoutes from './sensorSideBarRoutes.vue';
 import { shallowMount, enableAutoUnmount } from '@vue/test-utils';
 import { createVuetify } from 'vuetify';
 import { createTestingPinia } from '@pinia/testing';
@@ -15,7 +15,7 @@ beforeAll(() => {
     components,
     directives
   });
-  wrapper = shallowMount(SensorSidebarRoutes, {
+  wrapper = shallowMount(SensorSideBarRoutes, {
     global: {
       // global is equivalent to createlocalvue from vue2 jest
       plugins: [
