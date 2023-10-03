@@ -10,14 +10,14 @@ import { telusUi } from '@/styles/telusUi';
 // stores
 const routeStore = useRouteStore();
 const sensorStore = useSensorStore();
-const { getIsRouteGenerated, getHasMappedStartEnd } = storeToRefs(routeStore);
+const { getShouldDisplayRoute, getHasMappedStartEnd } = storeToRefs(routeStore);
 
 const state = reactive({
   startPointAddress: '',
   endPointAddress: '',
   startAddressOptions: [],
   endAddressOptions: [],
-  isRouteGenerated: false,
+  shouldDisplayRoute: false,
   drag: false,
   isMapInitialized: false,
   isLoadingGoogApi: false
@@ -33,8 +33,8 @@ onMounted(() => {
 });
 
 // element variables
-watch(getIsRouteGenerated, () => {
-  state.isRouteGenerated = routeStore.getIsRouteGenerated;
+watch(getShouldDisplayRoute, () => {
+  state.shouldDisplayRoute = routeStore.getShouldDisplayRoute;
 });
 
 watch(getHasMappedStartEnd, () => {
@@ -75,7 +75,7 @@ function updateEndPoint(value) {
     <div class="text-h6 padding-b-16">Create Route</div>
 
     <!-- route info display -->
-    <section v-if="state.isRouteGenerated">
+    <section v-if="state.shouldDisplayRoute">
       <SensorRouteBlock
         :selectedRouteList="routeStore.getSelectedRouteList"
         :startPointAddress="routeStore.getStartPointAddress"

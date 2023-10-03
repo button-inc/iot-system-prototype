@@ -8,17 +8,18 @@ import { getLatLng } from '@/utils/geoCodingHelper';
 import { useSensorStore } from '@/stores/sensors_store';
 import { useRouteStore } from '@/stores/route_store';
 import { storeToRefs } from 'pinia';
+import { decodePolyline } from '@/utils/polylineHelper';
 
 // stores
 const sensorStore = useSensorStore();
 const { getSensors } = storeToRefs(sensorStore);
 const routeStore = useRouteStore();
-const { getSelectedRouteLatLong, getIsRouteGenerated, getStartPointAddress, getEndPointAddress } = storeToRefs(routeStore);
+const { getShouldDisplayRoute, getStartPointAddress, getEndPointAddress, getGoogEncodedPolyline } = storeToRefs(routeStore);
 
 const state = reactive({
   location: 'bottomright',
   device: useDevice(),
-  isRouteGenerated: false,
+  shouldDisplayRoute: false,
   polyLineLatLngs: [],
   startPointLatLng: [],
   endPointLatLng: [],
@@ -53,32 +54,26 @@ watch(getSensors, () => {
   state.sensors = sensorStore.getSensors;
 });
 
-// when route updates, update the map polylines
-watch(
-  getSelectedRouteLatLong,
-  () => {
-    state.polyLineLatLngs = routeStore.getSelectedRouteLatLong;
+watch(getShouldDisplayRoute, () => {
+  state.shouldDisplayRoute = routeStore.getShouldDisplayRoute;
+});
 
-    // additional lines for start and end points
-    if (state.startPointLatLng.length && state.endPointLatLng.length) {
-      state.polyLineLatLngs.unshift(state.startPointLatLng); // append as first element
-      state.polyLineLatLngs.push(state.endPointLatLng); // append as last element
-    }
-  },
-  { deep: true }
-);
+watch(getGoogEncodedPolyline, async () => {
+  const encoded = routeStore.getGoogEncodedPolyline;
+  if (!encoded) {
+    return;
+  }
+  const latlngsArr = await decodePolyline(encoded);
 
-watch(getIsRouteGenerated, () => {
-  state.isRouteGenerated = routeStore.getIsRouteGenerated;
+  state.polyLineLatLngs = latlngsArr;
+  state.center = latlngsArr[0];
 });
 
 // when start point gets updated
 watch(getStartPointAddress, async () => {
   routeStore.setHasMappedStartEnd(false);
   state.startPointLatLng = await getLatLng(routeStore.getStartPointAddress); // get start point
-  state.polyLineLatLngs = routeStore.getSelectedRouteLatLong; // get route polyline
 
-  appendStartEndPolylines();
   state.center = state.startPointLatLng; // update map center
   routeStore.setHasMappedStartEnd(true);
 });
@@ -87,18 +82,8 @@ watch(getStartPointAddress, async () => {
 watch(getEndPointAddress, async () => {
   routeStore.setHasMappedStartEnd(false);
   state.endPointLatLng = await getLatLng(routeStore.getEndPointAddress); // get end point
-  state.polyLineLatLngs = routeStore.getSelectedRouteLatLong; // get route polyline
-
-  appendStartEndPolylines();
   routeStore.setHasMappedStartEnd(true);
 });
-
-function appendStartEndPolylines() {
-  if (state.startPointLatLng.length && state.endPointLatLng.length) {
-    state.polyLineLatLngs.unshift(state.startPointLatLng); // append as first element
-    state.polyLineLatLngs.push(state.endPointLatLng); // append as last element
-  }
-}
 
 function positionZoom() {
   state.device = useDevice();
@@ -131,7 +116,7 @@ function positionZoom() {
 
       <!-- route polyline -->
       <l-polyline
-        v-if="state.isRouteGenerated"
+        v-if="state.shouldDisplayRoute"
         :lat-lngs="state.polyLineLatLngs"
       ></l-polyline>
 

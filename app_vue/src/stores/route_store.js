@@ -1,46 +1,53 @@
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
 import { getOptimizedRouteData, getNewOptimizedRoute } from '@/utils/optimizeRouteHelper';
 
 export const useRouteStore = defineStore('route', {
   state: () => ({
     selectedRouteList: [], // list of sensor objects part of the route
-    isRouteGenerated: false, // when google api has been run on the route and we want to present it
+    shouldDisplayRoute: false, // when google api has been run on the route and we want to present it
     startPointAddress: '6900 Airport Rd Mississauga ON',
     endPointAddress: '6135 Airport Rd Mississauga ON',
     routeDuration: '',
     routeDistance: 0,
-    hasMappedStartEnd: false
+    hasMappedStartEnd: false,
+    googEncodedPolyline: ''
   }),
   getters: {
-    getSelectedRouteList({selectedRouteList}) {
+    getGoogEncodedPolyline({ googEncodedPolyline }) {
+      return googEncodedPolyline;
+    },
+    getSelectedRouteList({ selectedRouteList }) {
       return selectedRouteList;
     },
-    getSelectedRouteLatLong({selectedRouteList}) {
+    getSelectedRouteLatLong({ selectedRouteList }) {
       if (selectedRouteList.length > 0) {
-        return selectedRouteList.map(sensor => [sensor.lat, sensor.long]);
+        return selectedRouteList.map((sensor) => [sensor.lat, sensor.long]);
       }
       return [];
     },
-    getIsRouteGenerated({isRouteGenerated}) {
-      return isRouteGenerated;
+    getShouldDisplayRoute({ shouldDisplayRoute }) {
+      return shouldDisplayRoute;
     },
-    getStartPointAddress({startPointAddress}) {
+    getStartPointAddress({ startPointAddress }) {
       return startPointAddress;
     },
-    getEndPointAddress({endPointAddress}) {
+    getEndPointAddress({ endPointAddress }) {
       return endPointAddress;
     },
-    getRouteDuration({routeDuration}) {
+    getRouteDuration({ routeDuration }) {
       return routeDuration;
     },
-    getRouteDistance({routeDistance}) {
+    getRouteDistance({ routeDistance }) {
       return routeDistance;
     },
-    getHasMappedStartEnd({hasMappedStartEnd}) {
+    getHasMappedStartEnd({ hasMappedStartEnd }) {
       return hasMappedStartEnd;
-    },
+    }
   },
   actions: {
+    setGoogEncodedPolyline(value) {
+      this.googEncodedPolyline = value;
+    },
     setStartPoint(value) {
       this.startPointAddress = value;
     },
@@ -73,16 +80,16 @@ export const useRouteStore = defineStore('route', {
     },
     clearSensorRoute() {
       this.selectedRouteList = [];
-      this.isRouteGenerated = false;
+      this.shouldDisplayRoute = false;
     },
     setIsRouteGenerated(value) {
-      this.isRouteGenerated = value;
+      this.shouldDisplayRoute = value;
     },
     isAlreadyInRoute(sensor) {
       if (this.getSelectedRouteList.length > 0) {
-        return !!this.getSelectedRouteList.find(bin => bin.id === sensor.id);
+        return !!this.getSelectedRouteList.find((bin) => bin.id === sensor.id);
       }
-      return false
+      return false;
     },
     async googUpdateRouteStats() {
       const googResponse = await getOptimizedRouteData(this.getSelectedRouteList, this.startPointAddress, this.endPointAddress, false);
@@ -94,10 +101,16 @@ export const useRouteStore = defineStore('route', {
         if (googResponse.routes[0].distanceMeters) {
           this.setRouteDistance(googResponse.routes[0]?.distanceMeters);
         }
+
+        if (googResponse.routes[0].polyline) {
+          this.setGoogEncodedPolyline(googResponse.routes[0].polyline.encodedPolyline);
+        }
+
         this.setIsRouteGenerated(true);
       }
     },
-    async googOptimizeRoute() { // updates our stored selected route state with new optimized route
+    async googOptimizeRoute() {
+      // updates our stored selected route state with new optimized route
       const googResponse = await getOptimizedRouteData(this.getSelectedRouteList, this.startPointAddress, this.endPointAddress);
       if (googResponse && googResponse.routes && googResponse.routes[0]) {
         const newRouteIndexOrder = googResponse.routes[0].optimizedIntermediateWaypointIndex; // [0,3,4]
@@ -111,8 +124,13 @@ export const useRouteStore = defineStore('route', {
         if (googResponse.routes[0].distanceMeters) {
           this.setRouteDistance(googResponse.routes[0]?.distanceMeters);
         }
+
+        if (googResponse.routes[0].polyline) {
+          this.setGoogEncodedPolyline(googResponse.routes[0].polyline.encodedPolyline);
+        }
+
         this.setIsRouteGenerated(true);
       }
     }
-  },
-})
+  }
+});
