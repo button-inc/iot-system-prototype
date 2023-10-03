@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, onMounted, watch, onBeforeMount, onDeactivated } from 'vue';
+import { reactive, ref, onMounted, watch, onBeforeMount, onDeactivated } from 'vue';
 import SensorMapMarker from '@/components/sensorMapMarker.vue';
 import 'leaflet/dist/leaflet.css';
 import { LMap, LTileLayer, LMarker, LControlZoom, LPolyline, LIcon } from '@vue-leaflet/vue-leaflet';
@@ -16,6 +16,7 @@ const { getSensors } = storeToRefs(sensorStore);
 const routeStore = useRouteStore();
 const { getShouldDisplayRoute, getStartPointAddress, getEndPointAddress, getGoogEncodedPolyline } = storeToRefs(routeStore);
 
+// element variables
 const state = reactive({
   location: 'bottomright',
   device: useDevice(),
@@ -27,9 +28,9 @@ const state = reactive({
   center: [43.7, -79.42],
   sensors: []
 });
-
 const startImgUrl = 'src/assets/images/feather-disc.svg';
 const endImgUrl = 'src/assets/images/feather-map-pin.svg';
+const leafletMap = ref(null); // ref to access leafletMap object
 
 onBeforeMount(async () => {
   // processing start/end/center lat lng points
@@ -98,7 +99,7 @@ function positionZoom() {
 <template>
   <div class="sensor-map-container">
     <l-map
-      ref="map"
+      ref="leafletMap"
       v-model:zoom="state.zoom"
       :use-global-leaflet="false"
       :center="state.center"
