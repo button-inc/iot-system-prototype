@@ -43,7 +43,7 @@ watch(getHasMappedStartEnd, () => {
 
 async function findRouteClicked() {
   state.isLoadingGoogApi = true;
-  routeStore.updateRouteListWithSensors(sensorStore.sensors); // store current displayed sensors into route list
+  routeStore.setSelectedRouteList(sensorStore.sensors); // store current displayed sensors into route list
 
   if (sensorStore.getTotalSensors === 1) {
     await routeStore.googUpdateRouteStats();

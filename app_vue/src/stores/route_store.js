@@ -66,9 +66,6 @@ export const useRouteStore = defineStore('route', {
     setSelectedRouteList(value) {
       this.selectedRouteList = value;
     },
-    updateRouteListWithSensors(sensors) {
-      this.selectedRouteList = [...sensors];
-    },
     addSensorToRoute(sensor) {
       this.selectedRouteList.push(sensor);
     },

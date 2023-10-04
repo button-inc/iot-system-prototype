@@ -47,10 +47,6 @@ onMounted(() => {
   state.sensors = sensorStore.getSensors;
 });
 
-onDeactivated(() => {
-  routeStore.setHasMappedStartEnd(false);
-});
-
 watch(getSensors, () => {
   state.sensors = sensorStore.getSensors;
 });
@@ -59,6 +55,7 @@ watch(getShouldDisplayRoute, () => {
   state.shouldDisplayRoute = routeStore.getShouldDisplayRoute;
 });
 
+// when we have gathered a new polyline from google routes response
 watch(getGoogEncodedPolyline, async () => {
   const encoded = routeStore.getGoogEncodedPolyline;
   if (!encoded) {
@@ -66,6 +63,7 @@ watch(getGoogEncodedPolyline, async () => {
   }
   const latlngsArr = await decodePolyline(encoded);
 
+  // update route polyline
   state.polyLineLatLngs = latlngsArr;
   state.center = latlngsArr[0];
 });
@@ -94,6 +92,10 @@ function positionZoom() {
     state.location = 'bottomright';
   }
 }
+
+onDeactivated(() => {
+  routeStore.setHasMappedStartEnd(false);
+});
 </script>
 
 <template>
