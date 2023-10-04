@@ -14,6 +14,11 @@ export const useSensorStore = defineStore('sensors', {
     getSensors({ sensors }) {
       return sensors;
     },
+    getRoutableSensors({ sensors }) {
+      return sensors.filter((sensor) => {
+        return !sensor.isFilteredOut;
+      });
+    },
     getTotalSensors({ sensors }) {
       return Object.keys(sensors).length;
     },

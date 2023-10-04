@@ -12,7 +12,7 @@ const routeStore = useRouteStore();
 
 // sensor store
 const sensorStore = useSensorStore();
-const { sensors, getAllGroupOptions, getAllAssetTags, getAllBinTypes, getAllBinVolumes, getAllMaterialTypes } = storeToRefs(sensorStore);
+const { getAllGroupOptions, getAllAssetTags, getAllBinTypes, getAllBinVolumes, getAllMaterialTypes, getRoutableSensors } = storeToRefs(sensorStore);
 
 // component reactive variables
 const state = reactive({
@@ -27,7 +27,7 @@ const state = reactive({
   binType: [],
   binVolume: [],
   materialType: [],
-  totalSensors: 0,
+  totalSensorsShown: 0,
   showFillLabel: false,
   isCollapsed: false,
   filtersUsedMap: {
@@ -41,8 +41,8 @@ const state = reactive({
 });
 
 // watching for store state updates and updating component variables
-watch(sensors, () => {
-  state.totalSensors = sensorStore.getTotalSensors;
+watch(getRoutableSensors, () => {
+  state.totalSensorsShown = sensorStore.getRoutableSensors.length || 0;
 });
 
 watch(getAllGroupOptions, () => {
@@ -266,7 +266,7 @@ function getFilterCount() {
     </section>
 
     <div class="mb-6">
-      <span class="font-weight-bold">Result: {{ state.totalSensors }} bin{{ state.totalSensors > 1 ? 's' : '' }}</span>
+      <span class="font-weight-bold">Result: {{ state.totalSensorsShown }} bin{{ state.totalSensorsShown > 1 ? 's' : '' }}</span>
       displayed on map
     </div>
   </section>

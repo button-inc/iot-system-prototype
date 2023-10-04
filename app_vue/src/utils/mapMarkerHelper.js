@@ -1,28 +1,24 @@
 const ICON_NAMES = {
-  GREYSCALE_FULL_BIN: 'greyscale-full-bin',
   FULL_BIN: 'full-bin',
-  GREYSCALE_HALF_FULL_BIN: 'greyscale-half-full-bin',
   HALF_FULL_BIN: 'half-full-bin',
-  GREYSCALE_EMPTY_BIN: 'greyscale-empty-bin',
   EMPTY_BIN: 'empty-bin',
   ERROR_BIN: 'error-bin'
+  // GREYSCALE_EMPTY_BIN: 'greyscale-empty-bin',
+  // GREYSCALE_HALF_FULL_BIN: 'greyscale-half-full-bin',
+  // GREYSCALE_FULL_BIN: 'greyscale-full-bin'
 };
+
+// const IS_FILTERED_OUT = 'isFilteredOut';
 
 export const getBinIconName = (sensor) => {
   const isErrorState = sensor.error;
-  const isFilteredOut = sensor.isFilteredOut;
+  // const isFilteredOut = sensor[IS_FILTERED_OUT];
   const isFullState = sensor.fill_level && sensor.fill_level >= 75;
   const isHalfFullState = sensor.fill_level && sensor.fill_level >= 50 && sensor.fill_level < 75;
   const isEmptyState = sensor.fill_level && sensor.fill_level < 50;
 
   if (isErrorState) {
     return ICON_NAMES.ERROR_BIN;
-  } else if (isFilteredOut && isFullState) {
-    return ICON_NAMES.GREYSCALE_FULL_BIN;
-  } else if (isFilteredOut && isHalfFullState) {
-    return ICON_NAMES.GREYSCALE_HALF_FULL_BIN;
-  } else if (isFilteredOut && isEmptyState) {
-    return ICON_NAMES.GREYSCALE_EMPTY_BIN;
   } else if (isFullState) {
     return ICON_NAMES.FULL_BIN;
   } else if (isHalfFullState) {
