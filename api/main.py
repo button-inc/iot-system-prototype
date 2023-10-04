@@ -83,6 +83,13 @@ class BasicSensor(BaseModel):
     material_type: str
     asset_tag: str
     bin_volume: str
+    fill_level_last_collected: int | None
+    fill_level_alert: int | None
+    temperature_alert: int | None
+    illegal_dumping_alert: bool | None
+    contamination_alert: bool | None
+    last_collected: datetime | None
+
 
 
 # 📝 Model to represent a BrighterBinsSensorReading
@@ -215,7 +222,7 @@ def brighterbins_sensor_to_basic_sensor_with_reading(
     return BasicSensor(
         id=sensor["id"],
         sensor_type=SensorType.SOLID_BIN_LEVEL,
-        fill_level=sensor["readings"][-1]["fillLevel"]
+        fill_level=sensor["readings"][-1]["fillLevel"] # get the latest reading
         if (sensor["readings"] and len(sensor["readings"]) > 0)
         else None,
         lat=sensor["lat"],
@@ -232,6 +239,12 @@ def brighterbins_sensor_to_basic_sensor_with_reading(
         material_type=sensor["material_type"],
         bin_volume=sensor["bin_volume"],
         asset_tag=sensor["asset_tag"],
+        fill_level_last_collected=sensor["fill_level_last_collected"],
+        fill_level_alert=sensor["fill_level_alert"],
+        temperature_alert=sensor["temperature_alert"],
+        illegal_dumping_alert=sensor["illegal_dumping_alert"],
+        contamination_alert=sensor["contamination_alert"],
+        last_collected=sensor["last_collected"],
     )
 
 
@@ -347,11 +360,10 @@ def set_tkl_cache():
     try:
         print("Tekelek sensor data cache: fetching sensor data...")
         # get api token
-        # tekelek_api_token = get_tekelek_token() # TODO: put this back on after trade show
+        tekelek_api_token = get_tekelek_token() 
 
         # Define the base URL
         base_url = "https://phoenixapiprod.azurewebsites.net/api/"
-        date_format = "%m/%d/%Y %H:%M:%S"
 
         # Make a request to get all sensor data from tank records
         # tanks_url = base_url + "tanks"
@@ -367,15 +379,14 @@ def set_tkl_cache():
         if records:
             # Iterate asset records to get additional information from related API endpoints
             for index, record in enumerate(records):
-                id = index # TODO: after trade show, id = record["Sensor ID"] 
+                id = record["Sensor ID"] 
                 # get the latest sensor fill reading
-                # TODO: put the api call back on after trade show
-                # latest_reading_url = base_url + "latestReading/" + str(id)
-                # reading_response = make_http_request(
-                #     latest_reading_url,
-                #     method="GET",
-                #     headers={"Authorization": "Bearer " + tekelek_api_token},
-                # )
+                latest_reading_url = base_url + "latestReading/" + str(id)
+                reading_response = make_http_request(
+                    latest_reading_url,
+                    method="GET",
+                    headers={"Authorization": "Bearer " + tekelek_api_token},
+                )
 
                 sensor = {
                     "id": id,
@@ -394,12 +405,12 @@ def set_tkl_cache():
                     "asset_tag": record["Addiontal Asset Tags"],
                     "group": record["Group"],
                     "fill_level_last_collected": record["Fill_level_last_collected"],
-                    "fill_level": record["Fill_level"], # TODO: after trade show: "fill_level": reading_response["PercentFull"] if reading_response else None
+                    "fill_level": reading_response["PercentFull"] if reading_response else None,
                     "fill_level_alert": record["Fill_level_alert"],
                     "temperature_alert": record["Temperature_alert"],
-                    "illegal_dumping_alert": True if record["Illegal_dumping_alert"].upper() == "YES" else False,
-                    "contamination_alert": True if record["Contamination_alert"].upper() == "YES" else False,
-                    "last_collected": datetime.strptime(record["Last_collected"], date_format)
+                    "illegal_dumping_alert": record["Illegal_dumping_alert"].upper() == "YES",
+                    "contamination_alert": record["Contamination_alert"].upper() == "YES",
+                    "last_collected": datetime.strptime(record["Last_collected"], "%m/%d/%Y %H:%M:%S")
                 }
                 tkl_cache[id] = sensor
             print("Tekelek sensor data cache: fetch complete")
@@ -412,8 +423,8 @@ def set_tkl_cache():
 # The purpose is to maintain a historical record of sensor readings over time.
 # This allows the program to access and analyze past readings without repeatedly querying the API for the same data
 # event handler continues to run periodically, in the background, due to the @repeat_every decorator
-#@app.on_event("startup")
-#@repeat_every(seconds=60 * 60)  # Every 1 hour
+@app.on_event("startup")
+@repeat_every(seconds=60 * 60)  # Every 1 hour
 def update_bb_cache() -> None:
     global bb_cache
     global last_run_timestamp
@@ -434,6 +445,7 @@ def update_bb_cache() -> None:
 
         for index, record in enumerate(records):
             id = record["Sensor ID"]
+            print("fetching BrighterBin id", id)
             response = requests.request(
                 "POST",
                 url,
@@ -444,6 +456,7 @@ def update_bb_cache() -> None:
                     "id": id,
                 },
             ).json()
+            print(response['success'])
             readings = (
                 []
                 if len(response["data"]["series"]) == 0
@@ -465,6 +478,12 @@ def update_bb_cache() -> None:
                 "asset_tag": record["Addiontal Asset Tags"],
                 "group": record["Group"],
                 "readings": readings,
+                "fill_level_last_collected": record["Fill_level_last_collected"],
+                "fill_level_alert": record["Fill_level_alert"],
+                "temperature_alert": record["Temperature_alert"],
+                "illegal_dumping_alert": record["Illegal_dumping_alert"].upper() == "YES",
+                "contamination_alert": record["Contamination_alert"].upper() == "YES",
+                "last_collected": datetime.strptime(record["Last_collected"], "%m/%d/%Y %H:%M:%S")
             }
             bb_cache[id] = sensor
         print("Initial fetch complete")
