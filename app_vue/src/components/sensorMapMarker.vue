@@ -15,7 +15,6 @@ const props = defineProps({
 
 // set html element variables
 const state = reactive({
-  iconUrl: '',
   linearProgressColor: '',
   fillPercent: 0,
   isAlreadyInRoute: false,
@@ -28,7 +27,6 @@ const { getSelectedRouteList, getShouldDisplayRoute } = storeToRefs(routeStore);
 
 onBeforeMount(() => {
   const binIconName = getBinIconName(props.sensor);
-  state.iconUrl = getIconUrl(binIconName);
   state.linearProgressColor = getVuetifyLinearProgressColor(binIconName);
   state.fillPercent = Math.round(props.sensor.fill_level || 0);
 });
@@ -71,7 +69,7 @@ function removeBinFromRoute(sensor) {
   <l-icon
     :icon-size="[19, 23]"
     :icon-anchor="[10, 18]"
-    :icon-url="state.iconUrl"
+    :icon-url="getIconUrl(getBinIconName(props.sensor))"
   />
 
   <l-popup class="popup">

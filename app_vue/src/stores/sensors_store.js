@@ -65,7 +65,7 @@ export const useSensorStore = defineStore('sensors', {
       this.selectedMaterialType = materialType;
     },
     updateSensorsWithFilters() {
-      this.sensors.forEach((sensor) => {
+      this.sensors.map((sensor) => {
         // filter for fill range
         const fillRangeFilter = () => {
           if (this.selectedFillRange && (sensor.fill_level || sensor.fill_level === 0)) {
@@ -114,8 +114,9 @@ export const useSensorStore = defineStore('sensors', {
           return true;
         };
 
-        // combining results of all filters together
+        // setting up new property
         sensor.keepAfterFiltering = fillRangeFilter() && groupFilter() && assetTagFilter() && binTypeFilter() && binVolumeFilter() && materialTypeFilter();
+        return sensor;
       });
     }
   }
