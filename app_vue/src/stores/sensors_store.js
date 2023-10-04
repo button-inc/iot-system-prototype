@@ -115,7 +115,9 @@ export const useSensorStore = defineStore('sensors', {
         };
 
         // setting up new property
-        sensor.keepAfterFiltering = fillRangeFilter() && groupFilter() && assetTagFilter() && binTypeFilter() && binVolumeFilter() && materialTypeFilter();
+
+        const keepAfterFiltering = fillRangeFilter() && groupFilter() && assetTagFilter() && binTypeFilter() && binVolumeFilter() && materialTypeFilter();
+        sensor.isFilteredOut = !keepAfterFiltering;
         return sensor;
       });
     }

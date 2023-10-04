@@ -10,7 +10,7 @@ const ICON_NAMES = {
 
 export const getBinIconName = (sensor) => {
   const isErrorState = sensor.error;
-  const isFilteredOut = 'keepAfterFiltering' in sensor && !sensor.keepAfterFiltering;
+  const isFilteredOut = sensor.isFilteredOut;
   const isFullState = sensor.fill_level && sensor.fill_level >= 75;
   const isHalfFullState = sensor.fill_level && sensor.fill_level >= 50 && sensor.fill_level < 75;
   const isEmptyState = sensor.fill_level && sensor.fill_level < 50;

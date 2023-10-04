@@ -67,6 +67,7 @@ function removeBinFromRoute(sensor) {
 
 <template>
   <l-icon
+    :class-name="props.sensor.isFilteredOut ? 'low-opacity' : ''"
     :icon-size="[19, 23]"
     :icon-anchor="[10, 18]"
     :icon-url="getIconUrl(getBinIconName(props.sensor))"

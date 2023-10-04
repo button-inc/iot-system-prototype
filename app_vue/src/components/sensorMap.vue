@@ -167,7 +167,10 @@ onDeactivated(() => {
 
 <style lang="scss" scoped>
 // leaflet css override for mobile views
-
+:deep img.low-opacity {
+  // class from sensorMapMaker
+  opacity: 0.6;
+}
 :deep .leaflet-pane .leaflet-layer {
   // handles map opacity level
   opacity: 0.7 !important;
