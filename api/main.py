@@ -36,6 +36,8 @@ tkl_username = os.environ.get("TEKELEK_USERNAME")
 # 📚 Authenticate with Google Sheets service account
 sa = gspread.service_account(filename="google_sheets_sa_key.json")
 
+goog_sheet_date_format = "%m/%d/%Y %H:%M:%S"
+
 # 🚀 Initialize FastAPI application
 app = FastAPI()
 
@@ -414,7 +416,7 @@ def set_tkl_cache():
                     "temperature_alert": record["Temperature_alert"],
                     "illegal_dumping_alert": record["Illegal_dumping_alert"].upper() == "YES",
                     "contamination_alert": record["Contamination_alert"].upper() == "YES",
-                    "last_collected": datetime.strptime(record["Last_collected"], "%m/%d/%Y %H:%M:%S")
+                    "last_collected": datetime.strptime(record["Last_collected"], goog_sheet_date_format)
                 }
                 tkl_cache[id] = sensor
             print("Tekelek sensor data cache: fetch complete")
@@ -493,7 +495,7 @@ def update_bb_cache() -> None:
                     "temperature_alert": record["Temperature_alert"],
                     "illegal_dumping_alert": record["Illegal_dumping_alert"].upper() == "YES",
                     "contamination_alert": record["Contamination_alert"].upper() == "YES",
-                    "last_collected": datetime.strptime(record["Last_collected"], "%m/%d/%Y %H:%M:%S")
+                    "last_collected": datetime.strptime(record["Last_collected"], goog_sheet_date_format)
                 }
                 bb_cache[id] = sensor
             except Exception as e:
