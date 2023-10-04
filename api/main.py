@@ -389,6 +389,9 @@ def set_tkl_cache():
                     headers={"Authorization": "Bearer " + tekelek_api_token},
                 )
 
+                if not (reading_response):
+                    print("failed to get response from id ", id)
+
                 sensor = {
                     "id": id,
                     "row_id": index + 2,
