@@ -8,7 +8,7 @@ const ICON_NAMES = {
   ERROR_BIN: 'error-bin'
 };
 
-const getBinIconName = (sensor) => {
+export const getBinIconName = (sensor) => {
   const isErrorState = sensor.error;
   const isFilteredOut = 'keepAfterFiltering' in sensor && !sensor.keepAfterFiltering;
   const isFullState = sensor.fill_level && sensor.fill_level >= 75;
@@ -16,7 +16,6 @@ const getBinIconName = (sensor) => {
   const isEmptyState = sensor.fill_level && sensor.fill_level < 50;
 
   if (isErrorState) {
-    // shows error icon
     return ICON_NAMES.ERROR_BIN;
   } else if (isFilteredOut && isFullState) {
     return ICON_NAMES.GREYSCALE_FULL_BIN;
@@ -60,27 +59,23 @@ export const getMaterialTypeIconURL = (materialType) => {
 };
 
 // linearProgressColor -> used by Vuetify to determine progress bar color
-// iconURL -> used by Vuetify to display bin icon
-export const getIconAndProgressColor = (sensor) => {
-  // mini-helper function
-  const iconName = getBinIconName(sensor);
-  let iconUrl = '';
-  let linearProgressColor = '';
+export const getVuetifyLinearProgressColor = (iconName) => {
   const RED = '#C92828';
   const GREEN = 'green';
   const ORANGE = '#F07F2D';
-  const iconDirectory = 'src/assets/images/binMarkerIcons';
 
-  iconUrl = `${iconDirectory}/${iconName}.png`;
-  linearProgressColor = GREEN;
+  let linearProgressColor = GREEN;
 
   if (iconName === ICON_NAMES.ERROR_BIN || iconName === ICON_NAMES.FULL_BIN) {
     linearProgressColor = RED;
   } else if (iconName === ICON_NAMES.HALF_FULL_BIN) {
     linearProgressColor = ORANGE;
   }
-
-  return { iconUrl, linearProgressColor };
+  return linearProgressColor;
 };
 
-export default getIconAndProgressColor;
+// iconURL -> used by Vuetify to display bin icon
+export const getIconUrl = (iconName) => {
+  const iconDirectory = 'src/assets/images/binMarkerIcons';
+  return `${iconDirectory}/${iconName}.png`;
+};

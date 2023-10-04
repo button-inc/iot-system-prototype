@@ -3,7 +3,6 @@ import { defineStore } from 'pinia';
 export const useSensorStore = defineStore('sensors', {
   state: () => ({
     sensors: [],
-    allSensors: [],
     selectedGroup: null,
     selectedAssetTag: [],
     selectedBinType: [],
@@ -18,20 +17,20 @@ export const useSensorStore = defineStore('sensors', {
     getTotalSensors({ sensors }) {
       return Object.keys(sensors).length;
     },
-    getAllGroupOptions({ allSensors }) {
-      return [...new Set(allSensors.flatMap((sensor) => sensor.group || []))];
+    getAllGroupOptions({ sensors }) {
+      return [...new Set(sensors.flatMap((sensor) => sensor.group || []))];
     },
-    getAllAssetTags({ allSensors }) {
-      return [...new Set(allSensors.flatMap((sensor) => sensor.asset_tag || []))];
+    getAllAssetTags({ sensors }) {
+      return [...new Set(sensors.flatMap((sensor) => sensor.asset_tag || []))];
     },
-    getAllBinTypes({ allSensors }) {
-      return [...new Set(allSensors.flatMap((sensor) => sensor.bin_type || []))];
+    getAllBinTypes({ sensors }) {
+      return [...new Set(sensors.flatMap((sensor) => sensor.bin_type || []))];
     },
-    getAllBinVolumes({ allSensors }) {
-      return [...new Set(allSensors.flatMap((sensor) => sensor.bin_volume || []))];
+    getAllBinVolumes({ sensors }) {
+      return [...new Set(sensors.flatMap((sensor) => sensor.bin_volume || []))];
     },
-    getAllMaterialTypes({ allSensors }) {
-      return [...new Set(allSensors.flatMap((sensor) => sensor.material_type || []))];
+    getAllMaterialTypes({ sensors }) {
+      return [...new Set(sensors.flatMap((sensor) => sensor.material_type || []))];
     }
   },
   actions: {
@@ -46,7 +45,6 @@ export const useSensorStore = defineStore('sensors', {
     },
     setSensors(value) {
       this.sensors = value;
-      this.allSensors = value;
     },
     setSelectedGroup(group) {
       this.selectedGroup = group;
