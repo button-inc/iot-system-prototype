@@ -1,6 +1,6 @@
 <script setup>
 import { reactive, ref } from 'vue';
-import { getLatLng } from '@/utils/getLatLngFromAddressHelper';
+import { getLatLng } from '@/utils/geoCodingHelper';
 
 const emit = defineEmits(['update:modelValue', 'update:addressOptions']); // for v-model
 

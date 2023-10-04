@@ -21,7 +21,7 @@ const isRouteCreated = ref(false);
 
 // route store
 const routeStore = useRouteStore();
-const { getSelectedRouteList, getIsRouteGenerated } = storeToRefs(routeStore);
+const { getSelectedRouteList, getShouldDisplayRoute } = storeToRefs(routeStore);
 
 // watch for changes in stored sensor route array (ie. when a sensor gets added or removed)
 watch(
@@ -33,9 +33,9 @@ watch(
 );
 
 watch(
-  getIsRouteGenerated,
+  getShouldDisplayRoute,
   () => {
-    isRouteCreated.value = routeStore.getIsRouteGenerated;
+    isRouteCreated.value = routeStore.getShouldDisplayRoute;
   },
   { deep: true }
 );
