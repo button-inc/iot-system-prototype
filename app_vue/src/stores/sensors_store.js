@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
 
 export const useSensorStore = defineStore('sensors', {
   state: () => ({
@@ -8,7 +8,7 @@ export const useSensorStore = defineStore('sensors', {
     selectedAssetTag: [],
     selectedBinType: [],
     selectedBinVolume: null,
-    selectedFillRange: [0,100],
+    selectedFillRange: [0, 100],
     selectedMaterialType: []
   }),
   getters: {
@@ -19,19 +19,19 @@ export const useSensorStore = defineStore('sensors', {
       return Object.keys(sensors).length;
     },
     getAllGroupOptions({ allSensors }) {
-      return [...new Set(allSensors.flatMap(sensor => sensor.group || []))];
+      return [...new Set(allSensors.flatMap((sensor) => sensor.group || []))];
     },
     getAllAssetTags({ allSensors }) {
-      return [...new Set(allSensors.flatMap(sensor => sensor.asset_tag || []))];
+      return [...new Set(allSensors.flatMap((sensor) => sensor.asset_tag || []))];
     },
     getAllBinTypes({ allSensors }) {
-      return [...new Set(allSensors.flatMap(sensor => sensor.bin_type || []))];
+      return [...new Set(allSensors.flatMap((sensor) => sensor.bin_type || []))];
     },
     getAllBinVolumes({ allSensors }) {
-      return [...new Set(allSensors.flatMap(sensor => sensor.bin_volume || []))];
+      return [...new Set(allSensors.flatMap((sensor) => sensor.bin_volume || []))];
     },
     getAllMaterialTypes({ allSensors }) {
-      return [...new Set(allSensors.flatMap(sensor => sensor.material_type || []))];
+      return [...new Set(allSensors.flatMap((sensor) => sensor.material_type || []))];
     }
   },
   actions: {
@@ -49,7 +49,7 @@ export const useSensorStore = defineStore('sensors', {
       this.allSensors = value;
     },
     setSelectedGroup(group) {
-      this.selectedGroup = group
+      this.selectedGroup = group;
     },
     setSelectedAssetTag(assetTag) {
       this.selectedAssetTag = assetTag;
@@ -67,7 +67,7 @@ export const useSensorStore = defineStore('sensors', {
       this.selectedMaterialType = materialType;
     },
     updateSensorsWithFilters() {
-      this.sensors = this.allSensors.filter(sensor => {
+      this.sensors.forEach((sensor) => {
         // filter for fill range
         const fillRangeFilter = () => {
           if (this.selectedFillRange && (sensor.fill_level || sensor.fill_level === 0)) {
@@ -75,7 +75,7 @@ export const useSensorStore = defineStore('sensors', {
           }
           return true;
         };
-  
+
         // filter for group
         const groupFilter = () => {
           if (this.selectedGroup && this.selectedGroup.length > 0 && sensor.group) {
@@ -83,7 +83,7 @@ export const useSensorStore = defineStore('sensors', {
           }
           return true;
         };
-  
+
         // filter for asset tag
         const assetTagFilter = () => {
           if (this.selectedAssetTag && this.selectedAssetTag.length > 0 && sensor.asset_tag) {
@@ -91,7 +91,7 @@ export const useSensorStore = defineStore('sensors', {
           }
           return true;
         };
-  
+
         // filter for bintype
         const binTypeFilter = () => {
           if (this.selectedBinType && this.selectedBinType.length > 0 && sensor.bin_type) {
@@ -99,7 +99,7 @@ export const useSensorStore = defineStore('sensors', {
           }
           return true;
         };
-  
+
         // filter for bin volume
         const binVolumeFilter = () => {
           if (this.selectedBinVolume && this.selectedBinVolume.length > 0 && sensor.bin_volume) {
@@ -117,8 +117,8 @@ export const useSensorStore = defineStore('sensors', {
         };
 
         // combining results of all filters together
-        return fillRangeFilter() && groupFilter() && assetTagFilter() && binTypeFilter() && binVolumeFilter() && materialTypeFilter();
-      })
+        sensor.keepAfterFiltering = fillRangeFilter() && groupFilter() && assetTagFilter() && binTypeFilter() && binVolumeFilter() && materialTypeFilter();
+      });
     }
-  },
-})
+  }
+});
