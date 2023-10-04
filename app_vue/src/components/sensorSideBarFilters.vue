@@ -30,7 +30,7 @@ const state = reactive({
   totalSensors: 0,
   showFillLabel: false,
   isCollapsed: false,
-  filterEnabledMap: {
+  filtersUsedMap: {
     fillRange: false,
     group: false,
     assetTag: false,
@@ -76,9 +76,9 @@ function updateGroupFilter() {
   updateSensorsShown();
 
   if (state.selectedGroup) {
-    state.filterEnabledMap['group'] = true;
+    state.filtersUsedMap['group'] = true;
   } else {
-    state.filterEnabledMap['group'] = false;
+    state.filtersUsedMap['group'] = false;
   }
 }
 
@@ -87,9 +87,9 @@ function updateAssetTagFilter() {
   updateSensorsShown();
 
   if (state.selectedAssetTag.length > 0) {
-    state.filterEnabledMap['assetTag'] = true;
+    state.filtersUsedMap['assetTag'] = true;
   } else {
-    state.filterEnabledMap['assetTag'] = false;
+    state.filtersUsedMap['assetTag'] = false;
   }
 }
 
@@ -98,9 +98,9 @@ function updateBinTypeFilter() {
   updateSensorsShown();
 
   if (state.selectedBinType.length > 0) {
-    state.filterEnabledMap['binType'] = true;
+    state.filtersUsedMap['binType'] = true;
   } else {
-    state.filterEnabledMap['binType'] = false;
+    state.filtersUsedMap['binType'] = false;
   }
 }
 
@@ -109,9 +109,9 @@ function updateBinVolumeFilter() {
   updateSensorsShown();
 
   if (state.selectedBinVolume) {
-    state.filterEnabledMap['binVolume'] = true;
+    state.filtersUsedMap['binVolume'] = true;
   } else {
-    state.filterEnabledMap['binVolume'] = false;
+    state.filtersUsedMap['binVolume'] = false;
   }
 }
 
@@ -121,9 +121,9 @@ function updateFillRangeFilter() {
 
   const isInitial = state.selectedFillRange[0] === 0 && state.selectedFillRange[1] === 100;
   if (isInitial) {
-    state.filterEnabledMap['fillRange'] = false;
+    state.filtersUsedMap['fillRange'] = false;
   } else {
-    state.filterEnabledMap['fillRange'] = true;
+    state.filtersUsedMap['fillRange'] = true;
   }
 }
 
@@ -132,9 +132,9 @@ function updateMaterialTypeFilter() {
   updateSensorsShown();
 
   if (state.selectedMaterialType.length > 0) {
-    state.filterEnabledMap['materialType'] = true;
+    state.filtersUsedMap['materialType'] = true;
   } else {
-    state.filterEnabledMap['materialType'] = false;
+    state.filtersUsedMap['materialType'] = false;
   }
 }
 
@@ -149,14 +149,14 @@ function clearFilters() {
   state.selectedFillRange = [0, 100];
   state.selectedMaterialType = [];
 
-  Object.keys(state.filterEnabledMap).forEach((key) => {
-    state.filterEnabledMap[key] = false;
+  Object.keys(state.filtersUsedMap).forEach((key) => {
+    state.filtersUsedMap[key] = false;
   });
 }
 
 function getFilterCount() {
   // returns number of filters in use
-  const truthArr = Object.values(state.filterEnabledMap).filter((isEnabled) => isEnabled);
+  const truthArr = Object.values(state.filtersUsedMap).filter((isEnabled) => isEnabled);
   return truthArr.length;
 }
 </script>

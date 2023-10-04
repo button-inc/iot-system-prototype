@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, watch, onMounted } from 'vue';
+import { reactive, watch, onBeforeMount } from 'vue';
 import { LPopup, LIcon } from '@vue-leaflet/vue-leaflet';
 import { useRouteStore } from '@/stores/route_store';
 import { storeToRefs } from 'pinia';
@@ -26,7 +26,7 @@ const state = reactive({
 const routeStore = useRouteStore();
 const { getSelectedRouteList, getShouldDisplayRoute } = storeToRefs(routeStore);
 
-onMounted(() => {
+onBeforeMount(() => {
   const binIconName = getBinIconName(props.sensor);
   state.iconUrl = getIconUrl(binIconName);
   state.linearProgressColor = getVuetifyLinearProgressColor(binIconName);
