@@ -379,7 +379,8 @@ def set_tkl_cache():
         if records:
             # Iterate asset records to get additional information from related API endpoints
             for index, record in enumerate(records):
-                id = record["Sensor ID"] 
+                id = record["Sensor ID"]
+                print("fetching Tekelek id", id) 
                 # get the latest sensor fill reading
                 latest_reading_url = base_url + "latestReading/" + str(id)
                 reading_response = make_http_request(
@@ -446,46 +447,55 @@ def update_bb_cache() -> None:
         for index, record in enumerate(records):
             id = record["Sensor ID"]
             print("fetching BrighterBin id", id)
-            response = requests.request(
-                "POST",
-                url,
-                headers={"Authorization": "Bearer " + brighterbins_api_token},
-                data={
-                    "from": readingsStartTime,
-                    "to": readingsEndTime,
+            try:
+                response = requests.request(
+                    "POST",
+                    url,
+                    headers={"Authorization": "Bearer " + brighterbins_api_token},
+                    data={
+                        "from": readingsStartTime,
+                        "to": readingsEndTime,
+                        "id": id,
+                    },
+                ).json()
+                # Check if the response is successful
+                if response.get('success'):
+                    readings = (
+                        []
+                        if len(response["data"]["series"]) == 0
+                        else response["data"]["series"]
+                    )
+                else:
+                    print(f"Error fetching data for sensor {id}. Response: {response}")
+                    readings = ([{"fillLevel": -1}])
+                
+                sensor = {
                     "id": id,
-                },
-            ).json()
-            print(response['success'])
-            readings = (
-                []
-                if len(response["data"]["series"]) == 0
-                else response["data"]["series"]
-            )
-            sensor = {
-                "id": id,
-                "row_id": index + 2,
-                "bin_name": record["Asset - Name"],
-                "address": record["Address"],
-                "city": record["City"],
-                "province": record["Province"],
-                "postal_code": record["Postal code"],
-                "lat": record["Latitude"],
-                "long": record["Longitude"],
-                "bin_volume": record["Bin Volume"],
-                "bin_type": record["Bin Type"],
-                "material_type": record["Material/Waste Type"],
-                "asset_tag": record["Addiontal Asset Tags"],
-                "group": record["Group"],
-                "readings": readings,
-                "fill_level_last_collected": record["Fill_level_last_collected"],
-                "fill_level_alert": record["Fill_level_alert"],
-                "temperature_alert": record["Temperature_alert"],
-                "illegal_dumping_alert": record["Illegal_dumping_alert"].upper() == "YES",
-                "contamination_alert": record["Contamination_alert"].upper() == "YES",
-                "last_collected": datetime.strptime(record["Last_collected"], "%m/%d/%Y %H:%M:%S")
-            }
-            bb_cache[id] = sensor
+                    "row_id": index + 2,
+                    "bin_name": record["Asset - Name"],
+                    "address": record["Address"],
+                    "city": record["City"],
+                    "province": record["Province"],
+                    "postal_code": record["Postal code"],
+                    "lat": record["Latitude"],
+                    "long": record["Longitude"],
+                    "bin_volume": record["Bin Volume"],
+                    "bin_type": record["Bin Type"],
+                    "material_type": record["Material/Waste Type"],
+                    "asset_tag": record["Addiontal Asset Tags"],
+                    "group": record["Group"],
+                    "readings": readings,
+                    "fill_level_last_collected": record["Fill_level_last_collected"],
+                    "fill_level_alert": record["Fill_level_alert"],
+                    "temperature_alert": record["Temperature_alert"],
+                    "illegal_dumping_alert": record["Illegal_dumping_alert"].upper() == "YES",
+                    "contamination_alert": record["Contamination_alert"].upper() == "YES",
+                    "last_collected": datetime.strptime(record["Last_collected"], "%m/%d/%Y %H:%M:%S")
+                }
+                bb_cache[id] = sensor
+            except Exception as e:
+                print(f"Error fetching data for sensor {id}. Exception: {e}")
+
         print("Initial fetch complete")
     else:
         print("Fetching latest data...")
