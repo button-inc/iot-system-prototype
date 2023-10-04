@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-
 // uses openstreetmap geocoding (opensource)
 // https://nominatim.openstreetmap.org/ui/search.html
 export const getLatLng = async (address) => {
@@ -11,10 +10,10 @@ export const getLatLng = async (address) => {
       return [response.data[0].lat, response.data[0].lon];
     }
     return [];
-  } catch(e) {
+  } catch (e) {
     console.error('error generating lat lng', e);
     return [];
   }
 };
 
-export default getLatLng
+export default getLatLng;

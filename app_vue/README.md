@@ -52,6 +52,7 @@ Ensure you have followed the README file located here: api/README.md
 ### Google Maps Routes API
 - this is used to calculate the optimal order of bins to visit
 - note that if it returns empty object {} it is likely that your request is passing incorrect lat/long or location data
+- we are also using it to return an encoded polyline
 
 ### JEST
 - We are using Jest and specifically the `@vue/test-utils` version of it (more info [here](https://test-utils.vuejs.org/))

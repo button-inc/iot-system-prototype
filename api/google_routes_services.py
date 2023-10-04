@@ -28,10 +28,10 @@ def get_optimized_routes_payload(selectedRouteList, originAddress, destinationAd
     ]
     
     if to_optimize:
-        GOOG_FIELD_MASK = 'routes.duration,routes.distanceMeters,routes.optimizedIntermediateWaypointIndex'
+        GOOG_FIELD_MASK = 'routes.duration,routes.distanceMeters,routes.optimizedIntermediateWaypointIndex,routes.polyline'
         optimizeWaypointOrder = True
     else:
-        GOOG_FIELD_MASK = 'routes.duration,routes.distanceMeters'
+        GOOG_FIELD_MASK = 'routes.duration,routes.distanceMeters,routes.polyline'
         optimizeWaypointOrder = False
 
     return {
