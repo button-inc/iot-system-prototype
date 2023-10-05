@@ -82,12 +82,6 @@ export const useRouteStore = defineStore('route', {
     setIsRouteGenerated(value) {
       this.shouldDisplayRoute = value;
     },
-    isAlreadyInRoute(sensor) {
-      if (this.getSelectedRouteList.length > 0) {
-        return !!this.getSelectedRouteList.find((bin) => bin.id === sensor.id);
-      }
-      return false;
-    },
     async googUpdateRouteStats() {
       const googResponse = await getOptimizedRouteData(this.getSelectedRouteList, this.startPointAddress, this.endPointAddress, false);
       if (googResponse && googResponse.routes && googResponse.routes[0]) {
