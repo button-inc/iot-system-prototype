@@ -199,22 +199,22 @@ def tkl_to_bs(sensor: TekelekSensor) -> BasicSensor:
 
 
 # 🔧 Function to convert TeklekSensor dictionary to BasicSensor dictionary
-# def tkl_dict_to_bs_dict(sensors: List[Dict[str, Union[str, int, float, None]]]) -> dict:
-#     bs_dict = {}
-#     # loop to iterate through each obj in the TekelekSensor list
-#     for sensor_data in sensors:
-#         try:
-#             # create a TekelekSensor object (sensor_obj) by passing the dictionary sensor_data as keyword argument
-#             sensor_obj = TekelekSensor(**sensor_data)
+def tkl_dict_to_bs_dict(sensors: List[Dict[str, Union[str, int, float, None]]]) -> dict:
+    bs_dict = {}
+    # loop to iterate through each obj in the TekelekSensor list
+    for sensor_data in sensors:
+        try:
+            # create a TekelekSensor object (sensor_obj) by passing the dictionary sensor_data as keyword argument
+            sensor_obj = TekelekSensor(**sensor_data)
 
-#             # print(f"sensor_obj : {sensor_obj }")
-#             # convert the TekelekSensor into a BasicSensor and store it in the bs_dict dictionary.
-#             bs_dict[sensor_obj.ModemSerialNo] = tkl_to_bs(sensor_obj)
-#         except (ValueError, KeyError, TypeError) as e:
-#             print(f"Error processing sensor {sensor_obj.ModemSerialNo}: {e}")
-#             # Optionally, continue to the next iteration
-#             continue
-#     return bs_dict
+            # print(f"sensor_obj : {sensor_obj }")
+            # convert the TekelekSensor into a BasicSensor and store it in the bs_dict dictionary.
+            bs_dict[sensor_obj.ModemSerialNo] = tkl_to_bs(sensor_obj)
+        except (ValueError, KeyError, TypeError) as e:
+            print(f"Error processing sensor {sensor_obj.ModemSerialNo}: {e}")
+            # Optionally, continue to the next iteration
+            continue
+    return bs_dict
 
 
 # 🔧 Function to convert BrighterBinsSensor to BasicSensor with latest reading
