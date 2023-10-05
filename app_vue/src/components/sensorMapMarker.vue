@@ -1,9 +1,9 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { reactive, watch, onBeforeMount } from 'vue';
 import { LPopup, LIcon } from '@vue-leaflet/vue-leaflet';
 import { useRouteStore } from '@/stores/route_store';
 import { storeToRefs } from 'pinia';
-import { getIconAndProgressColor, getMaterialTypeIconURL } from '@/utils/mapMarkerHelper';
+import { getBinIconName, getMaterialTypeIconURL, getVuetifyLinearProgressColor, getIconUrl } from '@/utils/mapMarkerHelper';
 import { getDate12HrTime } from '@/utils/formattingHelper';
 
 const props = defineProps({
@@ -14,35 +14,54 @@ const props = defineProps({
 });
 
 // set html element variables
-const fillPercent = ref(Math.round(props.sensor.fill_level || 0));
-const { iconUrl, linearProgressColor } = getIconAndProgressColor(props.sensor);
-const isAlreadyInRoute = ref(false);
-const isRouteCreated = ref(false);
+const state = reactive({
+  linearProgressColor: '',
+  fillPercent: 0,
+  isAlreadyInRoute: false,
+  showAddRemoveFromRoute: false
+});
 
 // route store
 const routeStore = useRouteStore();
-const { getSelectedRouteList, getIsRouteGenerated } = storeToRefs(routeStore);
+const { getSelectedRouteList, getShouldDisplayRoute } = storeToRefs(routeStore);
+
+onBeforeMount(() => {
+  const binIconName = getBinIconName(props.sensor);
+  state.linearProgressColor = getVuetifyLinearProgressColor(binIconName);
+  state.fillPercent = Math.round(props.sensor.fill_level || 0);
+});
 
 // watch for changes in stored sensor route array (ie. when a sensor gets added or removed)
 watch(
   getSelectedRouteList,
   () => {
-    isAlreadyInRoute.value = routeStore.isAlreadyInRoute(props.sensor);
+    state.isAlreadyInRoute = isAlreadyInRoute(props.sensor);
   },
   { deep: true }
 );
 
 watch(
-  getIsRouteGenerated,
+  getShouldDisplayRoute,
   () => {
-    isRouteCreated.value = routeStore.getIsRouteGenerated;
+    const routeList = routeStore.getSelectedRouteList;
+    state.showAddRemoveFromRoute = routeStore.getShouldDisplayRoute && routeList.length > 1;
   },
   { deep: true }
 );
 
+function isAlreadyInRoute(sensor) {
+  const selectedRouteList = routeStore.getSelectedRouteList;
+  if (selectedRouteList.length > 1) {
+    return !!selectedRouteList.find((bin) => bin.id === sensor.id);
+  } else if (selectedRouteList.length === 1) {
+    return true;
+  }
+  return false;
+}
+
 function addBinToRoute(sensor) {
   // only add to route if not already added
-  if (isAlreadyInRoute.value === false) {
+  if (state.isAlreadyInRoute === false) {
     routeStore.addSensorToRoute(sensor);
     routeStore.googOptimizeRoute();
   }
@@ -50,7 +69,7 @@ function addBinToRoute(sensor) {
 
 function removeBinFromRoute(sensor) {
   // only remove from route if already added
-  if (isAlreadyInRoute.value === true) {
+  if (state.isAlreadyInRoute === true) {
     routeStore.removeSensorFromRoute(sensor);
     routeStore.googOptimizeRoute();
   }
@@ -59,9 +78,10 @@ function removeBinFromRoute(sensor) {
 
 <template>
   <l-icon
+    :class-name="props.sensor.isFilteredOut ? 'low-opacity' : ''"
     :icon-size="[19, 23]"
     :icon-anchor="[10, 18]"
-    :icon-url="iconUrl"
+    :icon-url="getIconUrl(getBinIconName(props.sensor))"
   />
 
   <l-popup class="popup">
@@ -116,14 +136,14 @@ function removeBinFromRoute(sensor) {
 
       <section class="popup__sidebar">
         <div class="fill-level">
-          <template v-if="fillPercent === null">level not captured</template>
+          <template v-if="!state.fillPercent && state.fillPercent !== 0">level not captured</template>
           <template v-else>
-            <span class="fill-level__percent">{{ fillPercent }}%</span>
+            <span class="fill-level__percent">{{ state.fillPercent }}%</span>
             <v-progress-linear
               class="fill-level__progress-bar"
               style="width: 100px; height: 20px; transform: rotate(270deg); top: unset; left: unset"
-              :model-value="fillPercent"
-              :color="linearProgressColor"
+              :model-value="state.fillPercent"
+              :color="state.linearProgressColor"
               :max="100"
             ></v-progress-linear>
             <div class="fill-level__text">Fill level</div>
@@ -207,20 +227,20 @@ function removeBinFromRoute(sensor) {
     <!-- add to route buttons -->
     <section
       class="bin-details__cta-routes"
-      v-if="isRouteCreated"
+      v-if="state.showAddRemoveFromRoute"
     >
       <v-btn
         variant="flat"
         class="mt-2 mb-2"
         color="#191A1C"
-        :disabled="isAlreadyInRoute"
+        :disabled="state.isAlreadyInRoute"
         @click="addBinToRoute(props.sensor)"
       >
         + Add to route
       </v-btn>
       <v-btn
         variant="tonal"
-        v-if="isAlreadyInRoute"
+        v-if="state.isAlreadyInRoute"
         class="mt-2 mb-2"
         @click="removeBinFromRoute(props.sensor)"
       >

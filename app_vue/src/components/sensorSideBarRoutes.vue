@@ -10,17 +10,18 @@ import { telusUi } from '@/styles/telusUi';
 // stores
 const routeStore = useRouteStore();
 const sensorStore = useSensorStore();
-const { getIsRouteGenerated, getHasMappedStartEnd } = storeToRefs(routeStore);
+const { getShouldDisplayRoute, getHasMappedStartEnd, getSelectedRouteList } = storeToRefs(routeStore);
 
 const state = reactive({
   startPointAddress: '',
   endPointAddress: '',
   startAddressOptions: [],
   endAddressOptions: [],
-  isRouteGenerated: false,
+  shouldDisplayRoute: false,
   drag: false,
   isMapInitialized: false,
-  isLoadingGoogApi: false
+  isLoadingGoogApi: false,
+  selectedRouteList: []
 });
 
 onMounted(() => {
@@ -33,19 +34,24 @@ onMounted(() => {
 });
 
 // element variables
-watch(getIsRouteGenerated, () => {
-  state.isRouteGenerated = routeStore.getIsRouteGenerated;
+watch(getShouldDisplayRoute, () => {
+  state.shouldDisplayRoute = routeStore.getShouldDisplayRoute;
 });
 
 watch(getHasMappedStartEnd, () => {
   state.isMapInitialized = routeStore.getHasMappedStartEnd;
 });
 
+watch(getSelectedRouteList, () => {
+  state.selectedRouteList = routeStore.getSelectedRouteList;
+});
+
 async function findRouteClicked() {
   state.isLoadingGoogApi = true;
-  routeStore.updateRouteListWithSensors(sensorStore.sensors); // store current displayed sensors into route list
+  routeStore.setSelectedRouteList(sensorStore.getRoutableSensors); // store current displayed sensors into route list
 
-  if (sensorStore.getTotalSensors === 1) {
+  const routeList = routeStore.getSelectedRouteList;
+  if (routeList.length === 1) {
     await routeStore.googUpdateRouteStats();
   } else {
     await routeStore.googOptimizeRoute();
@@ -75,9 +81,9 @@ function updateEndPoint(value) {
     <div class="text-h6 padding-b-16">Create Route</div>
 
     <!-- route info display -->
-    <section v-if="state.isRouteGenerated">
+    <section v-if="state.shouldDisplayRoute">
       <SensorRouteBlock
-        :selectedRouteList="routeStore.getSelectedRouteList"
+        :selectedRouteList="state.selectedRouteList"
         :startPointAddress="routeStore.getStartPointAddress"
         :endPointAddress="routeStore.getEndPointAddress"
       ></SensorRouteBlock>

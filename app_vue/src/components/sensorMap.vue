@@ -1,24 +1,26 @@
 <script setup>
-import { reactive, onMounted, watch, onBeforeMount, onDeactivated } from 'vue';
+import { reactive, ref, onMounted, watch, onBeforeMount, onDeactivated } from 'vue';
 import SensorMapMarker from '@/components/sensorMapMarker.vue';
 import 'leaflet/dist/leaflet.css';
 import { LMap, LTileLayer, LMarker, LControlZoom, LPolyline, LIcon } from '@vue-leaflet/vue-leaflet';
 import { useDevice, DEVICE_SIZE } from '@/utils/screenSizeHelper';
-import { getLatLng } from '@/utils/getLatLngFromAddressHelper';
+import { getLatLng } from '@/utils/geoCodingHelper';
 import { useSensorStore } from '@/stores/sensors_store';
 import { useRouteStore } from '@/stores/route_store';
 import { storeToRefs } from 'pinia';
+import { decodePolyline } from '@/utils/polylineHelper';
 
 // stores
 const sensorStore = useSensorStore();
 const { getSensors } = storeToRefs(sensorStore);
 const routeStore = useRouteStore();
-const { getSelectedRouteLatLong, getIsRouteGenerated, getStartPointAddress, getEndPointAddress } = storeToRefs(routeStore);
+const { getShouldDisplayRoute, getStartPointAddress, getEndPointAddress, getGoogEncodedPolyline } = storeToRefs(routeStore);
 
+// element variables
 const state = reactive({
   location: 'bottomright',
   device: useDevice(),
-  isRouteGenerated: false,
+  shouldDisplayRoute: false,
   polyLineLatLngs: [],
   startPointLatLng: [],
   endPointLatLng: [],
@@ -26,9 +28,9 @@ const state = reactive({
   center: [43.7, -79.42],
   sensors: []
 });
-
 const startImgUrl = 'src/assets/images/feather-disc.svg';
 const endImgUrl = 'src/assets/images/feather-map-pin.svg';
+const leafletMap = ref(null); // ref to access leafletMap object
 
 onBeforeMount(async () => {
   // processing start/end/center lat lng points
@@ -45,40 +47,32 @@ onMounted(() => {
   state.sensors = sensorStore.getSensors;
 });
 
-onDeactivated(() => {
-  routeStore.setHasMappedStartEnd(false);
-});
-
 watch(getSensors, () => {
   state.sensors = sensorStore.getSensors;
 });
 
-// when route updates, update the map polylines
-watch(
-  getSelectedRouteLatLong,
-  () => {
-    state.polyLineLatLngs = routeStore.getSelectedRouteLatLong;
+watch(getShouldDisplayRoute, () => {
+  state.shouldDisplayRoute = routeStore.getShouldDisplayRoute;
+});
 
-    // additional lines for start and end points
-    if (state.startPointLatLng.length && state.endPointLatLng.length) {
-      state.polyLineLatLngs.unshift(state.startPointLatLng); // append as first element
-      state.polyLineLatLngs.push(state.endPointLatLng); // append as last element
-    }
-  },
-  { deep: true }
-);
+// when we have gathered a new polyline from google routes response
+watch(getGoogEncodedPolyline, async () => {
+  const encoded = routeStore.getGoogEncodedPolyline;
+  if (!encoded) {
+    return;
+  }
+  const latlngsArr = await decodePolyline(encoded);
 
-watch(getIsRouteGenerated, () => {
-  state.isRouteGenerated = routeStore.getIsRouteGenerated;
+  // update route polyline
+  state.polyLineLatLngs = latlngsArr;
+  state.center = latlngsArr[0];
 });
 
 // when start point gets updated
 watch(getStartPointAddress, async () => {
   routeStore.setHasMappedStartEnd(false);
   state.startPointLatLng = await getLatLng(routeStore.getStartPointAddress); // get start point
-  state.polyLineLatLngs = routeStore.getSelectedRouteLatLong; // get route polyline
 
-  appendStartEndPolylines();
   state.center = state.startPointLatLng; // update map center
   routeStore.setHasMappedStartEnd(true);
 });
@@ -87,18 +81,8 @@ watch(getStartPointAddress, async () => {
 watch(getEndPointAddress, async () => {
   routeStore.setHasMappedStartEnd(false);
   state.endPointLatLng = await getLatLng(routeStore.getEndPointAddress); // get end point
-  state.polyLineLatLngs = routeStore.getSelectedRouteLatLong; // get route polyline
-
-  appendStartEndPolylines();
   routeStore.setHasMappedStartEnd(true);
 });
-
-function appendStartEndPolylines() {
-  if (state.startPointLatLng.length && state.endPointLatLng.length) {
-    state.polyLineLatLngs.unshift(state.startPointLatLng); // append as first element
-    state.polyLineLatLngs.push(state.endPointLatLng); // append as last element
-  }
-}
 
 function positionZoom() {
   state.device = useDevice();
@@ -108,12 +92,16 @@ function positionZoom() {
     state.location = 'bottomright';
   }
 }
+
+onDeactivated(() => {
+  routeStore.setHasMappedStartEnd(false);
+});
 </script>
 
 <template>
   <div class="sensor-map-container">
     <l-map
-      ref="map"
+      ref="leafletMap"
       v-model:zoom="state.zoom"
       :use-global-leaflet="false"
       :center="state.center"
@@ -131,7 +119,7 @@ function positionZoom() {
 
       <!-- route polyline -->
       <l-polyline
-        v-if="state.isRouteGenerated"
+        v-if="state.shouldDisplayRoute"
         :lat-lngs="state.polyLineLatLngs"
       ></l-polyline>
 
@@ -179,7 +167,10 @@ function positionZoom() {
 
 <style lang="scss" scoped>
 // leaflet css override for mobile views
-
+:deep img.low-opacity {
+  // class from sensorMapMaker that handles filtered out bins opacity
+  opacity: 0.2;
+}
 :deep .leaflet-pane .leaflet-layer {
   // handles map opacity level
   opacity: 0.7 !important;
