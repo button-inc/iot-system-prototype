@@ -81,46 +81,50 @@ export const useSensorStore = defineStore('sensors', {
 
         // filter for group
         const groupFilter = () => {
-          if (this.selectedGroup && this.selectedGroup.length > 0 && sensor.group) {
-            return this.selectedGroup.includes(sensor.group);
+          const groupSelected = this.selectedGroup && this.selectedGroup.length > 0;
+          if (!groupSelected) {
+            return true;
           }
-          return true;
+          return sensor.group && this.selectedGroup.includes(sensor.group);
         };
 
         // filter for asset tag
         const assetTagFilter = () => {
-          if (this.selectedAssetTag && this.selectedAssetTag.length > 0 && sensor.asset_tag) {
-            return this.selectedAssetTag.includes(sensor.asset_tag);
+          const tagSelected = this.selectedAssetTag && this.selectedAssetTag.length > 0;
+          if (!tagSelected) {
+            return true;
           }
-          return true;
+          return sensor.asset_tag && this.selectedAssetTag.includes(sensor.asset_tag);
         };
 
         // filter for bintype
         const binTypeFilter = () => {
-          if (this.selectedBinType && this.selectedBinType.length > 0 && sensor.bin_type) {
-            return this.selectedBinType.includes(sensor.bin_type);
+          const binTypeSelected = this.selectedBinType && this.selectedBinType.length > 0;
+          if (!binTypeSelected) {
+            return true;
           }
-          return true;
+          return sensor.bin_type && this.selectedBinType.includes(sensor.bin_type);
         };
 
         // filter for bin volume
         const binVolumeFilter = () => {
-          if (this.selectedBinVolume && this.selectedBinVolume.length > 0 && sensor.bin_volume) {
-            return this.selectedBinVolume.includes(sensor.bin_volume);
+          const binVolumeSelected = this.selectedBinVolume && this.selectedBinVolume.length > 0;
+          if (!binVolumeSelected) {
+            return true;
           }
-          return true;
+          return sensor.bin_volume && this.selectedBinVolume.includes(sensor.bin_volume);
         };
 
         // filter for materialType
         const materialTypeFilter = () => {
-          if (this.selectedMaterialType && this.selectedMaterialType.length > 0 && sensor.material_type) {
-            return this.selectedMaterialType.includes(sensor.material_type);
+          const matTypeSelected = this.selectedMaterialType && this.selectedMaterialType.length > 0;
+          if (!matTypeSelected) {
+            return true;
           }
-          return true;
+          return sensor.material_type && this.selectedMaterialType.includes(sensor.material_type);
         };
 
         // setting up new property
-
         const keepAfterFiltering = fillRangeFilter() && groupFilter() && assetTagFilter() && binTypeFilter() && binVolumeFilter() && materialTypeFilter();
         sensor.isFilteredOut = !keepAfterFiltering;
         return sensor;
