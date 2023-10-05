@@ -23,19 +23,34 @@ export const useSensorStore = defineStore('sensors', {
       return Object.keys(sensors).length;
     },
     getAllGroupOptions({ sensors }) {
-      return [...new Set(sensors.flatMap((sensor) => sensor.group || []))];
+      // using Set as it ensures unique values
+      const groupOptions = [...new Set(sensors.flatMap((sensor) => sensor.group || []))];
+      groupOptions.sort((a, b) => a.localeCompare(b));
+      return groupOptions;
     },
     getAllAssetTags({ sensors }) {
-      return [...new Set(sensors.flatMap((sensor) => sensor.asset_tag || []))];
+      const assetTagOptions = [...new Set(sensors.flatMap((sensor) => sensor.asset_tag || []))];
+      assetTagOptions.sort((a, b) => a.localeCompare(b));
+      return assetTagOptions;
     },
     getAllBinTypes({ sensors }) {
-      return [...new Set(sensors.flatMap((sensor) => sensor.bin_type || []))];
+      const binTypeOptions = [...new Set(sensors.flatMap((sensor) => sensor.bin_type || []))];
+      binTypeOptions.sort((a, b) => a.localeCompare(b));
+      return binTypeOptions;
     },
     getAllBinVolumes({ sensors }) {
-      return [...new Set(sensors.flatMap((sensor) => sensor.bin_volume || []))];
+      const binVolumeOptions = [...new Set(sensors.flatMap((sensor) => sensor.bin_volume || []))];
+      binVolumeOptions.sort((a, b) => {
+        const arrStringA = a.split(' ');
+        const arrStringB = b.split(' ');
+        return arrStringA[0] - arrStringB[0];
+      });
+      return binVolumeOptions;
     },
     getAllMaterialTypes({ sensors }) {
-      return [...new Set(sensors.flatMap((sensor) => sensor.material_type || []))];
+      const matTypeOptions = [...new Set(sensors.flatMap((sensor) => sensor.material_type || []))];
+      matTypeOptions.sort((a, b) => a.localeCompare(b));
+      return matTypeOptions;
     }
   },
   actions: {
