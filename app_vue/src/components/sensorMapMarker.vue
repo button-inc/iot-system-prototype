@@ -18,7 +18,7 @@ const state = reactive({
   linearProgressColor: '',
   fillPercent: 0,
   isAlreadyInRoute: false,
-  isRouteCreated: false
+  showAddRemoveFromRoute: false
 });
 
 // route store
@@ -35,7 +35,7 @@ onBeforeMount(() => {
 watch(
   getSelectedRouteList,
   () => {
-    state.isAlreadyInRoute = routeStore.isAlreadyInRoute(props.sensor);
+    state.isAlreadyInRoute = isAlreadyInRoute(props.sensor);
   },
   { deep: true }
 );
@@ -43,10 +43,21 @@ watch(
 watch(
   getShouldDisplayRoute,
   () => {
-    state.isRouteCreated = routeStore.getShouldDisplayRoute;
+    const routeList = routeStore.getSelectedRouteList;
+    state.showAddRemoveFromRoute = routeStore.getShouldDisplayRoute && routeList.length > 1;
   },
   { deep: true }
 );
+
+function isAlreadyInRoute(sensor) {
+  const selectedRouteList = routeStore.getSelectedRouteList;
+  if (selectedRouteList.length > 1) {
+    return !!selectedRouteList.find((bin) => bin.id === sensor.id);
+  } else if (selectedRouteList.length === 1) {
+    return true;
+  }
+  return false;
+}
 
 function addBinToRoute(sensor) {
   // only add to route if not already added
@@ -216,7 +227,7 @@ function removeBinFromRoute(sensor) {
     <!-- add to route buttons -->
     <section
       class="bin-details__cta-routes"
-      v-if="state.isRouteCreated"
+      v-if="state.showAddRemoveFromRoute"
     >
       <v-btn
         variant="flat"

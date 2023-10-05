@@ -10,7 +10,7 @@ import { telusUi } from '@/styles/telusUi';
 // stores
 const routeStore = useRouteStore();
 const sensorStore = useSensorStore();
-const { getShouldDisplayRoute, getHasMappedStartEnd } = storeToRefs(routeStore);
+const { getShouldDisplayRoute, getHasMappedStartEnd, getSelectedRouteList } = storeToRefs(routeStore);
 
 const state = reactive({
   startPointAddress: '',
@@ -20,7 +20,8 @@ const state = reactive({
   shouldDisplayRoute: false,
   drag: false,
   isMapInitialized: false,
-  isLoadingGoogApi: false
+  isLoadingGoogApi: false,
+  selectedRouteList: []
 });
 
 onMounted(() => {
@@ -41,11 +42,16 @@ watch(getHasMappedStartEnd, () => {
   state.isMapInitialized = routeStore.getHasMappedStartEnd;
 });
 
+watch(getSelectedRouteList, () => {
+  state.selectedRouteList = routeStore.getSelectedRouteList;
+});
+
 async function findRouteClicked() {
   state.isLoadingGoogApi = true;
   routeStore.setSelectedRouteList(sensorStore.getRoutableSensors); // store current displayed sensors into route list
 
-  if (sensorStore.getTotalSensors === 1) {
+  const routeList = routeStore.getSelectedRouteList;
+  if (routeList.length === 1) {
     await routeStore.googUpdateRouteStats();
   } else {
     await routeStore.googOptimizeRoute();
@@ -77,7 +83,7 @@ function updateEndPoint(value) {
     <!-- route info display -->
     <section v-if="state.shouldDisplayRoute">
       <SensorRouteBlock
-        :selectedRouteList="routeStore.getSelectedRouteList"
+        :selectedRouteList="state.selectedRouteList"
         :startPointAddress="routeStore.getStartPointAddress"
         :endPointAddress="routeStore.getEndPointAddress"
       ></SensorRouteBlock>
