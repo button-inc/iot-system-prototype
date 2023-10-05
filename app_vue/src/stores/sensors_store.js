@@ -3,10 +3,10 @@ import { defineStore } from 'pinia';
 export const useSensorStore = defineStore('sensors', {
   state: () => ({
     sensors: [],
-    selectedGroup: null,
+    selectedGroup: [],
     selectedAssetTag: [],
     selectedBinType: [],
-    selectedBinVolume: null,
+    selectedBinVolume: [],
     selectedFillRange: [0, 100],
     selectedMaterialType: []
   }),
@@ -40,10 +40,10 @@ export const useSensorStore = defineStore('sensors', {
   },
   actions: {
     clearSelected() {
-      this.selectedGroup = null;
+      this.selectedGroup = [];
       this.selectedAssetTag = [];
       this.selectedBinType = [];
-      this.selectedBinVolume = null;
+      this.selectedBinVolume = [];
       this.selectedFillRange = [0, 100];
       this.selectedMaterialType = [];
       this.updateSensorsWithFilters();

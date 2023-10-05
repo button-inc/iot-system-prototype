@@ -16,10 +16,10 @@ const { getAllGroupOptions, getAllAssetTags, getAllBinTypes, getAllBinVolumes, g
 
 // component reactive variables
 const state = reactive({
-  selectedGroup: null,
+  selectedGroup: [],
   selectedAssetTag: [],
   selectedBinType: [],
-  selectedBinVolume: null,
+  selectedBinVolume: [],
   selectedFillRange: [0, 100],
   selectedMaterialType: [],
   group: [],
@@ -75,7 +75,7 @@ function updateGroupFilter() {
   sensorStore.setSelectedGroup(state.selectedGroup);
   updateSensorsShown();
 
-  if (state.selectedGroup) {
+  if (state.selectedGroup.length > 0) {
     state.filtersUsedMap['group'] = true;
   } else {
     state.filtersUsedMap['group'] = false;
@@ -108,7 +108,7 @@ function updateBinVolumeFilter() {
   sensorStore.setSelectedBinVolume(state.selectedBinVolume);
   updateSensorsShown();
 
-  if (state.selectedBinVolume) {
+  if (state.selectedBinVolume.length > 0) {
     state.filtersUsedMap['binVolume'] = true;
   } else {
     state.filtersUsedMap['binVolume'] = false;
@@ -142,10 +142,10 @@ function clearFilters() {
   sensorStore.clearSelected(); // clear store of selected values
   routeStore.clearSensorRoute(); // clear route
   // clear v-models in form
-  state.selectedGroup = null;
+  state.selectedGroup = [];
   state.selectedAssetTag = [];
-  state.selectedBinType = null;
-  state.selectedBinVolume = null;
+  state.selectedBinType = [];
+  state.selectedBinVolume = [];
   state.selectedFillRange = [0, 100];
   state.selectedMaterialType = [];
 
