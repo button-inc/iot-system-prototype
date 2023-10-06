@@ -1,20 +1,33 @@
-const getBinIconName = (sensor) => {
+const ICON_NAMES = {
+  FULL_BIN: 'full-bin',
+  HALF_FULL_BIN: 'half-full-bin',
+  EMPTY_BIN: 'empty-bin',
+  ERROR_BIN: 'error-bin'
+  // GREYSCALE_EMPTY_BIN: 'greyscale-empty-bin',
+  // GREYSCALE_HALF_FULL_BIN: 'greyscale-half-full-bin',
+  // GREYSCALE_FULL_BIN: 'greyscale-full-bin'
+};
+
+// const IS_FILTERED_OUT = 'isFilteredOut';
+
+export const getBinIconName = (sensor) => {
   const isErrorState = sensor.error;
+  // const isFilteredOut = sensor[IS_FILTERED_OUT];
   const isFullState = sensor.fill_level && sensor.fill_level >= 75;
   const isHalfFullState = sensor.fill_level && sensor.fill_level >= 50 && sensor.fill_level < 75;
   const isEmptyState = sensor.fill_level && sensor.fill_level < 50;
 
-  if (isErrorState) { // shows error icon
-    return 'error';
+  if (isErrorState) {
+    return ICON_NAMES.ERROR_BIN;
   } else if (isFullState) {
-    return 'full';
+    return ICON_NAMES.FULL_BIN;
   } else if (isHalfFullState) {
-    return 'half-full';
+    return ICON_NAMES.HALF_FULL_BIN;
   } else if (isEmptyState) {
-    return 'empty';
+    return ICON_NAMES.EMPTY_BIN;
   }
-  return 'empty'; // default
-}
+  return ICON_NAMES.EMPTY_BIN; // default
+};
 
 export const getMaterialTypeIconURL = (materialType) => {
   const directory = 'src/assets/images/materialTypeIcons';
@@ -23,57 +36,42 @@ export const getMaterialTypeIconURL = (materialType) => {
     return genericMaterialIconPath;
   }
   const materialMap = {
-    'Cardboard': `${directory}/cardboard.svg`,
-    'Plastic': `${directory}/plastic.svg`,
-    'Compost': `${directory}/compost.svg`,
-    'Garbage': `${directory}/garbage.svg`,
+    Cardboard: `${directory}/cardboard.svg`,
+    Plastic: `${directory}/plastic.svg`,
+    Compost: `${directory}/compost.svg`,
+    Garbage: `${directory}/garbage.svg`,
     'Mixed Recyclables': `${directory}/mixed_recyclables.svg`,
-    'Paper': `${directory}/paper.svg`,
+    Paper: `${directory}/paper.svg`,
     'Mixed Containers': `${directory}/mixed_containers.svg`,
     'Glass, Metal, Plastic': `${directory}/glass_metal_plastic.svg`,
     'Soft Plastic': `${directory}/soft_plastic.svg`,
-    'WTE': `${directory}/wte.svg`,
-    'Shredding': `${directory}/shredding.svg`,
+    WTE: `${directory}/wte.svg`,
+    Shredding: `${directory}/shredding.svg`,
     'Scrap Metal': `${directory}/scrap_metal.svg`,
-    'Wood': `${directory}/wood.svg`,
-    'Construction Waste': `${directory}/construction_waste.svg`,
+    Wood: `${directory}/wood.svg`,
+    'Construction Waste': `${directory}/construction_waste.svg`
   };
   return materialMap[materialType] || genericMaterialIconPath;
-}
+};
 
 // linearProgressColor -> used by Vuetify to determine progress bar color
-// iconURL -> used by Vuetify to display bin icon
-export const getIconAndProgressColor = (sensor) => {
-  // mini-helper function
-  const iconName = getBinIconName(sensor);
-  let iconUrl = ''
-  let linearProgressColor = '';
+export const getVuetifyLinearProgressColor = (iconName) => {
   const RED = '#C92828';
   const GREEN = 'green';
   const ORANGE = '#F07F2D';
-  const iconDirectory = 'src/assets/images/binMarkerIcons';
-  switch (iconName) {
-    case 'error':
-      iconUrl = `${iconDirectory}/alert-bin.png`;
-      linearProgressColor = RED;
-      break;
-    case 'full':
-      iconUrl = `${iconDirectory}/full-bin.png`;
-      linearProgressColor = RED;
-      break;
-    case 'half-full':
-      iconUrl = `${iconDirectory}/half-full-bin.png`;
-      linearProgressColor = ORANGE;
-      break;
-    case 'empty':
-      iconUrl = `${iconDirectory}/empty-bin.png`;
-      linearProgressColor = GREEN;
-      break;
-    default: // default is empty bin
-      iconUrl = `${iconDirectory}/empty-bin.png`;
-      linearProgressColor = GREEN;
-  }
-  return { iconUrl, linearProgressColor };
-}
 
-export default getIconAndProgressColor
+  let linearProgressColor = GREEN;
+
+  if (iconName === ICON_NAMES.ERROR_BIN || iconName === ICON_NAMES.FULL_BIN) {
+    linearProgressColor = RED;
+  } else if (iconName === ICON_NAMES.HALF_FULL_BIN) {
+    linearProgressColor = ORANGE;
+  }
+  return linearProgressColor;
+};
+
+// iconURL -> used by Vuetify to display bin icon
+export const getIconUrl = (iconName) => {
+  const iconDirectory = 'src/assets/images/binMarkerIcons';
+  return `${iconDirectory}/${iconName}.png`;
+};
