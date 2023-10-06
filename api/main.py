@@ -3,8 +3,8 @@ from enum import Enum
 import re
 import time
 import requests
-from google_routes_services import RouteRequest, get_optimized_routes_response
-from mail_services import AlertEmailSchema, EmailSchema, get_email_msg, get_fm
+from services.google_routes import RouteRequest, get_optimized_routes_response
+from services.mail import AlertEmailSchema, EmailSchema, get_email_msg, get_fm
 from utils import filter_nulls
 
 import gspread
