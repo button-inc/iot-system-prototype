@@ -89,7 +89,7 @@ function updateEndPoint(value) {
       ></SensorRouteBlock>
     </section>
 
-    <!-- start and end point entry -->
+    <!-- start and end point entry and find routes button -->
     <section v-else>
       <PointAddressField
         v-model="state.startPointAddress"
