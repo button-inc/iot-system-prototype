@@ -44,7 +44,16 @@ watch(
   }
 );
 
-function exportToGmaps() {}
+function exportToGmaps() {
+  // everything needs to be URL-encoded
+  const apiVer = '1';
+  const origin = encodeURIComponent(state.startPointAddress);
+  const destination = encodeURIComponent(state.endPointAddress);
+  let wayPoints = state.selectedRouteList.map((route) => `${route.lat},${route.long}`).join('|');
+  wayPoints = encodeURIComponent(wayPoints);
+  const url = `https://www.google.com/maps/dir/?api=${apiVer}&origin=${origin}&destination=${destination}&travelmode=driving&waypoints=${wayPoints}`;
+  window.open(url, '_blank');
+}
 
 function draggedRoute() {
   state.drag = false;
@@ -185,7 +194,7 @@ function exportToCSV() {
           <!-- route related call-to-actions -->
           <div class="d-flex flex-column align-start">
             <v-btn
-              v-if="state.selectedRouteList && state.selectedRouteList.length > 1"
+              v-if="state.selectedRouteList && state.selectedRouteList.length > 1 && state.selectedRouteList.length <= 9"
               class="pa-0 route-display__export"
               variant="plain"
               @click="exportToGmaps()"
