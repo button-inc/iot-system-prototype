@@ -3,10 +3,10 @@ import { defineStore } from 'pinia';
 export const useSensorStore = defineStore('sensors', {
   state: () => ({
     sensors: [],
-    selectedGroup: null,
+    selectedGroup: [],
     selectedAssetTag: [],
     selectedBinType: [],
-    selectedBinVolume: null,
+    selectedBinVolume: [],
     selectedFillRange: [0, 100],
     selectedMaterialType: []
   }),
@@ -23,27 +23,42 @@ export const useSensorStore = defineStore('sensors', {
       return Object.keys(sensors).length;
     },
     getAllGroupOptions({ sensors }) {
-      return [...new Set(sensors.flatMap((sensor) => sensor.group || []))];
+      // using Set as it ensures unique values
+      const groupOptions = [...new Set(sensors.flatMap((sensor) => sensor.group || []))];
+      groupOptions.sort((a, b) => a.localeCompare(b));
+      return groupOptions;
     },
     getAllAssetTags({ sensors }) {
-      return [...new Set(sensors.flatMap((sensor) => sensor.asset_tag || []))];
+      const assetTagOptions = [...new Set(sensors.flatMap((sensor) => sensor.asset_tag || []))];
+      assetTagOptions.sort((a, b) => a.localeCompare(b));
+      return assetTagOptions;
     },
     getAllBinTypes({ sensors }) {
-      return [...new Set(sensors.flatMap((sensor) => sensor.bin_type || []))];
+      const binTypeOptions = [...new Set(sensors.flatMap((sensor) => sensor.bin_type || []))];
+      binTypeOptions.sort((a, b) => a.localeCompare(b));
+      return binTypeOptions;
     },
     getAllBinVolumes({ sensors }) {
-      return [...new Set(sensors.flatMap((sensor) => sensor.bin_volume || []))];
+      const binVolumeOptions = [...new Set(sensors.flatMap((sensor) => sensor.bin_volume || []))];
+      binVolumeOptions.sort((a, b) => {
+        const arrStringA = a.split(' ');
+        const arrStringB = b.split(' ');
+        return arrStringA[0] - arrStringB[0];
+      });
+      return binVolumeOptions;
     },
     getAllMaterialTypes({ sensors }) {
-      return [...new Set(sensors.flatMap((sensor) => sensor.material_type || []))];
+      const matTypeOptions = [...new Set(sensors.flatMap((sensor) => sensor.material_type || []))];
+      matTypeOptions.sort((a, b) => a.localeCompare(b));
+      return matTypeOptions;
     }
   },
   actions: {
     clearSelected() {
-      this.selectedGroup = null;
+      this.selectedGroup = [];
       this.selectedAssetTag = [];
       this.selectedBinType = [];
-      this.selectedBinVolume = null;
+      this.selectedBinVolume = [];
       this.selectedFillRange = [0, 100];
       this.selectedMaterialType = [];
       this.updateSensorsWithFilters();
@@ -81,46 +96,50 @@ export const useSensorStore = defineStore('sensors', {
 
         // filter for group
         const groupFilter = () => {
-          if (this.selectedGroup && this.selectedGroup.length > 0 && sensor.group) {
-            return this.selectedGroup.includes(sensor.group);
+          const groupSelected = this.selectedGroup && this.selectedGroup.length > 0;
+          if (!groupSelected) {
+            return true;
           }
-          return true;
+          return sensor.group && this.selectedGroup.includes(sensor.group);
         };
 
         // filter for asset tag
         const assetTagFilter = () => {
-          if (this.selectedAssetTag && this.selectedAssetTag.length > 0 && sensor.asset_tag) {
-            return this.selectedAssetTag.includes(sensor.asset_tag);
+          const tagSelected = this.selectedAssetTag && this.selectedAssetTag.length > 0;
+          if (!tagSelected) {
+            return true;
           }
-          return true;
+          return sensor.asset_tag && this.selectedAssetTag.includes(sensor.asset_tag);
         };
 
         // filter for bintype
         const binTypeFilter = () => {
-          if (this.selectedBinType && this.selectedBinType.length > 0 && sensor.bin_type) {
-            return this.selectedBinType.includes(sensor.bin_type);
+          const binTypeSelected = this.selectedBinType && this.selectedBinType.length > 0;
+          if (!binTypeSelected) {
+            return true;
           }
-          return true;
+          return sensor.bin_type && this.selectedBinType.includes(sensor.bin_type);
         };
 
         // filter for bin volume
         const binVolumeFilter = () => {
-          if (this.selectedBinVolume && this.selectedBinVolume.length > 0 && sensor.bin_volume) {
-            return this.selectedBinVolume.includes(sensor.bin_volume);
+          const binVolumeSelected = this.selectedBinVolume && this.selectedBinVolume.length > 0;
+          if (!binVolumeSelected) {
+            return true;
           }
-          return true;
+          return sensor.bin_volume && this.selectedBinVolume.includes(sensor.bin_volume);
         };
 
         // filter for materialType
         const materialTypeFilter = () => {
-          if (this.selectedMaterialType && this.selectedMaterialType.length > 0 && sensor.material_type) {
-            return this.selectedMaterialType.includes(sensor.material_type);
+          const matTypeSelected = this.selectedMaterialType && this.selectedMaterialType.length > 0;
+          if (!matTypeSelected) {
+            return true;
           }
-          return true;
+          return sensor.material_type && this.selectedMaterialType.includes(sensor.material_type);
         };
 
         // setting up new property
-
         const keepAfterFiltering = fillRangeFilter() && groupFilter() && assetTagFilter() && binTypeFilter() && binVolumeFilter() && materialTypeFilter();
         sensor.isFilteredOut = !keepAfterFiltering;
         return sensor;
