@@ -283,6 +283,8 @@ function getFilterCount() {
 </template>
 
 <style lang="scss" scoped>
+@include slide-fade-in-out(-30px);
+
 // vuetify overrides
 :deep .v-field--variant-filled .v-field__overlay {
   // vue select background
