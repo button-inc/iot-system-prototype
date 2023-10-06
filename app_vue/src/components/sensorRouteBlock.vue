@@ -43,6 +43,8 @@ watch(
   }
 );
 
+function exportToGmaps() {}
+
 function draggedRoute() {
   state.drag = false;
   routeStore.setSelectedRouteList(state.selectedRouteList); // update state with new route order
@@ -180,15 +182,19 @@ function exportToCSV() {
           </div>
 
           <!-- route related call-to-actions -->
-          <div
-            class="d-flex align-center"
-            :class="{
-              'justify-space-between': state.selectedRouteList && state.selectedRouteList.length > 1,
-              'justify-end': state.selectedRouteList && state.selectedRouteList.length <= 1
-            }"
-          >
-            <div v-if="state.selectedRouteList && state.selectedRouteList.length > 1">
+          <div class="d-flex flex-column align-start">
+            <v-btn
+              v-if="state.selectedRouteList && state.selectedRouteList.length > 1"
+              class="pa-0 route-display__export"
+              variant="plain"
+              @click="exportToGmaps()"
+            >
+              Open in Google Maps
+              <vue-feather type="upload"></vue-feather>
+            </v-btn>
+            <div class="d-flex align-center justify-space-between w-100">
               <v-btn
+                v-if="state.selectedRouteList && state.selectedRouteList.length > 1"
                 class="pa-0 route-display__export"
                 variant="plain"
                 @click="exportToCSV"
@@ -196,14 +202,14 @@ function exportToCSV() {
                 Export route
                 <vue-feather type="upload"></vue-feather>
               </v-btn>
+              <v-btn
+                class="route-display__delete pl-0 align-self-end"
+                variant="plain"
+                @click="routeStore.clearSensorRoute"
+              >
+                <vue-feather type="trash-2"></vue-feather>
+              </v-btn>
             </div>
-            <v-btn
-              class="route-display__delete pl-0 align-self-end"
-              variant="plain"
-              @click="routeStore.clearSensorRoute"
-            >
-              <vue-feather type="trash-2"></vue-feather>
-            </v-btn>
           </div>
         </section>
       </div>
