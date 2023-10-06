@@ -81,7 +81,7 @@ class BasicSensor(BaseModel):
     province: str | None
     postal_code: str | None
     group: str | None
-    bin_type: str
+    bin_type: str | None
     material_type: str
     asset_tag: str
     bin_volume: str
@@ -96,15 +96,17 @@ class BasicSensor(BaseModel):
 
 # 📝 Model to represent a BrighterBinsSensorReading
 class BrighterBinsSensorReading(BaseModel):
-    epoch_ms: int
-    rawDistance: int
-    temperature: int
-    batteryLevel: int
-    pickUpEvent: bool
+    epoch_ms: int | None
+    rawDistance: int | None
+    temperature: int | None
+    batteryLevel: int | None
+    pickUpEvent: bool | None
     fillLevel: int
-    fillError: bool
-    snr: int
-    rssi: int
+    fillError: bool | None
+    snr: int | None
+    rssi: int | None
+    lat: float | None
+    long: float | None
 
 
 # 📝 Model to represent a BrighterBinsSensor
@@ -112,9 +114,15 @@ class BrighterBinsSensor(BaseModel):
     id: str
     row_id: int | None
     readings: list[BrighterBinsSensorReading] | None
-    is_extended_uplink: int
-    manufacturer: str
-    address_line1: str | None
+    is_extended_uplink: int | None
+    manufacturer: str | None
+    # fields required by BasicSensor
+    id: str
+    fill_level: int | None
+    lat: float | None
+    long: float | None
+    bin_name: str | None
+    address: str | None
     city: str | None
     province: str | None
     postal_code: str | None
@@ -123,130 +131,162 @@ class BrighterBinsSensor(BaseModel):
     material_type: str
     asset_tag: str
     bin_volume: str
-
+    fill_level_last_collected: int | None
+    fill_level_alert: int | None
+    temperature_alert: int | None
+    illegal_dumping_alert: bool | None
+    contamination_alert: bool | None
+    last_collected: datetime | None
 
 # 📝 Model to represent a TeklekSensor
 class TekelekSensor(BaseModel):
-    ID: int
-    ModemSerialNo: str
-    Name: str
-    Shape: str
-    TheoreticalCapacity: float
-    SafePercentage: int
-    NominalCapacity: float
-    Diameter: float
-    Bund: bool
-    Height: float
-    Width: float
-    Length: float
-    SensorOffset: float
-    OutletHeight: float
-    Make: str
-    Model: str
-    Substance: str
-    Material: str
+    ModemSerialNo: Optional[str]
+    Shape: Optional[str]
+    TheoreticalCapacity: Optional[float]
+    SafePercentage: Optional[int]
+    NominalCapacity: Optional[float]
+    Diameter: Optional[float]
+    Bund: Optional[bool]
+    Height: Optional[float]
+    Width: Optional[float]
+    Length: Optional[float]
+    SensorOffset: Optional[float]
+    OutletHeight: Optional[float]
+    Make: Optional[str]
+    Model: Optional[str]
+    Substance: Optional[str]
+    Material: Optional[str]
     AccountNo: Optional[str]
-    DateCreated: str
+    DateCreated: Optional[str]
     DateLastModified: Optional[str]
     Note: Optional[str]
     Location: Optional[dict] = None
-    ContainerType: str
-    OrderTriggerPercentage: str
+    ContainerType: Optional[str]
+    OrderTriggerPercentage: Optional[str]
     Group: Optional[str] = (None,)
-    AddressLine1: Optional[str] = (None,)
-    AddressLine2: Optional[str] = (None,)
-    PercentFull: Optional[float] = None
+    # fields required by BasicSensor
+    id: str
+    fill_level: int | None
+    lat: float | None
+    long: float | None
+    bin_name: str | None
+    address_line1: str | None
+    address_line2: str | None
+    city: str | None
+    province: str | None
+    postal_code: str | None
+    group: str | None
+    bin_type: str
+    material_type: str
+    asset_tag: str
+    bin_volume: str
+    fill_level_last_collected: int | None
+    fill_level_alert: int | None
+    temperature_alert: int | None
+    illegal_dumping_alert: bool | None
+    contamination_alert: bool | None
+    last_collected: datetime | None
 
 
 # 🔧 Function to convert TekelekSensor to BasicSensor
 def tkl_to_bs(sensor: TekelekSensor) -> BasicSensor:
-    lat, long = None, None  # Default values in case of errors
+    #lat, long = None, None  # Default values in case of errors
 
-    try:
-        location = sensor.Location
+    # try:
+    #     location = sensor.Location
 
-        if location:
-            well_known_text = location.get("Geography", {}).get("WellKnownText", None)
+    #     if location:
+    #         well_known_text = location.get("Geography", {}).get("WellKnownText", None)
 
-            if well_known_text and well_known_text.startswith("POINT"):
-                pattern = r"POINT \((-?\d+\.\d+) (-?\d+\.\d+)\)"
-                match = re.search(pattern, well_known_text)
+    #         if well_known_text and well_known_text.startswith("POINT"):
+    #             pattern = r"POINT \((-?\d+\.\d+) (-?\d+\.\d+)\)"
+    #             match = re.search(pattern, well_known_text)
 
-                if match:
-                    lat = float(match.group(1))
-                    long = float(match.group(2))
+    #             if match:
+    #                 lat = float(match.group(1))
+    #                 long = float(match.group(2))
 
-    except (AttributeError, TypeError, ValueError) as e:
-        print(f"Error while processing location data: {e}")
+    # except (AttributeError, TypeError, ValueError) as e:
+    #     print(f"Error while processing location data: {e}")
 
     bs = BasicSensor(
-        id=sensor.ModemSerialNo,
+        id=sensor.id,
         sensor_type=SensorType.LIQUID_BIN_LEVEL,
-        fill_level=sensor.PercentFull if sensor.PercentFull is not None else None,
-        lat=lat,
-        long=long,
-        manufacturer=sensor.Make,
-        bin_name=sensor.Name,
-        address_line1=sensor.AddressLine1,
-        address_line2=sensor.AddressLine2,
-        group=sensor.Group,
-        bin_type=sensor.Material,
-        material_type=sensor.Substance,
-        asset_tag=sensor.Shape,
-        bin_volume=sensor.TheoreticalCapacity,
+        fill_level=sensor.fill_level,
+        lat=sensor.lat,
+        long=sensor.long,
+        manufacturer='Tekele',
+        bin_name=sensor.bin_name,
+        address_line1=sensor.address_line1,
+        address_line2=sensor.address_line2,
+        city=sensor.city,
+        province=sensor.province,
+        postal_code=sensor.postal_code,  
+        group=sensor.group,
+        bin_type=sensor.bin_type,
+        material_type=sensor.material_type,
+        asset_tag=sensor.asset_tag,
+        bin_volume=sensor.bin_volume,
+        fill_level_last_collected=sensor.fill_level_last_collected, 
+        fill_level_alert=sensor.fill_level_alert,  
+        temperature_alert=sensor.temperature_alert,  
+        illegal_dumping_alert=sensor.illegal_dumping_alert,  
+        contamination_alert=sensor.contamination_alert,  
+        last_collected=sensor.last_collected  
     )
     return bs
 
 
-# 🔧 Function to convert TeklekSensor dictionary to BasicSensor dictionary
-def tkl_dict_to_bs_dict(sensors: List[Dict[str, Union[str, int, float, None]]]) -> dict:
-    bs_dict = {}
-    # loop to iterate through each obj in the TekelekSensor list
-    for sensor_data in sensors:
-        try:
-            # create a TekelekSensor object (sensor_obj) by passing the dictionary sensor_data as keyword argument
-            sensor_obj = TekelekSensor(**sensor_data)
 
-            # print(f"sensor_obj : {sensor_obj }")
-            # convert the TekelekSensor into a BasicSensor and store it in the bs_dict dictionary.
-            bs_dict[sensor_obj.ModemSerialNo] = tkl_to_bs(sensor_obj)
-        except (ValueError, KeyError, TypeError) as e:
-            print(f"Error processing sensor {sensor_obj.ModemSerialNo}: {e}")
-            # Optionally, continue to the next iteration
-            continue
-    return bs_dict
+# 🔧 Function to convert TeklekSensor dictionary to BasicSensor dictionary
+# def tkl_dict_to_bs_dict(sensors: List[Dict[str, Union[str, int, float, None]]]) -> dict:
+#     bs_dict = {}
+#     # loop to iterate through each obj in the TekelekSensor list
+#     for sensor_data in sensors:
+#         try:
+#             # create a TekelekSensor object (sensor_obj) by passing the dictionary sensor_data as keyword argument
+#             sensor_obj = TekelekSensor(**sensor_data)
+
+#             # print(f"sensor_obj : {sensor_obj }")
+#             # convert the TekelekSensor into a BasicSensor and store it in the bs_dict dictionary.
+#             bs_dict[sensor_obj.ModemSerialNo] = tkl_to_bs(sensor_obj)
+#         except (ValueError, KeyError, TypeError) as e:
+#             print(f"Error processing sensor {sensor_obj.ModemSerialNo}: {e}")
+#             # Optionally, continue to the next iteration
+#             continue
+#     return bs_dict
 
 
 # 🔧 Function to convert BrighterBinsSensor to BasicSensor with latest reading
-def brighterbins_sensor_to_basic_sensor_with_reading(
+def bb_to_bs(
     sensor: BrighterBinsSensor,
 ) -> BasicSensor:
     return BasicSensor(
-        id=sensor["id"],
+        id=sensor.id,
         sensor_type=SensorType.SOLID_BIN_LEVEL,
-        fill_level=sensor["readings"][-1]["fillLevel"] # get the latest reading
-        if (sensor["readings"] and len(sensor["readings"]) > 0)
+        fill_level=sensor.readings[-1].fillLevel # get the latest reading
+        if (sensor.readings and len(sensor.readings) > 0)
         else None,
-        lat=sensor["lat"],
-        long=sensor["long"],
+        lat=sensor.lat,
+        long=sensor.long,
         manufacturer="BrighterBins",
-        bin_name=sensor["bin_name"],
-        address_line1=sensor["address"],
+        bin_name=sensor.bin_name,
+        address_line1=sensor.address,
         address_line2=None,
-        city=sensor["city"],
-        province=sensor["province"],
-        postal_code=sensor["postal_code"],
-        group=sensor["group"],
-        bin_type=sensor["bin_type"],
-        material_type=sensor["material_type"],
-        bin_volume=sensor["bin_volume"],
-        asset_tag=sensor["asset_tag"],
-        fill_level_last_collected=sensor["fill_level_last_collected"],
-        fill_level_alert=sensor["fill_level_alert"],
-        temperature_alert=sensor["temperature_alert"],
-        illegal_dumping_alert=sensor["illegal_dumping_alert"],
-        contamination_alert=sensor["contamination_alert"],
-        last_collected=sensor["last_collected"],
+        city=sensor.city,
+        province=sensor.province,
+        postal_code=sensor.postal_code,
+        group=sensor.group,
+        bin_type=sensor.bin_type,
+        material_type=sensor.material_type,
+        bin_volume=sensor.bin_volume,
+        asset_tag=sensor.asset_tag,
+        fill_level_last_collected=sensor.fill_level_last_collected,
+        fill_level_alert=sensor.fill_level_alert,
+        temperature_alert=sensor.temperature_alert,
+        illegal_dumping_alert=sensor.illegal_dumping_alert,
+        contamination_alert=sensor.contamination_alert,
+        last_collected=sensor.last_collected,
     )
 
 
@@ -531,14 +571,19 @@ def get_latest_readings():
     global tkl_cache
 
     bb_readings = []
-    for index, sensor in enumerate(bb_cache):
+    for bb_id, bb_sensor in bb_cache.items():
+        bb_obj = BrighterBinsSensor(**bb_sensor)
+        print(565, bb_sensor['lat'], bb_obj.lat)
         bb_readings.append(
-            brighterbins_sensor_to_basic_sensor_with_reading(bb_cache[sensor])
+            bb_to_bs(bb_obj)
         )
 
     tkl_readings = []
-    for index, sensor in enumerate(tkl_cache):
-        tkl_readings.append(tkl_cache[sensor])
+    for tkl_id, tkl_sensor in tkl_cache.items():
+        tkl_obj = TekelekSensor(**tkl_sensor)
+        tkl_readings.append(
+            tkl_to_bs(tkl_obj)
+            )
 
     latest_readings = bb_readings + tkl_readings
     # latest_readings = filter_nulls(latest_readings)
