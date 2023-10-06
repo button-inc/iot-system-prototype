@@ -4,6 +4,7 @@ import { useRouteStore } from '@/stores/route_store';
 import { v4 as uuidv4 } from 'uuid';
 import { getMinutesString, getKmFromMeterString } from '@/utils/formattingHelper';
 import draggable from 'vuedraggable';
+import GmapsIcon from '@/assets/images/gmaps.svg';
 
 const props = defineProps({
   selectedRouteList: {
@@ -189,8 +190,8 @@ function exportToCSV() {
               variant="plain"
               @click="exportToGmaps()"
             >
-              Open in Google Maps
-              <vue-feather type="upload"></vue-feather>
+              <span class="mr-1">Open in Google Maps</span>
+              <GmapsIcon></GmapsIcon>
             </v-btn>
             <div class="d-flex align-center justify-space-between w-100">
               <v-btn
