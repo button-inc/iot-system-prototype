@@ -193,24 +193,24 @@ function exportToCSV() {
               <span class="mr-1">Open in Google Maps</span>
               <GmapsIcon></GmapsIcon>
             </v-btn>
-            <div class="d-flex align-center justify-space-between w-100">
-              <v-btn
-                v-if="state.selectedRouteList && state.selectedRouteList.length > 1"
-                class="pa-0 route-display__export"
-                variant="plain"
-                @click="exportToCSV"
-              >
-                Export route
-                <vue-feather type="upload"></vue-feather>
-              </v-btn>
-              <v-btn
-                class="route-display__delete pl-0 align-self-end"
-                variant="plain"
-                @click="routeStore.clearSensorRoute"
-              >
-                <vue-feather type="trash-2"></vue-feather>
-              </v-btn>
-            </div>
+
+            <v-btn
+              v-if="state.selectedRouteList && state.selectedRouteList.length > 1"
+              class="pa-0 route-display__export"
+              variant="plain"
+              @click="exportToCSV"
+            >
+              Export route
+              <vue-feather type="upload"></vue-feather>
+            </v-btn>
+
+            <v-btn
+              class="route-display__delete pl-0 align-self-end"
+              variant="plain"
+              @click="routeStore.clearSensorRoute"
+            >
+              <vue-feather type="trash-2"></vue-feather>
+            </v-btn>
           </div>
         </section>
       </div>
