@@ -9,6 +9,7 @@ RUN pip install --no-cache-dir --upgrade -r /api/requirements.txt
 # Copy individual files and directories
 COPY ./api/main.py ./api/utils.py /api/
 COPY ./api/services/mail.py ./api/services/google_routes.py /api/services/
+COPY ./api/manufacturers/basic.py ./api/manufacturers/brighter_bins.py ./api/manufacturers/tekelek.py /api/manufacturers/
 COPY ./api/.en[v] ./api/google_sheets_sa_key.jso[n] /api/
 
 EXPOSE 8080
