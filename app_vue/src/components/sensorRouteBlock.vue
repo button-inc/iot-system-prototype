@@ -4,6 +4,7 @@ import { useRouteStore } from '@/stores/route_store';
 import { v4 as uuidv4 } from 'uuid';
 import { getMinutesString, getKmFromMeterString } from '@/utils/formattingHelper';
 import draggable from 'vuedraggable';
+import GmapsIcon from '@/assets/images/gmaps.svg';
 
 const props = defineProps({
   selectedRouteList: {
@@ -42,6 +43,17 @@ watch(
     state.selectedRouteList = value;
   }
 );
+
+function exportToGmaps() {
+  // everything needs to be URL-encoded
+  const apiVer = '1';
+  const origin = encodeURIComponent(state.startPointAddress);
+  const destination = encodeURIComponent(state.endPointAddress);
+  let wayPoints = state.selectedRouteList.map((route) => `${route.lat},${route.long}`).join('|');
+  wayPoints = encodeURIComponent(wayPoints);
+  const url = `https://www.google.com/maps/dir/?api=${apiVer}&origin=${origin}&destination=${destination}&travelmode=driving&waypoints=${wayPoints}`;
+  window.open(url, '_blank');
+}
 
 function draggedRoute() {
   state.drag = false;
@@ -180,23 +192,27 @@ function exportToCSV() {
           </div>
 
           <!-- route related call-to-actions -->
-          <div
-            class="d-flex align-center"
-            :class="{
-              'justify-space-between': state.selectedRouteList && state.selectedRouteList.length > 1,
-              'justify-end': state.selectedRouteList && state.selectedRouteList.length <= 1
-            }"
-          >
-            <div v-if="state.selectedRouteList && state.selectedRouteList.length > 1">
-              <v-btn
-                class="pa-0 route-display__export"
-                variant="plain"
-                @click="exportToCSV"
-              >
-                Export route
-                <vue-feather type="upload"></vue-feather>
-              </v-btn>
-            </div>
+          <div class="d-flex flex-column align-start">
+            <v-btn
+              v-if="state.selectedRouteList && state.selectedRouteList.length > 1 && state.selectedRouteList.length <= 9"
+              class="pa-0 route-display__export"
+              variant="plain"
+              @click="exportToGmaps()"
+            >
+              <span class="mr-1">Open in Google Maps</span>
+              <GmapsIcon></GmapsIcon>
+            </v-btn>
+
+            <v-btn
+              v-if="state.selectedRouteList && state.selectedRouteList.length > 1"
+              class="pa-0 route-display__export"
+              variant="plain"
+              @click="exportToCSV"
+            >
+              Export route
+              <vue-feather type="upload"></vue-feather>
+            </v-btn>
+
             <v-btn
               class="route-display__delete pl-0 align-self-end"
               variant="plain"
