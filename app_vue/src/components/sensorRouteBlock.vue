@@ -49,7 +49,7 @@ function draggedRoute() {
   routeStore.googUpdateRouteStats();
 }
 
-function exportRouteClicked() {
+function exportToCSV() {
   let csv = '';
   const duration = routeStore.getRouteDuration || '';
   const distance = routeStore.getRouteDistance || 0;
@@ -191,7 +191,7 @@ function exportRouteClicked() {
               <v-btn
                 class="pa-0 route-display__export"
                 variant="plain"
-                @click="exportRouteClicked"
+                @click="exportToCSV"
               >
                 Export route
                 <vue-feather type="upload"></vue-feather>
