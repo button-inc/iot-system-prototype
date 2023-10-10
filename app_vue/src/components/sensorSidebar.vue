@@ -37,22 +37,6 @@ function positionSidebar() {
         <SensorSideBarFilters></SensorSideBarFilters>
 
         <SensorSideBarRoutes></SensorSideBarRoutes>
-
-        <!-- Map Updated button -->
-        <v-btn
-          class="map-updated"
-          variant="plain"
-          disabled
-        >
-          <vue-feather
-            class="map-updated__icon"
-            type="refresh-ccw"
-          ></vue-feather>
-          <div>
-            <span class="map-updated__text">Map updated:</span>
-            <span>Just now</span>
-          </div>
-        </v-btn>
       </div>
     </v-navigation-drawer>
   </div>

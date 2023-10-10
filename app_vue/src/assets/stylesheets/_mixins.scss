@@ -92,7 +92,7 @@
 // Media queries
 $extraSmallScreenWidth: 300px;
 $smallScreenWidth: 500px;
-$mediumScreenWidth: 814px;
+$mediumScreenWidth: 768px;
 $largeScreenWidth: 1200px;
 $extraLargeScreenWidth: 1600px;
 
@@ -129,5 +129,26 @@ $extraLargeScreenWidth: 1600px;
 @mixin extraLargeScreens() {
   @media (min-width: $extraLargeScreenWidth) {
       @content;
+  }
+}
+
+//Animations
+@mixin slide-fade-animation($translateY: -10px, $timingLeave: .2s, $timingEnter: .3s) {
+  .slide-fade-leave-to {
+    transform: translateY($translateY);
+    opacity: 0;
+  }
+  .slide-fade-leave-active {
+    transition: all $timingLeave ease;
+  }
+  .slide-fade-enter-from {
+    transform: translateY($translateY);
+    opacity: 0;
+  }
+  .slide-fade-enter-to {
+    opacity: 1;
+  }
+  .slide-fade-enter-active {
+    transition: all $timingEnter ease;
   }
 }

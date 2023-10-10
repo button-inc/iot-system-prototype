@@ -9,6 +9,7 @@ const thresholdRange = ref([0, 100]);
 
 // route store
 const routeStore = useRouteStore();
+const { getShouldDisplayRoute } = storeToRefs(routeStore);
 
 // sensor store
 const sensorStore = useSensorStore();
@@ -38,6 +39,10 @@ const state = reactive({
     binVolume: false,
     matType: false
   }
+});
+
+watch(getShouldDisplayRoute, () => {
+  state.isCollapsed = routeStore.getShouldDisplayRoute;
 });
 
 // watching for store state updates and updating component variables
@@ -187,83 +192,88 @@ function getFilterCount() {
       </v-btn>
     </div>
 
-    <section
-      v-if="!state.isCollapsed"
-      class="filter-list__fields"
+    <transition
+      name="slide-fade"
+      mode="out-in"
     >
-      <div class="filter-list__fill-level">
-        <div class="filter-list__label color-gray-grey">Fill Level</div>
-        <v-range-slider
-          class="filter-list__slider"
-          v-model="state.selectedFillRange"
-          strict
-          :color="telusUi.green"
-          :track-color="telusUi.green"
-          :ticks="[0, 50, 100]"
-          show-ticks="always"
-          tick-size="0"
-          :step="1"
-          :max="thresholdRange[1]"
-          :min="thresholdRange[0]"
-          :thumb-label="state.showFillLabel"
-          @mouseup="state.showFillLabel = false"
-          @mousedown="state.showFillLabel = true"
-          @update:modelValue="updateFillRangeFilter"
-        >
-          <template v-slot:thumb-label="{ modelValue }">{{ modelValue }}%</template>
-        </v-range-slider>
-      </div>
+      <section
+        v-if="!state.isCollapsed"
+        class="filter-list__fields"
+      >
+        <div class="filter-list__fill-level">
+          <div class="filter-list__label color-gray-grey">Fill Level</div>
+          <v-range-slider
+            class="filter-list__slider"
+            v-model="state.selectedFillRange"
+            strict
+            :color="telusUi.green"
+            :track-color="telusUi.green"
+            :ticks="[0, 50, 100]"
+            show-ticks="always"
+            tick-size="0"
+            :step="1"
+            :max="thresholdRange[1]"
+            :min="thresholdRange[0]"
+            :thumb-label="state.showFillLabel"
+            @mouseup="state.showFillLabel = false"
+            @mousedown="state.showFillLabel = true"
+            @update:modelValue="updateFillRangeFilter"
+          >
+            <template v-slot:thumb-label="{ modelValue }">{{ modelValue }}%</template>
+          </v-range-slider>
+        </div>
 
-      <v-autocomplete
-        class="filter-list__dropdown"
-        v-model="state.selectedGroup"
-        label="Group"
-        chips
-        multiple
-        :items="state.group"
-        @update:modelValue="updateGroupFilter"
-      ></v-autocomplete>
+        <v-autocomplete
+          class="filter-list__dropdown"
+          v-model="state.selectedGroup"
+          label="Group"
+          chips
+          multiple
+          :items="state.group"
+          @update:modelValue="updateGroupFilter"
+        ></v-autocomplete>
 
-      <v-autocomplete
-        class="filter-list__dropdown"
-        v-model="state.selectedMaterialType"
-        label="Material Type"
-        chips
-        multiple
-        :items="state.materialType"
-        @update:modelValue="updateMaterialTypeFilter"
-      ></v-autocomplete>
+        <v-autocomplete
+          class="filter-list__dropdown"
+          v-model="state.selectedMaterialType"
+          label="Material Type"
+          chips
+          multiple
+          :items="state.materialType"
+          @update:modelValue="updateMaterialTypeFilter"
+        ></v-autocomplete>
 
-      <v-autocomplete
-        class="filter-list__dropdown"
-        v-model="state.selectedAssetTag"
-        label="Asset Tag"
-        chips
-        multiple
-        :items="state.assetTag"
-        @update:modelValue="updateAssetTagFilter"
-      ></v-autocomplete>
+        <v-autocomplete
+          class="filter-list__dropdown"
+          v-model="state.selectedAssetTag"
+          label="Asset Tag"
+          chips
+          multiple
+          :items="state.assetTag"
+          @update:modelValue="updateAssetTagFilter"
+        ></v-autocomplete>
 
-      <v-autocomplete
-        class="filter-list__dropdown"
-        v-model="state.selectedBinVolume"
-        label="Bin Volume"
-        chips
-        multiple
-        :items="state.binVolume"
-        @update:modelValue="updateBinVolumeFilter"
-      ></v-autocomplete>
+        <v-autocomplete
+          class="filter-list__dropdown"
+          v-model="state.selectedBinVolume"
+          label="Bin Volume"
+          chips
+          multiple
+          :items="state.binVolume"
+          @update:modelValue="updateBinVolumeFilter"
+        ></v-autocomplete>
 
-      <v-autocomplete
-        class="filter-list__dropdown"
-        v-model="state.selectedBinType"
-        label="Bin Type"
-        chips
-        multiple
-        :items="state.binType"
-        @update:modelValue="updateBinTypeFilter"
-      ></v-autocomplete>
-    </section>
+        <v-autocomplete
+          class="filter-list__dropdown"
+          v-model="state.selectedBinType"
+          label="Bin Type"
+          chips
+          multiple
+          :items="state.binType"
+          @update:modelValue="updateBinTypeFilter"
+        ></v-autocomplete>
+      </section>
+    </transition>
 
     <div class="mb-6">
       <span class="font-weight-bold">Result: {{ state.totalSensorsShown }} bin{{ state.totalSensorsShown > 1 ? 's' : '' }}</span>
@@ -302,6 +312,7 @@ function getFilterCount() {
 
 .filter-list {
   width: 100%;
+  @include slide-fade-animation;
 
   &__fields {
     margin-bottom: 20px;
