@@ -1,81 +1,90 @@
 // font mixins
 @mixin fontHeading1() {
-  font-size: 6rem;
-  font-weight: 300;
-  line-height: 6rem;
-  letter-spacing: -0.015625em;
-  font-family: "Roboto", sans-serif;
+  font-size: 2.75rem;
+  font-weight: 100;
+  line-height: 1.5;
+  letter-spacing: -.05em;
+  font-family: $font-face;
   text-transform: none;
 }
 
 @mixin fontHeading2() {
-  font-size: 3.75rem;
+  font-size: 2.252rem;
   font-weight: 300;
-  line-height: 3.75rem;
-  letter-spacing: -0.0083333333em;
+  line-height: 1.3;
+  letter-spacing: -.0225em;
   font-family: $font-face;  
   text-transform: none;
 }
 
 @mixin fontHeading3() {
-  font-size: 3rem;
-  font-weight: 400;
-  line-height: 3.125rem;
-  letter-spacing: normal;
+  font-size: 1.838rem;
+  font-weight: 300;
+  line-height: 1.25rem;
+  letter-spacing: -.02em;
   font-family: $font-face;  
   text-transform: none;
 }
 
 @mixin fontHeading4() {
-  font-size: 2.125rem;
+  font-size: 1.501rem;
   font-weight: 400;
-  line-height: 2.5rem;
-  letter-spacing: 0.0073529412em;
+  line-height: 1.25rem;
+  letter-spacing: -.02em;
   font-family: $font-face;
   text-transform: none;
 }
 
 @mixin fontHeading5() {
-  font-size: 1.5rem;
-  font-weight: 400;
-  line-height: 2rem;
-  letter-spacing: normal;
+  font-size: 1.225rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  letter-spacing: -.02em;
   font-family: $font-face;
   text-transform: none;
 }
 
 @mixin fontHeading6() {
-  font-size: 1.25rem;
+  font-size: 1.225rem;
   font-weight: 500;
-  line-height: 2rem;
-  letter-spacing: 0.0125em;
+  line-height: 1.25rem;
+  letter-spacing: -.02em;
   font-family: $font-face;
   text-transform: none;
 }
 
 @mixin fontSubTitle1() {
   font-size: 1rem;
-  font-weight: normal;
-  line-height: 1.75rem;
-  letter-spacing: 0.009375em;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: .01em;
   font-family: $font-face;
   text-transform: none;
 }
 
 @mixin fontSubTitle2() {
   font-size: 0.875rem;
-  font-weight: 400;
-  line-height: 1.375rem;
-  letter-spacing: 0.0071428571em;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: .01em;
   font-family: $font-face;  
   text-transform: none;
 }
 
 @mixin fontBody() {
   font-size: 1rem;
-  font-weight: 400;
+  font-weight: 300;
   line-height: 1.5rem;
-  letter-spacing: 0.03125em;
+  letter-spacing: -.025em;
+  font-family: $font-face;
+  text-transform: none;
+}
+
+@mixin fontBody2() {
+  font-size: 0.875rem;
+  font-weight: 300;
+  line-height: 1.2rem;
+  letter-spacing: 0em;
   font-family: $font-face;
   text-transform: none;
 }
@@ -85,6 +94,24 @@
   font-weight: 400;
   line-height: 1.25rem;
   letter-spacing: 0.0178571429em;
+  font-family: $font-face;
+  text-transform: none;
+}
+
+@mixin fontButton() {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.0rem;
+  letter-spacing: 0.089em;
+  font-family: $font-face;
+  text-transform: uppercase;
+}
+
+@mixin fontCaption() {
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.2rem;
+  letter-spacing: 3.33%;
   font-family: $font-face;
   text-transform: none;
 }
