@@ -78,7 +78,7 @@ function updateEndPoint(value) {
 
 <template>
   <section class="routes-list">
-    <div class="text-h6 padding-b-16">Create Route</div>
+    <div class="font-heading-h6 padding-b-16">Create Route</div>
 
     <!-- route info display -->
     <section v-if="state.shouldDisplayRoute">

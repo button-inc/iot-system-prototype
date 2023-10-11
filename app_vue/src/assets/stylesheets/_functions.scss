@@ -74,6 +74,10 @@
   @include fontBodySmall;
 }
 
+.font-heading-h6 {
+  @include fontHeading6;
+}
+
 // misc
 .cursor-pointer {
   cursor: pointer;
