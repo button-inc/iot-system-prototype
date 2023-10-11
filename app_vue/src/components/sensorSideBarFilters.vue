@@ -314,6 +314,10 @@ function getFilterCount() {
   width: 100%;
   @include slide-fade-animation;
 
+  &__title {
+    @include fontHeading4;
+  }
+
   &__fields {
     margin-bottom: 20px;
   }
