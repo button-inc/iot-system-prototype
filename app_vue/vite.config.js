@@ -9,7 +9,7 @@ export default defineConfig({
   define: {
     'process.env': process.env
   },
-  plugins: [vue(), vuetify(), svgLoader()],
+  plugins: [vue(), vuetify({ autoImport: true, styles: { configFile: 'src/assets/stylesheets/_vuetify.scss' } }), svgLoader()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

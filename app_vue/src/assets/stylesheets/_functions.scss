@@ -78,6 +78,10 @@
   @include fontHeading6;
 }
 
+.font-button {
+  @include fontButton;
+}
+
 // misc
 .cursor-pointer {
   cursor: pointer;

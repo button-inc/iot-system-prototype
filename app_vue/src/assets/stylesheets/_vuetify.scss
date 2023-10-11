@@ -1,0 +1,5 @@
+// this file will override vuetify sass variables
+// https://vuetifyjs.com/en/components/buttons/#sass-variables
+@use 'vuetify/settings' with (
+  $button-height: 32px,
+);

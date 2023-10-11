@@ -98,6 +98,15 @@
   text-transform: none;
 }
 
+@mixin fontButton() {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.0rem;
+  letter-spacing: 0.089em;
+  font-family: $font-face;
+  text-transform: uppercase;
+}
+
 @mixin fontCaption() {
   font-size: 0.75rem;
   font-weight: 400;

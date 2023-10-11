@@ -19,6 +19,11 @@ import axios from 'axios';
 import VueAxios from 'vue-axios';
 
 const vuetify = createVuetify({
+  defaults: {
+    VBtn: {
+      class: 'font-button'
+    }
+  },
   icons: {
     defaultSet: 'mdi',
     aliases,
