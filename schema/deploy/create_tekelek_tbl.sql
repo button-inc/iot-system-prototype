@@ -15,7 +15,7 @@ CREATE TABLE wav_schema.tekelek (
     longitude FLOAT,
     group_name TEXT,
     material_waste_type TEXT,
-    bin_volume FLOAT,
+    bin_volume TEXT,
     bin_type TEXT,
     bin_manufacturer_description TEXT,
     sensor_id TEXT PRIMARY KEY,
@@ -32,8 +32,8 @@ CREATE TABLE wav_schema.tekelek (
     fill_level FLOAT,
     fill_level_alert FLOAT,
     temperature_alert FLOAT,
-    illegal_dumping_alert BOOLEAN,
-    contamination_alert BOOLEAN,
+    illegal_dumping_alert BOOLEAN DEFAULT FALSE,
+    contamination_alert BOOLEAN DEFAULT FALSE,
     last_collected TIMESTAMP
 );
 
